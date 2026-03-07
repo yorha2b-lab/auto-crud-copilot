@@ -1,5 +1,6 @@
 .env
 .git
+.npmrc
 node_modules
 swagger/*.json
 screenShot/*.png
