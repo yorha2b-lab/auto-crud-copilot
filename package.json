@@ -35,16 +35,16 @@
   },
   "homepage": "https://github.com/yorha2b-lab/auto-crud-copilot#readme",
   "dependencies": {
+    "chalk": "^4.1.2",
     "chokidar": "^5.0.0",
     "commander": "^14.0.3",
     "dotenv": "^17.3.1",
+    "figlet": "^1.10.0",
     "handlebars": "^4.7.8",
     "json-stringify-pretty-compact": "^4.0.0",
     "json5": "^2.2.3",
     "openai": "^6.24.0",
-    "sharp": "^0.34.5",
-    "chalk": "^4.1.2",
-    "figlet": "^1.10.0",
-    "ora": "^5.4.1"
+    "ora": "^5.4.1",
+    "sharp": "^0.34.5"
   }
 }
