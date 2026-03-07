@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const fs = require('fs')
 const path = require('path')
 const chalk = require('chalk')
 const figlet = require('figlet')
@@ -9,8 +10,11 @@ console.log(chalk.white(' [System] ') + chalk.green('YoRHa No.2 Type B Unit: ') 
 console.log(chalk.white(' [Mission] ') + chalk.yellow('Generate Frontend CRUD: ') + chalk.cyan('Awaiting Command'))
 console.log(chalk.gray('--------------------------------------------------\n'))
 
+const localEnv = path.resolve(process.cwd(), '.env')
+const pkgEnv = path.resolve(__dirname, '../.env')
+
 require("dotenv").config({
-  path: path.resolve(__dirname, '../.env')
+  path: fs.existsSync(localEnv) ? localEnv : pkgEnv
 })
 
 const { program } = require('commander')
