@@ -8,11 +8,33 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "crud",
+    "generator",
+    "ai",
+    "vision",
+    "react",
+    "vue",
+    "angular",
+    "antd",
+    "umi",
+    "code-generation",
+    "automation",
+    "frontend",
+    "scaffold"
+  ],
   "author": "yorha2B",
-  "license": "ISC",
+  "license": "MIT",
   "type": "commonjs",
-  "devDependencies": {
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/auto-crud-copilot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/auto-crud-copilot/issues"
+  },
+  "homepage": "https://github.com/yourusername/auto-crud-copilot#readme",
+  "dependencies": {
     "chokidar": "^5.0.0",
     "commander": "^14.0.3",
     "dotenv": "^17.3.1",
