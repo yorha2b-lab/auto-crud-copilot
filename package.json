@@ -1,6 +1,6 @@
 {
   "name": "@yorha2b-lab/autodev",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "基于视觉大模型的前端(Umi+Antd)全自动 CRUD 代码生成器",
   "bin": {
     "autodev": "bin/autodev.js"
