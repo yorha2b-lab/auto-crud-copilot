@@ -13,7 +13,7 @@ export default props => {
 
     const { total, loading, dataSource, search, setSearch, refresh } = useTableQuery(
          async params => await request('/api/{{fileName}}', { method: 'POST', body: params }),
-         formatResponse: response => response?.data ?? [],
+         response => response?.data ?? [],
          initParams,
     )
 
@@ -68,7 +68,7 @@ export default props => {
 
     return (
         <Card {{#if hasTabs}}tabList={tabs} activeTabKey={activeKey} onTabChange={onTabChange}{{/if}}>
-            {modal.visible && <MyModalForm {...modal} formItems={[]} submit={modalSubmit} setModal={setModal} />}
+            {modal.visible && <MyModalForm {...modal} formItems={modalItems} submit={modalSubmit} setModal={setModal} />}
             <MySearchForm form={form} search={search} setSearch={setSearch} formItems={ {{#if hasTabs}}formItems[activeKey]{{else}}formItems{{/if}} } />
             {{#if hasTabs}}
             {{#each tabs}}
@@ -100,7 +100,7 @@ export default props => {
                 {{/if}}
                 {{#if hasRowSelection}}
                 rowSelection=\{{
-                    selectedRowKeys: selectedRows.map(item => item.key),
+                    selectedRowKeys: selectedRows.map(item => item.id),
                     onChange: (keys, rows) => setSelectedRows(rows)
                 }}
                 {{/if}}
