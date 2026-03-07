@@ -1,0 +1,16 @@
+import { timeRender } from '../../utils/utils'
+
+{{#if hasTabs}}
+export const tabs = {{{stringify tabs 50}}}
+{{/if}}
+
+{{#each dictBlocks}}
+export const {{this.name}} = {{{stringify this.data 50}}}
+
+{{/each}}
+
+{{#if formItems.length}}
+export const formItems = {{{stringify formItemsData 150}}}
+{{/if}}
+
+export const columns = {{{stringify columnsData 200}}}

@@ -1,0 +1,25 @@
+{
+  "name": "auto-crud-copilot",
+  "version": "1.0.0",
+  "description": "基于视觉大模型的前端(Umi+Antd)全自动 CRUD 代码生成器",
+  "bin": {
+    "autodev": "./bin/autodev.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "chokidar": "^5.0.0",
+    "commander": "^14.0.3",
+    "dotenv": "^17.3.1",
+    "handlebars": "^4.7.8",
+    "json-stringify-pretty-compact": "^4.0.0",
+    "json5": "^2.2.3",
+    "openai": "^6.24.0",
+    "sharp": "^0.34.5"
+  }
+}

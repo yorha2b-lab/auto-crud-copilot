@@ -1,0 +1,14 @@
+# 依赖
+node_modules/
+package-lock.json
+# 操作系统生成的文件
+.DS_Store
+.DS_Store?
+._*
+.env
+
+# 项目特定文件
+screenShot/
+screenPart/
+mock/
+swagger/

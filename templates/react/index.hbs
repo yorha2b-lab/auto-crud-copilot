@@ -1,0 +1,110 @@
+export default props => {
+
+    const [form] = Form.useForm()
+    const [modal, setModal] = useState({})
+    {{#if hasTabs}}
+    const [activeKey, setActiveKey] = useState(tabs[0].key)
+    {{/if}}
+    {{#if hasRowSelection}}
+    const [selectedRows, setSelectedRows] = useState([])
+    {{/if}}
+
+    const initParams = {{#if hasTabs}}{ type: tabs[0].key }{{else}}{}{{/if}}
+
+    const { total, loading, dataSource, search, setSearch, refresh } = useTableQuery(
+         async params => await request('/api/{{fileName}}', { method: 'POST', body: params }),
+         formatResponse: response => response?.data ?? [],
+         initParams,
+    )
+
+    {{#each operations}}
+    const {{this.action}} = async record => {
+        const response = await request('/api')
+        refresh()
+    }
+
+    {{/each}}
+
+    {{#each functionButtons}}
+    const {{this.action}} = () => {
+        Modal.confirm({
+            title: '确认',
+            centered: true,
+            content: '确认{{this.btn}}吗？',
+            onOk: async () => {
+                const response = await request('/api')
+                refresh()
+            }
+        })
+    }
+
+    {{/each}}
+
+    {{#if hasTabs}}
+    const onTabChange = key => {
+        setActiveKey(key)
+        {{#if hasRowSelection}}setSelectedRows([]){{/if}}
+        setSearch({ pageNo: 1, pageSize: 10, type: key })
+    }
+    {{/if}}
+
+    const modalSubmit = async values => {
+        const response = await request('/api')
+        refresh()
+    }
+
+    {{#if hasOperate}}
+    const operate = {
+        title: '操作',
+        render: (_, record) => (
+            <Space>
+                {{#each operations}}
+                <a onClick={()=> {{this.action}}(record)}>{{this.label}}</a>
+                {{/each}}
+            </Space>
+        )
+    }
+    {{/if}}
+
+    return (
+        <Card {{#if hasTabs}}tabList={tabs} activeTabKey={activeKey} onTabChange={onTabChange}{{/if}}>
+            {modal.visible && <MyModalForm {...modal} formItems={[]} submit={modalSubmit} setModal={setModal} />}
+            <MySearchForm form={form} search={search} setSearch={setSearch} formItems={ {{#if hasTabs}}formItems[activeKey]{{else}}formItems{{/if}} } />
+            {{#if hasTabs}}
+            {{#each tabs}}
+            {activeKey === '{{this.key}}' &&
+                <Space style=\{{ marginBottom: 16 }}>
+                    {{#each ../functionButtons}}
+                    <Button type='primary' onClick={ {{this.action}} }>{{this.btn}}</Button>
+                    {{/each}}
+                </Space>}
+            {{/each}}
+            {{else}}
+            <Space style=\{{ marginBottom: 16 }}>
+                {{#each functionButtons}}
+                <Button type='primary' onClick={ {{this.action}} }>{{this.btn}}</Button>
+                {{/each}}
+            </Space>
+            {{/if}}
+            {{#if hasStaticInfo}}
+            <Alert showIcon title='{{staticInfoText}}' type='info' style=\{{ marginBottom: 16 }} />
+            {{/if}}
+            <MyTable
+                rowKey='id'
+                loading={loading}
+                dataSource={dataSource}
+                columns={ {{columnsValue}} }
+                {{#if hasPagination}}
+                pagination=\{{ total, showSizeChanger: true, current: search.pageNo, pageSize: search.pageSize }}
+                onChange={(pagination, filters, sorter) => setSearch({ ...search , pageNo: pagination.current, pageSize: pagination.pageSize, orderBy: sorter.column ? sorter.field : undefined })}
+                {{/if}}
+                {{#if hasRowSelection}}
+                rowSelection=\{{
+                    selectedRowKeys: selectedRows.map(item => item.key),
+                    onChange: (keys, rows) => setSelectedRows(rows)
+                }}
+                {{/if}}
+            />
+        </Card>
+    )
+}
