@@ -6,9 +6,19 @@ const config = require('../../config.js')
 const pagePrompt = require('../prompts/watch-page.js')
 const { createTaskQueue } = require('../core/task-queue')
 const stringify = require('json-stringify-pretty-compact')
-const { index, resource } = require('../core/compiler.js')
 const { recognizePage, generateMock } = require('../services/llm.js')
 const { copyHooks, copyComponents, getExistingMenus } = require('../utils/utils.js')
+
+const compilerPath = path.join(__dirname, `../core/${options.template}-compiler.js`)
+
+if (!fs.existsSync(compilerPath)) {
+    console.error(`\n❌ 糟糕！暂不支持 [${options.template}] 框架的自动生成。`)
+    console.log(`💡 提示：目前仅内置了 react 编译器。`)
+    console.log(`🚀 强烈欢迎社区大佬提 PR 补充 ${options.template}-compiler.js ！\n`)
+    return
+}
+
+const { index, resource } = require(compilerPath)
 
 const watchPage = options => {
     try {
