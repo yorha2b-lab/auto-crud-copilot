@@ -6,6 +6,9 @@ package-lock.json
 .DS_Store?
 ._*
 .env
+.npmrc
+
+
 
 # 项目特定文件
 screenShot/
