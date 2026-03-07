@@ -27,6 +27,14 @@ const watchPage = options => {
     } catch (error) {
         console.error('❌ 程序运行出错:', error)
     }
+    /**
+     * 创建任务队列，限制并发数为 2。
+     *
+     * 为什么限制并发？
+     * 1. 视觉大模型的 API 计费昂贵且通常有严格的 TPM/RPM (每分钟请求数) 限流。
+     * 2. 如果用户一次性丢入 5 张截图，全量并发极易触发 HTTP 429 Too Many Requests 报错。
+     * 3. 并发设为 2 是实测下来速度与稳定性的最佳平衡点。
+     */
     const queue = createTaskQueue(2)
     const menus = getExistingMenus()
     const tplDir = path.join(__dirname, `../../templates/${options.template}`)

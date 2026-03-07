@@ -2,6 +2,12 @@ const fs = require('fs')
 const path = require('path')
 const config = require('../../config.js')
 
+
+/**
+ * 大模型输出的标准 JSON 无法携带 render: (text) => <Tag> 等箭头函数。
+ * 我们在 Prompt 中要求大模型用 _CODE_ 占位符包裹函数字符串，
+ * 在此处用正则剥离外层的双引号和占位符，将其还原为真正的可执行 JS 代码。
+ */
 const cleanCode = str => {
     return str
         .replace(/"(\w+)":/g, '$1:') // 去掉 key 的双引号
