@@ -1,0 +1,6 @@
+.env
+.git
+node_modules
+swagger/*.json
+screenShot/*.png
+screenPart/*.png

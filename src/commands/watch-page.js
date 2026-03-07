@@ -1,4 +1,5 @@
 const fs = require('fs')
+const ora = require('ora')
 const path = require('path')
 const chokidar = require('chokidar')
 const Handlebars = require('handlebars')
@@ -9,18 +10,19 @@ const stringify = require('json-stringify-pretty-compact')
 const { recognizePage, generateMock } = require('../services/llm.js')
 const { copyHooks, copyComponents, getExistingMenus } = require('../utils/utils.js')
 
-const compilerPath = path.join(__dirname, `../core/${options.template}-compiler.js`)
-
-if (!fs.existsSync(compilerPath)) {
-    console.error(`\n❌ 糟糕！暂不支持 [${options.template}] 框架的自动生成。`)
-    console.log(`💡 提示：目前仅内置了 react 编译器。`)
-    console.log(`🚀 强烈欢迎社区大佬提 PR 补充 ${options.template}-compiler.js ！\n`)
-    return
-}
-
-const { index, resource } = require(compilerPath)
-
 const watchPage = options => {
+
+    const compilerPath = path.join(__dirname, `../core/${options.template}-compiler.js`)
+
+    if (!fs.existsSync(compilerPath)) {
+        console.error(`\n❌ 糟糕！暂不支持 [${options.template}] 框架的自动生成。`)
+        console.log(`💡 提示：目前仅内置了 react 编译器。`)
+        console.log(`🚀 强烈欢迎社区大佬提 PR 补充 ${options.template}-compiler.js ！\n`)
+        return
+    }
+
+    const { index, resource } = require(compilerPath)
+
     try {
         copyHooks(options)
         copyComponents(options)
@@ -65,7 +67,8 @@ const watchPage = options => {
             try {
                 if (!fs.existsSync(mockDir)) fs.mkdirSync(mockDir, { recursive: true })
                 if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true })
-                console.log(`🚀 开始处理排队任务: ${fileName}...`)
+                const spinner = ora(`🚀 Pod 042: 开始处理排队任务: ${fileName}...`)
+                spinner.start()
                 const pageConfig = await recognizePage(pagePrompt, filePath)
                 fs.writeFileSync(path.join(targetDir, 'resource.js'), resource({ pageConfig, resourceTpl }))
                 fs.writeFileSync(path.join(targetDir, 'index.js'), index({ fileName, indexTpl, pageConfig }))
@@ -80,7 +83,7 @@ const watchPage = options => {
                 }
                 const endTime = Date.now()
                 //fs.unlinkSync(filePath)
-                console.log(`✅ 模块 [${fileName}] 装配完成！耗时 ${(endTime - startTime) / 1000} 秒`)
+                spinner.succeed(`✅ Pod 042: 模块 [${fileName}] 装配完成！耗时 ${(endTime - startTime) / 1000} 秒`)
             } catch (error) {
                 console.error(`❌ 处理失败: ${filePath}`, error)
             }

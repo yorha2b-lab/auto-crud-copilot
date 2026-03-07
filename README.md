@@ -1,8 +1,9 @@
 # Auto CRUD Copilot
 
-[![NPM Version](https://img.shields.io/npm/v/auto-crud-copilot.svg)](https://npmjs.org/package/auto-crud-copilot)
-[![License](https://img.shields.io/npm/l/auto-crud-copilot.svg)](LICENSE)
-[![Downloads](https://img.shields.io/npm/dm/auto-crud-copilot.svg)](https://npmjs.org/package/auto-crud-copilot)
+[![NPM Version](https://img.shields.io/npm/v/@yorha2b-lab/autodev.svg?style=flat-square)](https://www.npmjs.com/package/@yorha2b-lab/autodev)
+[![NPM Downloads](https://img.shields.io/npm/dm/@yorha2b-lab/autodev.svg?style=flat-square)](https://www.npmjs.com/package/@yorha2b-lab/autodev)
+[![GitHub Stars](https://img.shields.io/github/stars/yorha2b-lab/auto-crud-copilot.svg?style=flat-square)](https://github.com/yorha2b-lab/auto-crud-copilot/stargazers)
+[![License](https://img.shields.io/npm/l/@yorha2b-lab/autodev.svg?style=flat-square)](https://github.com/yorha2b-lab/auto-crud-copilot/blob/main/LICENSE)
 
 基于视觉大模型的前端(Umi+Antd)全自动 CRUD 代码生成器 🚀
 

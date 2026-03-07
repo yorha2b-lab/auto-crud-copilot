@@ -1,5 +1,5 @@
 {
-  "name": "auto-crud-copilot",
+  "name": "@yorha2b-lab/autodev",
   "version": "1.0.0",
   "description": "基于视觉大模型的前端(Umi+Antd)全自动 CRUD 代码生成器",
   "bin": {
@@ -42,6 +42,9 @@
     "json-stringify-pretty-compact": "^4.0.0",
     "json5": "^2.2.3",
     "openai": "^6.24.0",
-    "sharp": "^0.34.5"
+    "sharp": "^0.34.5",
+    "chalk": "^4.1.2",
+    "figlet": "^1.10.0",
+    "ora": "^5.4.1"
   }
 }
