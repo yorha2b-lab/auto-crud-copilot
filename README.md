@@ -161,7 +161,7 @@ module.exports = {
 
 ## 📞 联系方式
 
-如有问题或建议，欢迎提交 [Issue](https://github.com/yourusername/auto-crud-copilot/issues)。
+如有问题或建议，欢迎提交 [Issue](https://github.com/yorha2b-lab/auto-crud-copilot/issues)。
 
 ## 🛠️ 常见问题 (FAQ)
 Q: 这个工具收费吗？

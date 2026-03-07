@@ -50,7 +50,7 @@
 
 1. 克隆仓库
 ```bash
-git clone https://github.com/yourusername/auto-crud-copilot.git
+git clone https://github.com/yorha2b-lab/auto-crud-copilot.git
 cd auto-crud-copilot
 ```
 

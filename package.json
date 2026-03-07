@@ -28,12 +28,12 @@
   "type": "commonjs",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/auto-crud-copilot.git"
+    "url": "https://github.com/yorha2b-lab/auto-crud-copilot.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/auto-crud-copilot/issues"
+    "url": "https://github.com/yorha2b-lab/auto-crud-copilot/issues"
   },
-  "homepage": "https://github.com/yourusername/auto-crud-copilot#readme",
+  "homepage": "https://github.com/yorha2b-lab/auto-crud-copilot#readme",
   "dependencies": {
     "chokidar": "^5.0.0",
     "commander": "^14.0.3",
