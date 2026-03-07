@@ -170,4 +170,14 @@ A: 工具本身开源免费，但调用的 AI 模型（如 GPT-4v, Qwen-VL）可
 
 ---
 
+## ⚖️ Disclaimer
+
+Auto CRUD Copilot is a **fan-made, non-commercial, open-source tool**.
+
+- The themes, names (YoRHa, 2B, etc.), and catchphrases included in this project are inspired by **NieR:Automata**, which is a trademark and copyright of **Square Enix Co., Ltd. / PlatinumGames Inc.**
+- This project is not affiliated with, endorsed by, or representative of Square Enix in any way.
+- Please support the original masterpiece: [NieR:Automata Official Site](https://nierautomata.square-enix-games.com/).
+
+**Glory to Mankind.**
+
 ⭐ 如果这个项目对你有帮助，请给个Star支持一下！
