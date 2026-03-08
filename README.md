@@ -7,7 +7,7 @@
 
 基于视觉大模型的前端(Umi+Antd)全自动 CRUD 代码生成器 🚀
 
-![Demo](https://via.placeholder.com/800x400?text=Coming+Soon)
+![Demo](https://github.com/user-attachments/assets/6d42fce1-c815-482b-8c6a-4a3b9415ba47)
 
 拒绝重复劳动！为什么你需要 Auto CRUD Copilot？
 告别手写 Table/Form：截图即代码，提升你的开发效率，告别烦人的复制粘贴。
