@@ -3,7 +3,7 @@ import { formNode } from './index'
 
 export const MyBaseForm = ({ item, form }) => {
 
-    const renderFormContent = item => {
+    const renderFormContent = ({ item }) => {
 
         if (!item.name) {
             return typeof item.render === 'function' ? item.render(item) : (item.value ?? '-')
