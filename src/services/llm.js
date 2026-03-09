@@ -3,18 +3,12 @@ const path = require('path')
 const JSON5 = require('json5')
 const sharp = require('sharp')
 const OpenAI = require('openai')
-const mockPrompt = require('../prompts/mock.js')
 const { getConfig } = require('../utils/utils.js')
-const apiPrompt = require('../prompts/watch-api.js')
-const { UI_DESIGNER, API_DESIGNER, MOCK_DESIGNER } = require('../prompts/system.js')
-
-const config = getConfig()
 
 let client = null
 
 const getOpenAI = () => {
     if (!client) {
-
         const localEnv = path.resolve(process.cwd(), '.env')
         const pkgEnv = path.resolve(__dirname, '../.env')
         require("dotenv").config({
@@ -44,6 +38,9 @@ const askAI = async (model, messages, retryCount = 0) => {
 
 module.exports = {
     generateMock: async (columns, fileName) => {
+        const config = getConfig()
+        const mockPrompt = require('../prompts/mock.js')
+        const { MOCK_DESIGNER } = require('../prompts/system.js')
         return askAI(
             config.textModel,
             [
@@ -53,11 +50,15 @@ module.exports = {
         )
     },
     recognizePage: async (prompt, filePath) => {
+        const config = getConfig()
+        const { UI_DESIGNER } = require('../prompts/system.js')
+
         const compressedBuffer = await sharp(filePath)
             .resize(1280, null, { withoutEnlargement: true })
             .jpeg({ quality: 80 })
             .toBuffer()
         const base64Image = compressedBuffer.toString('base64')
+
         return askAI(
             config.visionModel,
             [
@@ -73,6 +74,9 @@ module.exports = {
         )
     },
     alignSwaggerFields: async (swaggerStr, resourceStr) => {
+        const config = getConfig()
+        const apiPrompt = require('../prompts/watch-api.js')
+        const { API_DESIGNER } = require('../prompts/system.js')
         return askAI(
             config.textModel,
             [

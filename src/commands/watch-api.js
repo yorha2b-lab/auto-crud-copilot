@@ -1,10 +1,11 @@
 const fs = require('fs')
 const path = require('path')
 const chokidar = require('chokidar')
-const { getConfig } = require('../utils/utils.js')
-const { alignSwaggerFields } = require('../services/llm.js')
 
 const watchApi = () => {
+
+    const { getConfig } = require('../utils/utils.js')
+    const { alignSwaggerFields } = require('../services/llm.js')
 
     const config = getConfig()
 

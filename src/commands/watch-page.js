@@ -1,15 +1,16 @@
 const fs = require('fs')
 const ora = require('ora')
 const path = require('path')
-const chokidar = require('chokidar')
-const Handlebars = require('handlebars')
-const pagePrompt = require('../prompts/watch-page.js')
-const { createTaskQueue } = require('../core/task-queue')
-const stringify = require('json-stringify-pretty-compact')
-const { recognizePage, generateMock } = require('../services/llm.js')
-const { getConfig, copyHooks, copyComponents, getExistingMenus } = require('../utils/utils.js')
 
 const watchPage = options => {
+
+    const chokidar = require('chokidar')
+    const Handlebars = require('handlebars')
+    const pagePrompt = require('../prompts/watch-page.js')
+    const { createTaskQueue } = require('../core/task-queue')
+    const stringify = require('json-stringify-pretty-compact')
+    const { recognizePage, generateMock } = require('../services/llm.js')
+    const { getConfig, copyHooks, copyComponents, getExistingMenus } = require('../utils/utils.js')
 
     const config = getConfig()
     const compilerPath = path.join(__dirname, `../core/${options.template}-compiler.js`)

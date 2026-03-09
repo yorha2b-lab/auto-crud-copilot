@@ -1,10 +1,11 @@
 const fs = require('fs')
 const chokidar = require('chokidar')
-const partPrompt = require('../prompts/watch-part.js')
-const { recognizePage } = require('../services/llm.js')
 const stringify = require('json-stringify-pretty-compact')
 
 const watchPart = () => {
+
+    const { recognizePage } = require('../services/llm.js')
+
     const watcher = chokidar.watch('./screenPart', {
         persistent: true,
         ignored: /(^|[\/\\])\../,
@@ -13,10 +14,12 @@ const watchPart = () => {
             pollInterval: 100
         }
     })
+
     watcher.on('add', async filePath => {
         try {
             const startTime = Date.now()
             console.log(`🚀 检测到新图片: 开始识别...`)
+            const partPrompt = require('../prompts/watch-part.js')
             const pageConfig = await recognizePage(partPrompt, filePath)
             const optionDict = pageConfig.optionDict || {}
             delete pageConfig.optionDict
