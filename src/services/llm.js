@@ -1,3 +1,5 @@
+const fs = require('fs')
+const path = require('path')
 const JSON5 = require('json5')
 const sharp = require('sharp')
 const OpenAI = require('openai')
@@ -12,6 +14,12 @@ let client = null
 
 const getOpenAI = () => {
     if (!client) {
+
+        const localEnv = path.resolve(process.cwd(), '.env')
+        const pkgEnv = path.resolve(__dirname, '../.env')
+        require("dotenv").config({
+            path: fs.existsSync(localEnv) ? localEnv : pkgEnv
+        })
         client = new OpenAI({ apiKey: process.env.API_KEY, baseURL: process.env.BASE_URL })
     }
     return client
