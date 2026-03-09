@@ -35,6 +35,12 @@ npm install -g auto-crud-copilot
 
 ### 环境配置
 
+快速开始
+
+```bash
+autodev init
+```
+
 创建 `.env` 文件并配置以下环境变量：
 
 ```bash
