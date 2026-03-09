@@ -7,13 +7,22 @@ const apiPrompt = require('../prompts/watch-api.js')
 const { UI_DESIGNER, API_DESIGNER, MOCK_DESIGNER } = require('../prompts/system.js')
 
 const config = getConfig()
-const openai = new OpenAI({ apiKey: process.env.API_KEY, baseURL: process.env.BASE_URL })
+
+let client = null
+
+const getOpenAI = () => {
+    if (!client) {
+        client = new OpenAI({ apiKey: process.env.API_KEY, baseURL: process.env.BASE_URL })
+    }
+    return client
+}
 
 const askAI = async (model, messages, retryCount = 0) => {
 
     if (retryCount > 3) throw new Error('AI 重试次数耗尽，请检查网络或图片')
 
     try {
+        const openai = getOpenAI()
         const response = await openai.chat.completions.create({ model, messages, response_format: { type: 'json_object' } })
         let raw = response.choices[0].message.content.trim()
         raw = raw.replace(/^```json\n?/, '').replace(/\n?```$/, '')
