@@ -14,7 +14,7 @@ const localEnv = path.resolve(process.cwd(), '.env')
 const pkgEnv = path.resolve(__dirname, '../.env')
 
 require("dotenv").config({
-  path: fs.existsSync(localEnv) ? localEnv : pkgEnv
+    path: fs.existsSync(localEnv) ? localEnv : pkgEnv
 })
 
 const { program } = require('commander')
@@ -25,6 +25,18 @@ const watchPart = require('../src/commands/watch-part')
 program.version('1.0.0').description('AI驱动的前端CRUD代码生成器')
 
 program.option('-t, --template <type>', '指定前端框架模板', 'react')
+
+program
+    .command('init')
+    .description('在当前目录初始化 .env 和 config.js 配置文件')
+    .action(() => {
+        const tplConfig = path.resolve(__dirname, '../config.js')
+        const tplEnv = path.resolve(__dirname, '../.env.example')
+        fs.copyFileSync(tplConfig, path.join(process.cwd(), 'config.js'))
+        fs.copyFileSync(tplEnv, path.join(process.cwd(), '.env'))
+        console.log('✅ 已生成 config.js')
+        console.log('✅ 已生成 .env')
+    })
 
 program
     .command('watch:page')

@@ -1,11 +1,12 @@
 const JSON5 = require('json5')
 const sharp = require('sharp')
 const OpenAI = require('openai')
-const config = require('../../config.js')
 const mockPrompt = require('../prompts/mock.js')
+const { getConfig } = require('../utils/utils.js')
 const apiPrompt = require('../prompts/watch-api.js')
 const { UI_DESIGNER, API_DESIGNER, MOCK_DESIGNER } = require('../prompts/system.js')
 
+const config = getConfig()
 const openai = new OpenAI({ apiKey: process.env.API_KEY, baseURL: process.env.BASE_URL })
 
 const askAI = async (model, messages, retryCount = 0) => {

@@ -1,7 +1,16 @@
 const fs = require('fs')
 const path = require('path')
-const config = require('../../config.js')
 
+const getConfig = () => {
+    const localConfigPath = path.join(process.cwd(), 'config.js')
+    const defaultConfigPath = path.resolve(__dirname, '../../config.js')
+    let config = require(defaultConfigPath)
+    if (fs.existsSync(localConfigPath)) {
+        const userConfig = require(localConfigPath)
+        config = { ...config, ...userConfig }
+    }
+    return config
+}
 
 /**
  * 大模型输出的标准 JSON 无法携带 render: (text) => <Tag> 等箭头函数。
@@ -20,21 +29,7 @@ const cleanCode = str => {
         .trim() + '\n'
 }
 
-const copyHooks = options => {
-    const targetDir = path.join(process.cwd(), config.hooksDir)
-    if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true })
-    const hookDir = path.join(__dirname, `../../templates/${options.template}/hooks`)
-    fs.readdirSync(hookDir).forEach(file => fs.copyFileSync(path.join(hookDir, file), path.join(targetDir, file)))
-}
-
-const copyComponents = options => {
-    const targetDir = path.join(process.cwd(), config.componentsDir)
-    if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true })
-    const componentsDir = path.join(__dirname, `../../templates/${options.template}/components`)
-    fs.readdirSync(componentsDir).forEach(file => fs.copyFileSync(path.join(componentsDir, file), path.join(targetDir, file)))
-}
-
-const getExistingMenus = (dir = config.pagesDir) => {
+const getExistingMenus = (dir = 'src/pages') => {
     const pagesDir = path.join(process.cwd(), dir)
     if (!fs.existsSync(pagesDir)) return []
     return fs.readdirSync(pagesDir)
@@ -66,4 +61,18 @@ const generateSmartImports = (codeStr, hasTabs) => {
     return imports.filter(Boolean).join('\n')
 }
 
-module.exports = { copyHooks, cleanCode, copyComponents, getExistingMenus, generateSmartImports }
+const copyHooks = (options, hooksDir = 'src/hooks') => {
+    const targetDir = path.join(process.cwd(), hooksDir)
+    if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true })
+    const hookDir = path.join(__dirname, `../../templates/${options.template}/hooks`)
+    fs.readdirSync(hookDir).forEach(file => fs.copyFileSync(path.join(hookDir, file), path.join(targetDir, file)))
+}
+
+const copyComponents = (options, componentsDir = 'src/components') => {
+    const targetDir = path.join(process.cwd(), componentsDir)
+    if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true })
+    const componentsDirectory = path.join(__dirname, `../../templates/${options.template}/components`)
+    fs.readdirSync(componentsDirectory).forEach(file => fs.copyFileSync(path.join(componentsDirectory, file), path.join(targetDir, file)))
+}
+
+module.exports = { getConfig, copyHooks, cleanCode, copyComponents, getExistingMenus, generateSmartImports }

@@ -1,10 +1,13 @@
 const fs = require('fs')
 const path = require('path')
 const chokidar = require('chokidar')
-const config = require('../../config.js')
+const { getConfig } = require('../utils/utils.js')
 const { alignSwaggerFields } = require('../services/llm.js')
 
 const watchApi = () => {
+
+    const config = getConfig()
+
     const watcher = chokidar.watch('./swagger', {
         persistent: true,
         ignored: /(^|[\/\\])\../,
