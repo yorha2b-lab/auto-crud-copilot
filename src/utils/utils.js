@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const OpenAI = require('openai')
 
 const getConfig = () => {
     const localConfigPath = path.join(process.cwd(), 'config.js')
@@ -10,6 +11,10 @@ const getConfig = () => {
         config = { ...config, ...userConfig }
     }
     return config
+}
+
+const initOpenAI = () => {
+    return new OpenAI({ apiKey: process.env.API_KEY, baseURL: process.env.BASE_URL })
 }
 
 /**
@@ -75,4 +80,4 @@ const copyComponents = (options, componentsDir = 'src/components') => {
     fs.readdirSync(componentsDirectory).forEach(file => fs.copyFileSync(path.join(componentsDirectory, file), path.join(targetDir, file)))
 }
 
-module.exports = { getConfig, copyHooks, cleanCode, copyComponents, getExistingMenus, generateSmartImports }
+module.exports = { getConfig, copyHooks, cleanCode, initOpenAI, copyComponents, getExistingMenus, generateSmartImports }
