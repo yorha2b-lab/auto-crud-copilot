@@ -37,6 +37,7 @@ const index = ({ fileName, indexTpl, pageConfig }) => {
         hasOperate,
         columnsValue,
         tabs: pageConfig.tabs,
+        hasExpandable: pageConfig.table.expandable,
         hasPagination: pageConfig.table.pagination,
         operations: pageConfig.table.operation || [],
         hasRowSelection: pageConfig.table.rowSelection,

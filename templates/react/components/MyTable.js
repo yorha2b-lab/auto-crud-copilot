@@ -8,7 +8,7 @@ const components = {
     }
 }
 
-export const MyTable = ({ size, onSave, onChange, pagination, columns = [], rowSelection, rowKey = 'id', loading = false, dataSource = [], editable = false, scroll = { x: 'max-content' }, ...restProps }) => {
+export const MyTable = ({ size, onSave, onChange, pagination, rowClassName, columns = [], rowSelection, rowKey = 'id', loading = false, dataSource = [], editable = false, scroll = { x: 'max-content' }, ...restProps }) => {
 
     const mergedColumns = columns.map(col => {
         if (!col.editable) {
@@ -42,7 +42,7 @@ export const MyTable = ({ size, onSave, onChange, pagination, columns = [], rowS
             size={size ?? 'middle'}
             rowSelection={rowSelection}
             components={editable ? components : undefined}
-            rowClassName={editable ? () => 'editable-row' : undefined}
+            rowClassName={editable ? () => 'editable-row' : rowClassName}
         />
     )
 }

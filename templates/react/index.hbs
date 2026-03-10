@@ -5,6 +5,9 @@ export default props => {
     {{#if hasTabs}}
     const [activeKey, setActiveKey] = useState(tabs[0].key)
     {{/if}}
+    {{#if hasExpandable}}
+    const [expandedRowKeys, setExpandedRowKeys] = useState([])
+    {{/if}}
     {{#if hasRowSelection}}
     const [selectedRows, setSelectedRows] = useState([])
     {{/if}}
@@ -46,6 +49,19 @@ export default props => {
         {{#if hasRowSelection}}setSelectedRows([]){{/if}}
         setSearch({ pageNo: 1, pageSize: 10, type: key })
     }
+    {{/if}}
+
+    {{#if hasExpandable}}
+    const onExpand = async (expanded, record) => {
+        if (expanded) {
+            setExpandedRowKeys([...expandedRowKeys, record.key])
+        } else {
+            setExpandedRowKeys(expandedRowKeys.filter(item => item !== record.key))
+        }
+    }
+
+    const expandedRowRender = record => (<div>自定义渲染</div>)
+
     {{/if}}
 
     const modalSubmit = async values => {
@@ -94,6 +110,9 @@ export default props => {
                 loading={loading}
                 dataSource={dataSource}
                 columns={ {{columnsValue}} }
+                {{#if hasExpandable}}
+                expandable=\{{ onExpand, expandedRowKeys, expandedRowRender, columnWidth: 24 }}
+                {{/if}}
                 {{#if hasPagination}}
                 pagination=\{{ total, showSizeChanger: true, current: search.pageNo, pageSize: search.pageSize }}
                 onChange={(pagination, filters, sorter) => setSearch({ ...search , pageNo: pagination.current, pageSize: pagination.pageSize, orderBy: sorter.column ? sorter.field : undefined })}

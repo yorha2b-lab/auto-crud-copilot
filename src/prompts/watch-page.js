@@ -15,6 +15,7 @@ module.exports = `
 4.表格:
     {
         pagination: true/false,
+        expandable: true/false,
         rowSelection: true/false,
         staticInfo:{has:true/false,text:''},
         operation: [{label:'操作',action:'操作动词+ByRecord'}],
@@ -28,7 +29,7 @@ module.exports = `
     如果是下拉框列(所对应的查询项明确是下拉框),请加入render:_CODE_text=>对应的options.find(item=>item.value===text)?.label_CODE_
     如果列需要过滤请加上filters:[],onFilter: _CODE_(value, record) => record[对应的英文名词].includes(value)_CODE_
 5.功能按钮
-    functionButtion:[{btn:'btn',action:'操作动词'}]
+    functionButtion:[{btn:'btn',action:'操作动词+模块英文名词'}]
     如果和表格行操作重复请在action加上BySelected前缀
     如果是导出功能,对应的动词为export+对应的英文名词,没有名词则为exportData
 6.下拉选项字典
