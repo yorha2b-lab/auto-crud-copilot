@@ -49,7 +49,7 @@ export const EditableCell = ({ title, record, editable, children, dataIndex, han
             inputNode = <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} />
             break
         case 'select':
-            inputNode = <Select ref={inputRef} options={options} onBlur={save} open={true} />
+            inputNode = <Select ref={inputRef} options={options} onBlur={save} />
             break;
         case 'checkbox':
             inputNode = <Checkbox.Group options={options} onChange={save} />
