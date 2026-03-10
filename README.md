@@ -30,7 +30,7 @@
 ### 安装
 
 ```bash
-npm install -g auto-crud-copilot
+npm install -g @yorha2b-lab/autodev
 ```
 
 ### 环境配置
