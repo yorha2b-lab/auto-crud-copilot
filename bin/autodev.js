@@ -20,11 +20,11 @@ program
     .action(() => {
         const tplConfig = path.resolve(__dirname, '../config.js')
         const tplEnv = path.resolve(__dirname, '../.env.example')
-        fs.copyFileSync(tplConfig, path.join(process.cwd(), 'config.js'))
         fs.copyFileSync(tplEnv, path.join(process.cwd(), '.env'))
+        fs.copyFileSync(tplConfig, path.join(process.cwd(), 'config.js'))
+        fs.mkdirSync(path.join(process.cwd(), 'swagger'), { recursive: true })
         fs.mkdirSync(path.join(process.cwd(), 'screenShot'), { recursive: true })
         fs.mkdirSync(path.join(process.cwd(), 'screenPart'), { recursive: true })
-        fs.mkdirSync(path.join(process.cwd(), 'swagger'), { recursive: true })
         console.log('✅ 已生成 config.js')
         console.log('✅ 已生成 .env')
     })
