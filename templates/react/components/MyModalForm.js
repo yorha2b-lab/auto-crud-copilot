@@ -1,4 +1,3 @@
-import { formNode } from './index'
 import { useState, useEffect } from 'react'
 import { Row, Col, Form, Modal, } from 'antd'
 import { MyBaseForm } from './MyBaseForm'

@@ -1,10 +1,6 @@
-import { Radio, Input, Upload, Select, Cascader, Checkbox, DatePicker, InputNumber, AutoComplete } from 'antd'
+import { Tree, Radio, Input, Upload, Select, Cascader, Checkbox, DatePicker, InputNumber, TreeSelect, AutoComplete } from 'antd'
 
 export const formNode = ({ item }) => {
-
-    if (typeof item.render === 'function') {
-        return item.render(item)
-    }
 
     const commonProps = {
         disabled: item.readOnly,
@@ -22,10 +18,14 @@ export const formNode = ({ item }) => {
             return <DatePicker.RangePicker {...commonProps} />
         case 'radio':
             return <Radio.Group options={item.options} {...commonProps} />
+        case 'treeSelect':
+            return <TreeSelect treeData={item.options} {...commonProps} />
         case 'auto':
             return <AutoComplete options={item.options} {...commonProps} />
         case 'checkbox':
             return <Checkbox.Group options={item.options} {...commonProps} />
+        case 'tree':
+            return <Tree checkable treeData={item.options} {...commonProps} />
         case 'textarea':
             return <Input.TextArea autoSize={{ minRows: 4 }} {...commonProps} />
         case 'cascader':
