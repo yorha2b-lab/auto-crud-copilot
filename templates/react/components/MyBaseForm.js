@@ -1,6 +1,6 @@
-import { Form, Space } from 'antd'
 import { formNode } from './index'
-import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons'
+import { Form, Space, Button } from 'antd'
+import { PlusOutlined, PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons'
 
 export const MyBaseForm = ({ item, form }) => {
 
