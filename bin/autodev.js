@@ -6,9 +6,11 @@ const figlet = require('figlet')
 const { program } = require('commander')
 
 console.log(chalk.cyan(figlet.textSync('AutoDev', { horizontalLayout: 'full' })))
-console.log(chalk.gray('--------------------------------------------------'))
+console.log(chalk.gray('Booting System...'))
 console.log(chalk.white(' [System] ') + chalk.green('YoRHa No.2 Type B Unit: ') + chalk.cyan('Online'))
-console.log(chalk.white(' [Mission] ') + chalk.yellow('Generate Frontend CRUD: ') + chalk.cyan('Awaiting Command'))
+console.log(chalk.white(' [System] ') + chalk.green('Scanner Type 9S Unit: ') + chalk.cyan('Standby'))
+console.log(chalk.white(' [Mission] ') + chalk.yellow('Frontend Architecture Construction: ') + chalk.cyan('Awaiting Command'))
+console.log(chalk.white(' [Bunker] ') + chalk.magenta('Glory to mankind. (人类荣光永存)'))
 console.log(chalk.gray('--------------------------------------------------\n'))
 
 program.version('1.0.0').description('AI驱动的前端CRUD代码生成器')
@@ -25,8 +27,8 @@ program
         fs.mkdirSync(path.join(process.cwd(), 'swagger'), { recursive: true })
         fs.mkdirSync(path.join(process.cwd(), 'screenShot'), { recursive: true })
         fs.mkdirSync(path.join(process.cwd(), 'screenPart'), { recursive: true })
-        console.log('🤖 Pod 042: 已生成 config.js')
-        console.log('🤖 Pod 042: 已生成 .env')
+        console.log(chalk.cyan('📡 Operator 6O: 呼叫 2B，环境配置文件已下发至本地终端！'))
+        console.log(chalk.green('🤖 Pod 042: [报告] config.js 与 .env 存储完毕。'))
     })
 
 program

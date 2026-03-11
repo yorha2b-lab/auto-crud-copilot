@@ -2,6 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const JSON5 = require('json5')
 const sharp = require('sharp') // 图片压缩库，用于处理截图
+const chalk = require('chalk')
 const OpenAI = require('openai')
 const { getConfig } = require('../utils/utils.js')
 
@@ -32,7 +33,7 @@ const getOpenAI = () => {
  */
 const askAI = async (model, messages, retryCount = 0) => {
     // 最多重试 3 次，避免无限循环
-    if (retryCount > 3) throw new Error('AI 重试次数耗尽，请检查网络或图片')
+    if (retryCount > 3) throw new Error('YoRHa 司令部连接中断：请检查网络状态或黑盒共鸣情况。')
 
     try {
         const openai = getOpenAI()
@@ -54,7 +55,7 @@ const askAI = async (model, messages, retryCount = 0) => {
         // 使用 JSON5 解析（支持单引号、注释等非标准 JSON）
         return JSON5.parse(match ? match[0] : raw)
     } catch (err) {
-        console.warn(`[解析失败，第 ${retryCount + 1} 次重试...]`, err.message)
+        console.warn(chalk.yellow(`[系统警告] 神经云网络连接不稳，正在尝试重新链接... (第 ${retryCount + 1} 次重试)`), err.message)
         return askAI(model, messages, retryCount + 1)
     }
 }

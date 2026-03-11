@@ -20,7 +20,7 @@ const watchPart = () => {
     watcher.on('add', async filePath => {
         try {
             const startTime = Date.now()
-            const spinner = ora(`🤖 Pod 042: 检测到新图片,开始识别...`)
+            const spinner = ora(chalk.cyan(`🤖 Pod 042: [报告] 捕获到新的视觉图像，开始执行构筑程序...`))
             spinner.start()
             const partPrompt = require('../prompts/watch-part.js')
             const pageConfig = await recognizePage(partPrompt, filePath)
@@ -40,9 +40,9 @@ const watchPart = () => {
             })
             const finalResult = `${mainConfigStr}\n${optionsCodeStr}`
             const endTime = Date.now()
-            spinner.succeed(`🤖 Pod 042: 识别完成！耗时 ${(endTime - startTime) / 1000} 秒\n================\n\n${finalResult}\n\n================`)
+            spinner.succeed(`🤖 Pod 042: [报告] 识别程序结束！耗时 ${(endTime - startTime) / 1000} 秒\n================\n\n${finalResult}\n\n================`)
         } catch (error) {
-            console.log(chalk.red(`🤖 Pod 042: 识别图片失败：${error}`))
+            console.log(chalk.red(`🤖 Pod 042: [警告] 识别程序失败。原因：${error}`))
         } finally {
             fs.unlinkSync(filePath)
         }

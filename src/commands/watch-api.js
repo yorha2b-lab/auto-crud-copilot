@@ -23,7 +23,7 @@ const watchApi = () => {
     watcher.on('add', async filePath => {
         const startTime = Date.now()
         const fileName = path.basename(filePath, path.extname(filePath))
-        const spinner = ora(`🤖 Pod 042: 检测到新文件: ${fileName}, 开始识别...`)
+        const spinner = ora(chalk.cyan(`🤖 Pod 153: [报告] 侦测到未知的 Swagger 数据源 [${fileName}]，开始进行语义对齐...`))
         spinner.start()
 
         try {
@@ -38,9 +38,9 @@ const watchApi = () => {
             fs.writeFileSync(path.join(`./${config.pagesDir}/${fileName}/resource.js`), resourceStr.replace(/"(\w+)":/g, '$1:').replace(/"/g, "'"))
             const endTime = Date.now()
             //fs.unlinkSync(filePath)
-            spinner.succeed(`🤖 Pod 042: 识别完成：耗时 ${(endTime - startTime) / 1000} 秒`)
+            spinner.succeed(chalk.green(`🤖 Pod 153: [肯定] 字段对齐协议执行完毕：耗时 ${(endTime - startTime) / 1000} 秒。9S 的骇客任务很顺利。`))
         } catch (error) {
-            console.log(chalk.red(`🤖 Pod 042: 识别 ${fileName} 失败失败：${error}`))
+            console.log(chalk.red(`🤖 Pod 153: [警告] 骇入 [${fileName}] 失败。接口数据遭遇强力防火墙：${error}`))
         }
     })
 }
