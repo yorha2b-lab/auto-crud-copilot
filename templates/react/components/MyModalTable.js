@@ -4,9 +4,9 @@ import { MySearchForm } from './MySearchForm'
 import { useTableQuery } from '../hooks/useTableQuery'
 
 
-export const MyModalTable = ({ onOk, title, width, footer, visible, request, columns, setModal, formItems, rowSelection, extraParams = {} }) => {
+export const MyModalTable = ({ onOk, title, width, footer, visible, request, columns, setModal, formItems, rowSelection, formatResponse, extraParams = {} }) => {
 
-    const { total, loading, dataSource, search, setSearch } = useTableQuery(async params => await request({ ...params, ...extraParams }), {})
+    const { total, loading, dataSource, search, setSearch } = useTableQuery(async params => await request('/api', { method: 'POST', body: { ...params, ...extraParams } }), formatResponse, {})
 
     const handleSearch = values => setSearch({ ...search, ...values, pageNo: 1 })
 

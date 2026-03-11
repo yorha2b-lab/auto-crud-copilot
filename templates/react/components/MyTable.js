@@ -1,4 +1,5 @@
 import { Table } from 'antd'
+import { useEffect } from 'react'
 import { EditableRow, EditableCell } from './EditableCell'
 
 const components = {
@@ -8,7 +9,7 @@ const components = {
     }
 }
 
-export const MyTable = ({ size, onSave, onChange, pagination, rowClassName, columns = [], rowSelection, rowKey = 'id', loading = false, dataSource = [], editable = false, scroll = { x: 'max-content' }, ...restProps }) => {
+export const MyTable = ({ size, query, onSave, autoScroll, onChange, pagination, rowClassName, columns = [], rowSelection, rowKey = 'id', loading = false, dataSource = [], editable = false, scroll = { x: 'max-content' }, ...restProps }) => {
 
     const mergedColumns = columns.map(col => {
         if (!col.editable) {
@@ -28,6 +29,18 @@ export const MyTable = ({ size, onSave, onChange, pagination, rowClassName, colu
             }),
         }
     })
+
+    useEffect(() => {
+        /* if (query && autoScroll) {
+            //如果需要可以在这里通过query来处理滚动到目标行的操作
+            const trList = document.getElementsByClassName('ant-table-row')
+            const index = 0 //根据query来计算索引
+            const tr = trList[index]
+            if (tr) {
+                tr.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
+            }
+        } */
+    }, [])
 
     return (
         <Table

@@ -1,5 +1,7 @@
 export default props => {
 
+    const query = Object.fromEntries(new URLSearchParams(location.search).entries())
+
     const [form] = Form.useForm()
     const [modal, setModal] = useState({})
     {{#if hasTabs}}
@@ -17,7 +19,7 @@ export default props => {
     const { total, loading, dataSource, search, setSearch, refresh } = useTableQuery(
          async params => await request('/api/{{fileName}}', { method: 'POST', body: params }),
          response => response?.data ?? [],
-         initParams,
+         {...initParams, ...query},
     )
 
     {{#each operations}}
@@ -85,7 +87,7 @@ export default props => {
     return (
         <Card {{#if hasTabs}}tabList={tabs} activeTabKey={activeKey} onTabChange={onTabChange}{{/if}}>
             {modal.visible && <MyModalForm {...modal} formItems={modalItems} submit={modalSubmit} setModal={setModal} />}
-            <MySearchForm form={form} search={search} setSearch={setSearch} formItems={ {{#if hasTabs}}formItems[activeKey]{{else}}formItems{{/if}} } />
+            <MySearchForm form={form} search={search} initialValues={query} loading={loading} setSearch={setSearch} formItems={ {{#if hasTabs}}formItems[activeKey]{{else}}formItems{{/if}} } />
             {{#if hasTabs}}
             {{#each tabs}}
             {activeKey === '{{this.key}}' &&
@@ -107,6 +109,7 @@ export default props => {
             {{/if}}
             <MyTable
                 rowKey='id'
+                query={query}
                 loading={loading}
                 dataSource={dataSource}
                 columns={ {{columnsValue}} }
