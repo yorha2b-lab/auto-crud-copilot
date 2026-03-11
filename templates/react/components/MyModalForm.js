@@ -1,8 +1,9 @@
+import dayjs from 'dayjs'
+import { MyBaseForm } from './MyBaseForm'
 import { useState, useEffect } from 'react'
 import { Row, Col, Form, Modal, } from 'antd'
-import { MyBaseForm } from './MyBaseForm'
 
-export const MyModalForm = ({ width, title, submit, record, visible, setModal, labelCol, formItems, wrapperCol, onValuesChange }) => {
+export const MyModalForm = ({ width, title, submit, record, visible, setModal, labelCol, formItems, wrapperCol, dateSeparator = '\GMT\,', onValuesChange }) => {
 
     const [form] = Form.useForm()
     const [pending, setPending] = useState(false)
@@ -11,7 +12,11 @@ export const MyModalForm = ({ width, title, submit, record, visible, setModal, l
         if (visible) {
             form.resetFields()
             if (record && Object.keys(record).length > 0) {
-                form.setFieldsValue(record)
+                const entries = Object.entries(record).map(([key, value]) => [
+                    key,
+                    formItems.find(item => item.name === key)?.type?.includes('date') ? value?.split(dateSeparator)?.map(item => dayjs(item)) : value
+                ])
+                form.setFieldsValue(Object.fromEntries(entries))
             }
         }
     }, [visible, record, form])
@@ -25,6 +30,7 @@ export const MyModalForm = ({ width, title, submit, record, visible, setModal, l
                 setPending(false)
             }
         } catch (error) {
+            setPending(false)
             console.log('表单校验失败:', error)
         }
     }

@@ -4,9 +4,9 @@ import { MySearchForm } from './MySearchForm'
 import { useTableQuery } from '../hooks/useTableQuery'
 
 
-export const MyModalTable = ({ onOk, title, width, footer, visible, request, columns, setModal, formItems, rowSelection, formatResponse, extraParams = {} }) => {
+export const MyModalTable = ({ api, onOk, title, width, footer, visible, columns, setModal, formItems, rowSelection, formatResponse }) => {
 
-    const { total, loading, dataSource, search, setSearch } = useTableQuery(async params => await request('/api', { method: 'POST', body: { ...params, ...extraParams } }), formatResponse, {})
+    const { total, loading, dataSource, search, setSearch } = useTableQuery(api, formatResponse, {})
 
     const handleSearch = values => setSearch({ ...search, ...values, pageNo: 1 })
 
@@ -14,7 +14,7 @@ export const MyModalTable = ({ onOk, title, width, footer, visible, request, col
 
     const handleOk = () => {
         if (onOk) {
-            onOk({ selectedRows: rowSelection?.selectedRows, dataSource })
+            onOk()
         }
         setModal({ visible: false })
     }
@@ -29,12 +29,7 @@ export const MyModalTable = ({ onOk, title, width, footer, visible, request, col
                 dataSource={dataSource}
                 rowSelection={rowSelection}
                 onChange={handleTableChange}
-                pagination={{
-                    total: total,
-                    showSizeChanger: true,
-                    current: search.pageNo,
-                    pageSize: search.pageSize,
-                }} />
+                pagination={{ total: total, showSizeChanger: true, current: search.pageNo, pageSize: search.pageSize }} />
         </Modal>
     )
 }

@@ -23,7 +23,9 @@ export const EditableCell = ({ title, record, editable, children, dataIndex, han
 
     useEffect(() => {
         if (editing) {
-            inputRef.current?.focus()
+            if (inputRef.current && typeof inputRef.current.focus === 'function') {
+                inputRef.current.focus()
+            }
         }
     }, [editing])
 
@@ -52,7 +54,16 @@ export const EditableCell = ({ title, record, editable, children, dataIndex, han
             inputNode = <Select ref={inputRef} options={options} onBlur={save} />
             break;
         case 'checkbox':
-            inputNode = <Checkbox.Group options={options} onChange={save} />
+            inputNode = (
+                <div tabIndex={-1} onBlur={e => {
+                    // 确保失去焦点时，新的焦点不在当前 checkbox 组内部
+                    if (!e.currentTarget.contains(e.relatedTarget)) {
+                        save()
+                    }
+                }}>
+                    <Checkbox.Group ref={inputRef} options={options} />
+                </div>
+            )
             break;
         default:
             inputNode = <Input ref={inputRef} onPressEnter={save} onBlur={save} />

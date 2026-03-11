@@ -11,7 +11,7 @@ export const MyBaseForm = ({ item, form }) => {
         }
 
         const inputNode = (
-            <Form.Item noStyle name={item.name} rules={item.rules} initialValue={item.value}>
+            <Form.Item noStyle name={item.name} rules={item.rules} initialValue={item.value} valuePropName={item.valuePropName}>
                 {formNode({ item })}
             </Form.Item>
         )
@@ -32,25 +32,24 @@ export const MyBaseForm = ({ item, form }) => {
         item.isList ?
             <Form.List name={item.name} initialValue={item.value}>
                 {(fields, { add, remove }) => (
-                    fields.map((field, index) => (
-                        <Space key={field.key} style={{ display: 'flex', marginBottom: 8 }} align='baseline'>
-                            {item.render(field, index, { add, remove }, form)}
-                            {index !== 0 && <MinusCircleOutlined onClick={() => remove(field.name)} />}
-                            {fields.length === index + 1 && <PlusCircleOutlined onClick={() => add()} />}
-                        </Space>
-                    ))
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        {fields.map((field, index) => (
+                            <Space key={field.key} style={{ display: 'flex', marginBottom: 8 }} align='baseline'>
+                                {item.render(field, index, { add, remove }, form)}
+                                {index !== 0 && <MinusCircleOutlined onClick={() => remove(field.name)} />}
+                                {fields.length === index + 1 && <PlusCircleOutlined onClick={() => add()} />}
+                            </Space>
+                        ))}
+                        {fields.length === 0 && <Button type='dashed' onClick={() => add()} block icon={<PlusOutlined />}>添加{item.label || '项'}</Button>}
+                    </div>
                 )}
             </Form.List> :
             <Form.Item
-                name={item.name}
                 label={item.label}
-                rules={item.rules}
                 extra={item.extra}
                 tooltip={item.tooltip}
                 labelCol={item.labelCol}
-                initialValue={item.value}
                 wrapperCol={item.wrapperCol}
-                valuePropName={item.valuePropName}
                 required={item.required ?? !!item.rules}
                 style={{ marginBottom: !item.name ? 0 : undefined, ...item.style }}
             >
