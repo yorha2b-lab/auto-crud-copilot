@@ -25,8 +25,8 @@ program
         fs.mkdirSync(path.join(process.cwd(), 'swagger'), { recursive: true })
         fs.mkdirSync(path.join(process.cwd(), 'screenShot'), { recursive: true })
         fs.mkdirSync(path.join(process.cwd(), 'screenPart'), { recursive: true })
-        console.log('✅ 已生成 config.js')
-        console.log('✅ 已生成 .env')
+        console.log('🤖 Pod 042: 已生成 config.js')
+        console.log('🤖 Pod 042: 已生成 .env')
     })
 
 program

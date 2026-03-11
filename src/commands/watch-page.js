@@ -1,6 +1,8 @@
 const fs = require('fs')
 const ora = require('ora') // 命令行加载动画
 const path = require('path')
+const chalk = require('chalk')
+
 
 /**
  * 监听截图目录，自动生成 CRUD 页面
@@ -61,12 +63,12 @@ const watchPage = options => {
 
     // 所有任务完成后统一更新菜单配置
     queue.onIdle(() => {
-        console.log('💾 所有排队的截图已处理完成，正在统一更新 menu 配置...')
+        console.log(chalk.green('🤖 Pod 042: 所有排队的截图已处理完成，正在统一更新 menu 配置...'))
         const constantDir = path.join(process.cwd(), config.utilsDir)
         if (!fs.existsSync(constantDir)) fs.mkdirSync(constantDir, { recursive: true })
         // 格式化菜单配置为 JS 代码
         fs.writeFileSync(path.join(constantDir, 'constant.js'), `export const menus = ${stringify.default(menus, { indent: 4, maxLength: 50 })}`)
-        console.log('✅ Menu 配置更新成功！')
+        console.log(chalk.green('🤖 Pod 042: Menu 配置更新成功！'))
     })
 
     // 监听 screenShot 目录
@@ -111,18 +113,18 @@ const watchPage = options => {
 
                 // 5. 生成 Mock 数据（可选）
                 if (config.needMock) {
-                    console.log(`🚀 开始生成 ${fileName} 的 Mock 数据...`)
+                    console.log(`🤖 Pod 042: 开始生成 ${fileName} 的 Mock 数据...`)
                     const rawContent = await generateMock(pageConfig.table.columns, fileName)
                     // 格式化 Mock 数据
                     fs.writeFileSync(path.join(mockDir, `${fileName}.js`), `export default ${stringify.default(rawContent, { indent: 4, maxLength: 200 })}`.replaceAll(`"'`, `"`).replaceAll(`'"`, `"`))
-                    console.log(`生成 ${fileName} 的 Mock 数据耗时: ${(Date.now() - startTime) / 1000} 秒`)
+                    console.log(`🤖 Pod 042: 生成 ${fileName} 的 Mock 数据耗时: ${(Date.now() - startTime) / 1000} 秒`)
                 }
 
                 const endTime = Date.now()
                 //fs.unlinkSync(filePath) // 可选：处理完成后删除截图
-                spinner.succeed(`✅ Pod 042: 模块 [${fileName}] 装配完成！耗时 ${(endTime - startTime) / 1000} 秒`)
+                spinner.succeed(`🤖 Pod 042: 模块 [${fileName}] 装配完成！耗时 ${(endTime - startTime) / 1000} 秒`)
             } catch (error) {
-                console.error(`❌ 处理失败: ${filePath}`, error)
+                console.log(chalk.red(`🤖 Pod 042: 模块 [${fileName}] 处理失败: ${filePath}`))
             }
         })
     })

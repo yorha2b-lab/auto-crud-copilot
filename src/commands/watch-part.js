@@ -1,4 +1,6 @@
 const fs = require('fs')
+const ora = require('ora')
+const chalk = require('chalk')
 const chokidar = require('chokidar')
 const stringify = require('json-stringify-pretty-compact')
 
@@ -18,7 +20,8 @@ const watchPart = () => {
     watcher.on('add', async filePath => {
         try {
             const startTime = Date.now()
-            console.log(`🚀 检测到新图片: 开始识别...`)
+            const spinner = ora(`🤖 Pod 042: 检测到新图片,开始识别...`)
+            spinner.start()
             const partPrompt = require('../prompts/watch-part.js')
             const pageConfig = await recognizePage(partPrompt, filePath)
             const optionDict = pageConfig.optionDict || {}
@@ -37,9 +40,9 @@ const watchPart = () => {
             })
             const finalResult = `${mainConfigStr}\n${optionsCodeStr}`
             const endTime = Date.now()
-            console.log(`🎉 识别完成！耗时 ${(endTime - startTime) / 1000} 秒\n================\n\n${finalResult}\n\n================`)
+            spinner.succeed(`🤖 Pod 042: 识别完成！耗时 ${(endTime - startTime) / 1000} 秒\n================\n\n${finalResult}\n\n================`)
         } catch (error) {
-            console.error('识别图片失败', error)
+            console.log(chalk.red(`🤖 Pod 042: 识别图片失败：${error}`))
         } finally {
             fs.unlinkSync(filePath)
         }
