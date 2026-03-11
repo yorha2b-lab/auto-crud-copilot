@@ -12,7 +12,7 @@ const components = {
 export const MyTable = ({ size, query, onSave, autoScroll, onChange, pagination, rowClassName, columns = [], rowSelection, rowKey = 'id', loading = false, dataSource = [], editable = false, scroll = { x: 'max-content' }, ...restProps }) => {
 
     const mergedColumns = columns.map(col => {
-        if (!col.editable) {
+        if (!col.editType) {
             return col
         }
         return {

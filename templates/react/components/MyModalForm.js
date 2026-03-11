@@ -3,7 +3,7 @@ import { MyBaseForm } from './MyBaseForm'
 import { useState, useEffect } from 'react'
 import { Row, Col, Form, Modal, } from 'antd'
 
-export const MyModalForm = ({ width, title, submit, record, visible, setModal, labelCol, formItems, wrapperCol, dateSeparator = '\GMT\,', onValuesChange }) => {
+export const MyModalForm = ({ width, title, submit, record, visible, setModal, labelCol, formItems, wrapperCol, dateSeparator = ',', onValuesChange }) => {
 
     const [form] = Form.useForm()
     const [pending, setPending] = useState(false)
@@ -30,8 +30,9 @@ export const MyModalForm = ({ width, title, submit, record, visible, setModal, l
                 setPending(false)
             }
         } catch (error) {
-            setPending(false)
             console.log('表单校验失败:', error)
+        } finally {
+            setPending(false)
         }
     }
 
