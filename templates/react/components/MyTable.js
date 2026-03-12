@@ -11,6 +11,9 @@ const components = {
 
 export const MyTable = ({ size, query, onSave, autoScroll, onChange, pagination, rowClassName, columns = [], rowSelection, rowKey = 'id', loading = false, dataSource = [], editable = false, scroll = { x: 'max-content' }, ...restProps }) => {
 
+
+    const hasScrolled = useRef(false)
+
     const mergedColumns = columns.map(col => {
         if (!col.editType) {
             return col
@@ -31,16 +34,21 @@ export const MyTable = ({ size, query, onSave, autoScroll, onChange, pagination,
     })
 
     useEffect(() => {
-        /* if (query && autoScroll) {
-            //如果需要可以在这里通过query来处理滚动到目标行的操作
-            const trList = document.getElementsByClassName('ant-table-row')
-            const index = 0 //根据query来计算索引
-            const tr = trList[index]
-            if (tr) {
-                tr.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
-            }
-        } */
-    }, [])
+        if (hasScrolled.current || !query || !autoScroll || !dataSource?.length) return
+        if (query && autoScroll && dataSource?.length > 0) {
+            const timer = setTimeout(() => {
+                const trList = document.getElementsByClassName('ant-table-row')
+                const tr = trList[Number(query.rowIndex)]
+                if (tr) {
+                    tr.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' })
+                    tr.style.transition = 'background-color 0.8s ease'
+                    tr.style.backgroundColor = '#e6f4ff'
+                    hasScrolled.current = true
+                }
+            }, 100)
+            return () => clearTimeout(timer)
+        }
+    }, [dataSource])
 
     return (
         <Table

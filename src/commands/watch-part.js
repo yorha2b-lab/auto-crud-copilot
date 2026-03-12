@@ -44,7 +44,9 @@ const watchPart = () => {
         } catch (error) {
             console.log(chalk.red(`🤖 Pod 042: [警告] 识别程序失败。原因：${error}`))
         } finally {
-            fs.unlinkSync(filePath)
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath)
+            }
         }
     })
 }
