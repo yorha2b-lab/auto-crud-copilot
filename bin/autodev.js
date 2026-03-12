@@ -3,6 +3,7 @@ const fs = require('fs')
 const path = require('path')
 const chalk = require('chalk')
 const figlet = require('figlet')
+const pkg = require('../package.json')
 const { program } = require('commander')
 
 console.log(chalk.cyan(figlet.textSync('AutoDev', { horizontalLayout: 'full' })))
@@ -13,7 +14,7 @@ console.log(chalk.white(' [Mission] ') + chalk.yellow('Frontend Architecture Con
 console.log(chalk.white(' [Bunker] ') + chalk.magenta('Glory to mankind. (人类荣光永存)'))
 console.log(chalk.gray('--------------------------------------------------\n'))
 
-program.version('1.0.0').description('AI驱动的前端CRUD代码生成器')
+program.version(pkg.version).description('AI驱动的前端CRUD代码生成器')
 program.option('-t, --template <type>', '指定前端框架模板', 'react')
 
 program
