@@ -106,4 +106,4 @@ const copyTemplateDir = (options, templateSubDir, targetSubDir) => {
 }
 
 // 导出工具函数
-module.exports = { getConfig, copyHooks, cleanCode, copyComponents, getExistingMenus, copyTemplateDir, generateSmartImports }
+module.exports = { getConfig, cleanCode, getExistingMenus, copyTemplateDir, generateSmartImports }
