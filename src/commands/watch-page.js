@@ -17,7 +17,7 @@ const watchPage = options => {
     const { createTaskQueue } = require('../core/task-queue') // 任务队列，控制并发
     const stringify = require('json-stringify-pretty-compact') // 格式化 JSON
     const { recognizePage, generateMock } = require('../services/llm.js') // AI 服务
-    const { getConfig, copyHooks, copyComponents, getExistingMenus } = require('../utils/utils.js') // 工具函数
+    const { getConfig, copyTemplateDir, getExistingMenus } = require('../utils/utils.js') // 工具函数
 
     const config = getConfig()
 
@@ -37,8 +37,8 @@ const watchPage = options => {
 
     try {
         // 首次运行时复制 hooks 和 components 模板到目标项目
-        copyHooks(options)
-        copyComponents(options)
+        copyTemplateDir(options, 'hooks', config.hooksDir)
+        copyTemplateDir(options, 'components', config.componentsDir)
     } catch (error) {
         console.error('❌ 程序运行出错:', error)
     }

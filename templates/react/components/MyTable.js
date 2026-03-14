@@ -1,5 +1,5 @@
 import { Table } from 'antd'
-import { useEffect } from 'react'
+import { useRef, useEffect } from 'react'
 import { EditableRow, EditableCell } from './EditableCell'
 
 const components = {

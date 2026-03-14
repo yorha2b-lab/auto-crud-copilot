@@ -86,28 +86,24 @@ const generateSmartImports = (codeStr, hasTabs) => {
 }
 
 /**
- * 复制 hooks 模板到目标项目
+ * 复制模板目录到目标项目
  * @param {Object} options - 命令行选项
- * @param {string} hooksDir - hooks 目录路径（默认 'src/hooks'）
+ * @param {string} templateSubDir - 模板子目录（如 'hooks'、'components'）
+ * @param {string} targetSubDir - 目标子目录（如 'src/hooks'、'src/components'）
  */
-const copyHooks = (options, hooksDir = 'src/hooks') => {
-    const targetDir = path.join(process.cwd(), hooksDir)
-    if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true }) // 递归创建目录
-    const hookDir = path.join(__dirname, `../../templates/${options.template}/hooks`)
-    fs.readdirSync(hookDir).forEach(file => fs.copyFileSync(path.join(hookDir, file), path.join(targetDir, file)))
-}
-
-/**
- * 复制 components 模板到目标项目
- * @param {Object} options - 命令行选项
- * @param {string} componentsDir - components 目录路径（默认 'src/components'）
- */
-const copyComponents = (options, componentsDir = 'src/components') => {
-    const targetDir = path.join(process.cwd(), componentsDir)
-    if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true }) // 递归创建目录
-    const componentsDirectory = path.join(__dirname, `../../templates/${options.template}/components`)
-    fs.readdirSync(componentsDirectory).forEach(file => fs.copyFileSync(path.join(componentsDirectory, file), path.join(targetDir, file)))
+const copyTemplateDir = (options, templateSubDir, targetSubDir) => {
+    const targetDir = path.join(process.cwd(), targetSubDir)
+    const sourceDir = path.join(__dirname, `../../templates/${options.template}/${templateSubDir}`)
+    if (!fs.existsSync(sourceDir)) return
+    fs.mkdirSync(targetDir, { recursive: true })
+    fs.readdirSync(sourceDir).forEach(file => {
+        const src = path.join(sourceDir, file)
+        const dest = path.join(targetDir, file)
+        if (!fs.existsSync(dest)) {
+            fs.copyFileSync(src, dest)
+        }
+    })
 }
 
 // 导出工具函数
-module.exports = { getConfig, copyHooks, cleanCode, copyComponents, getExistingMenus, generateSmartImports }
+module.exports = { getConfig, copyHooks, cleanCode, copyComponents, getExistingMenus, copyTemplateDir, generateSmartImports }
