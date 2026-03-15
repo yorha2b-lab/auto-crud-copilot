@@ -88,14 +88,12 @@ const watchPage = options => {
             const mockDir = path.join(process.cwd(), 'mock')
             const fileName = path.basename(filePath, path.extname(filePath))
             const targetDir = path.join(process.cwd(), config.pagesDir, fileName)
-
+            const spinner = ora(chalk.cyan(`🤖 Pod 042: [报告] 捕获到新的视觉图像 [${fileName}]，开始执行构筑程序...`))
+            spinner.start()
             try {
                 // 创建必要的目录
                 if (!fs.existsSync(mockDir)) fs.mkdirSync(mockDir, { recursive: true })
                 if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true })
-
-                const spinner = ora(chalk.cyan(`🤖 Pod 042: [报告] 捕获到新的视觉图像 [${fileName}]，开始执行构筑程序...`))
-                spinner.start()
 
                 // 1. 识别页面结构（调用视觉大模型）
                 const pageConfig = await recognizePage(pagePrompt, filePath)
@@ -124,7 +122,7 @@ const watchPage = options => {
                 //fs.unlinkSync(filePath) // 可选：处理完成后删除截图
                 spinner.succeed(chalk.green(`🤖 Pod 042: [报告] 模块 [${fileName}] 物理装配完成！耗时 ${(endTime - startTime) / 1000} 秒`))
             } catch (error) {
-                console.log(chalk.red(`🤖 Pod 042: [警告] 模块 [${fileName}] 构筑失败。原因：${error}`))
+                spinner.fail(chalk.red(`🤖 Pod 042: [警告] 模块 [${fileName}] 构筑失败。原因：${error}`))
             }
         })
     })

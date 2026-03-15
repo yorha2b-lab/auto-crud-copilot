@@ -79,7 +79,7 @@ const generateSmartImports = (codeStr, hasTabs) => {
         `import { ${hasTabs ? 'tabs, ' : ''}columns, formItems, modalItems } from './resource'`,
         ...usedHooks.map(hook => `import { ${hook} } from '../../hooks/${hook}'`),
         ...usedComps.map(comp => `import { ${comp} } from '../../components/${comp}'`),
-        usedAntd.length && `import { Form,${usedAntd.join(', ')} } from 'antd'`
+        usedAntd.length && `import { Form, ${usedAntd.join(', ')} } from 'antd'`
     ].sort((a, b) => a.length - b.length) // 按长度排序（短的在前）
 
     return imports.filter(Boolean).join('\n') // 过滤空值并拼接
@@ -100,7 +100,7 @@ const copyTemplateDir = (options, templateSubDir, targetSubDir) => {
         const src = path.join(sourceDir, file)
         const dest = path.join(targetDir, file)
         if (!fs.existsSync(dest)) {
-            fs.copyFileSync(src, dest)
+            fs.cpSync(src, dest, { recursive: true })
         }
     })
 }

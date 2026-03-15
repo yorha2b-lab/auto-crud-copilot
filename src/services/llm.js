@@ -55,6 +55,10 @@ const askAI = async (model, messages, retryCount = 0) => {
         // 使用 JSON5 解析（支持单引号、注释等非标准 JSON）
         return JSON5.parse(match ? match[0] : raw)
     } catch (err) {
+        const isAuthError = err.message.includes('401') || err.message.includes('402');
+        if (isAuthError) {
+            throw new Error('[系统警告] YoRHa 司令部拒绝访问：API Key 无效或额度耗尽，请检查！');
+        }
         console.warn(chalk.yellow(`[系统警告] 神经云网络连接不稳，正在尝试重新链接... (第 ${retryCount + 1} 次重试)`), err.message)
         return askAI(model, messages, retryCount + 1)
     }
@@ -105,7 +109,7 @@ module.exports = {
                     role: 'user',
                     content: [
                         { type: 'text', text: prompt },
-                        { type: 'image_url', image_url: { url: `data:image/png;base64,${base64Image}` } }
+                        { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${base64Image}` } }
                     ]
                 }
             ]

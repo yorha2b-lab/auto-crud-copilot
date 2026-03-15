@@ -29,7 +29,7 @@ export const MySearchForm = ({ form, search, loading, labelCol, setSearch, formI
 
     useEffect(() => {
         if (Object.values(initialValues).length > 0) {
-            const entries = Object.entries(initialValues).map(([key, value]) => [
+            const entries = Object.entries(initialValues).filter(([key]) => formItems.some(item => item.name === key)).map(([key, value]) => [
                 key,
                 formItems.find(item => item.name === key)?.type?.includes('date') ? value?.split(dateSeparator)?.map(item => dayjs(item)) : value
             ])

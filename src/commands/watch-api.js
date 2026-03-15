@@ -35,7 +35,7 @@ const watchApi = () => {
                 const regex = new RegExp(`(dataIndex|name)\\s*:\\s*['"]${oldField}['"]`, 'g')
                 resourceStr = resourceStr.replace(regex, `$1: '${newField}'`)
             })
-            fs.writeFileSync(path.join(`./${config.pagesDir}/${fileName}/resource.js`), resourceStr.replace(/"(\w+)":/g, '$1:').replace(/"/g, "'"))
+            fs.writeFileSync(path.join(`./${config.pagesDir}/${fileName}/resource.js`), resourceStr)
             const endTime = Date.now()
             //fs.unlinkSync(filePath)
             spinner.succeed(chalk.green(`🤖 Pod 153: [肯定] 字段对齐协议执行完毕：耗时 ${(endTime - startTime) / 1000} 秒。9S 的骇客任务很顺利。`))

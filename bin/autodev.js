@@ -23,13 +23,24 @@ program
     .action(() => {
         const tplConfig = path.resolve(__dirname, '../config.js')
         const tplEnv = path.resolve(__dirname, '../.env.example')
-        fs.copyFileSync(tplEnv, path.join(process.cwd(), '.env'))
-        fs.copyFileSync(tplConfig, path.join(process.cwd(), 'config.js'))
+        const targetEnv = path.join(process.cwd(), '.env')
+        const targetConfig = path.join(process.cwd(), 'config.js')
         fs.mkdirSync(path.join(process.cwd(), 'swagger'), { recursive: true })
         fs.mkdirSync(path.join(process.cwd(), 'screenShot'), { recursive: true })
         fs.mkdirSync(path.join(process.cwd(), 'screenPart'), { recursive: true })
+        if (fs.existsSync(targetEnv)) {
+            console.log(chalk.yellow('🤖 Pod 042: [警告] 终端已存在 .env 文件，跳过生成以免覆盖数据。'));
+        } else {
+            fs.copyFileSync(tplEnv, targetEnv);
+            console.log(chalk.green('🤖 Pod 042: [报告] .env 存储完毕。'));
+        }
+        if (fs.existsSync(targetConfig)) {
+            console.log(chalk.yellow('🤖 Pod 042: [警告] 终端已存在 config.js 文件，跳过生成以免覆盖数据。'));
+        } else {
+            fs.copyFileSync(tplConfig, targetConfig)
+            console.log(chalk.green('🤖 Pod 042: [报告] config.js 存储完毕。'));
+        }
         console.log(chalk.cyan('📡 Operator 6O: 呼叫 2B，环境配置文件已下发至本地终端！'))
-        console.log(chalk.green('🤖 Pod 042: [报告] config.js 与 .env 存储完毕。'))
     })
 
 program
