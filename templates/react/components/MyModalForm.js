@@ -3,7 +3,7 @@ import { MyBaseForm } from './MyBaseForm'
 import { useState, useEffect } from 'react'
 import { Row, Col, Form, Modal, } from 'antd'
 
-export const MyModalForm = ({ width, title, submit, record, visible, setModal, labelCol, formItems, wrapperCol, dateSeparator = ',', onValuesChange }) => {
+export const MyModalForm = ({ width, title, submit, record, visible, setModal, labelCol, formItems, wrapperCol, onValuesChange }) => {
 
     const [form] = Form.useForm()
     const [pending, setPending] = useState(false)
@@ -14,7 +14,7 @@ export const MyModalForm = ({ width, title, submit, record, visible, setModal, l
             if (record && Object.keys(record).length > 0) {
                 const entries = Object.entries(record).map(([key, value]) => [
                     key,
-                    formItems.find(item => item.name === key)?.type?.includes('date') ? value?.split(dateSeparator)?.map(item => dayjs(item)) : value
+                    formItems.find(item => item.name === key)?.type?.includes('date') ? (value?.toString()?.includes(',') ? value?.split(',')?.map(item => dayjs(Number(item))) : dayjs(Number(value))) : value
                 ])
                 form.setFieldsValue(Object.fromEntries(entries))
             }
