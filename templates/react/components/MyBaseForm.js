@@ -2,32 +2,39 @@ import { formNode } from './index'
 import { Form, Space, Button } from 'antd'
 import { PlusOutlined, PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons'
 
-export const MyBaseForm = ({ item, form }) => {
+const getValueFromEvent = e => {
+    if (Array.isArray(e)) {
+        return e
+    }
+    return e?.fileList
+}
 
-    const renderFormContent = ({ item }) => {
+const renderFormContent = ({ item }) => {
 
-        if (!item.name) {
-            return item.value
-        }
-
-        const inputNode = (
-            <Form.Item noStyle name={item.name} rules={item.rules} initialValue={item.value} valuePropName={item.valuePropName}>
-                {formNode({ item })}
-            </Form.Item>
-        )
-
-        if (item.unit) {
-            return (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>{inputNode}</div>
-                    <span style={{ color: '#888', whiteSpace: 'nowrap' }}>{item.unit}</span>
-                </div>
-            )
-        }
-
-        return inputNode
+    if (!item.name) {
+        return item.value
     }
 
+    const inputNode = (
+        <Form.Item noStyle name={item.name} rules={item.rules} initialValue={item.value} {...(item.type === 'upload' ? { getValueFromEvent, valuePropName: 'fileList' } : { valuePropName: item.valuePropName })}>
+            {formNode({ item })}
+        </Form.Item>
+    )
+
+    if (item.unit) {
+        return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>{inputNode}</div>
+                <span style={{ color: '#888', whiteSpace: 'nowrap' }}>{item.unit}</span>
+            </div>
+        )
+    }
+
+    return inputNode
+}
+
+
+export const MyBaseForm = ({ item, form }) => {
     return (
         item.isList ?
             <Form.List name={item.name} initialValue={item.value}>
