@@ -1,4 +1,70 @@
-import { Tree, Radio, Input, Upload, Select, Cascader, Checkbox, DatePicker, InputNumber, TreeSelect, AutoComplete } from 'antd'
+import { useState, useEffect } from 'react'
+import { UploadOutlined } from '@ant-design/icons'
+import { Button, Tree, Radio, Input, Upload, Select, Cascader, Checkbox, DatePicker, InputNumber, TreeSelect, AutoComplete } from 'antd'
+
+const initOss = async () => {
+    /* 初始化OSS客户端，请自行实现 */
+}
+
+const AliyunOSSUpload = ({ style, value, disabled, onChange }) => {
+
+    const [OSSData, setOSSData] = useState()
+
+    const init = async () => {
+        try {
+            const result = await initOss()
+            setOSSData(result)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    useEffect(() => {
+        init()
+    }, [])
+
+    const handleChange = ({ fileList }) => onChange?.([...fileList])
+
+    const onRemove = file => {
+        const files = (value || []).filter(v => v.url !== file.url)
+        onChange?.(files)
+    }
+
+    const getExtraData = file => ({
+        key: file.url,
+        policy: OSSData?.policy,
+        Signature: OSSData?.signature,
+        OSSAccessKeyId: OSSData?.accessId,
+    })
+
+    const beforeUpload = async file => {
+        if (!OSSData) {
+            return false
+        }
+        const expire = Number(OSSData.expire) * 1000
+        if (expire < Date.now()) {
+            await init()
+        }
+        file.url = `${OSSData.dir}/${file.name}`.replace(/\/\//g, '/')
+        return file
+    }
+
+    const uploadProps = {
+        onRemove,
+        name: 'file',
+        beforeUpload,
+        fileList: value,
+        data: getExtraData,
+        action: OSSData?.host,
+        onChange: handleChange,
+    }
+
+    return (
+        <Upload {...uploadProps} disabled={disabled} style={style}>
+            <Button icon={<UploadOutlined />}>选择文件</Button>
+        </Upload>
+    )
+}
 
 export const formNode = ({ item }) => {
 
@@ -14,6 +80,8 @@ export const formNode = ({ item }) => {
             return <DatePicker {...commonProps} />
         case 'number':
             return <InputNumber  {...commonProps} />
+        case 'ossUpload':
+            return <AliyunOSSUpload {...commonProps} />
         case 'daterange':
             return <DatePicker.RangePicker {...commonProps} />
         case 'radio':
