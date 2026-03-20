@@ -9,7 +9,7 @@ const AliyunOSSUpload = ({ style, value, disabled, onChange }) => {
 
     const init = async () => {
         try {
-            const result = await initOss()
+            const result = await initOSS()
             setOSSData(result)
         } catch (err) {
             console.log(err)
