@@ -49,6 +49,8 @@ API_KEY=your_api_key_here
 BASE_URL=your_api_base_url_here
 ```
 
+🚗 **获取API Key直通车**: [阿里云百炼控制台](https://bailian.console.aliyun.com/cn-beijing?tab=doc#/doc/)
+
 ### 基本使用
 
 1. **生成完整CRUD页面**
