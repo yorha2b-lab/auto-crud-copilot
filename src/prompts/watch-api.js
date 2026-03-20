@@ -8,4 +8,5 @@ responseStr是后端的真实响应。
 请只输出一个JSON对象, Key为前端猜测的旧名字, Value为Response里的真实新名字。
 例如：{"key_1": "key1"}
 如果没有找到对应的，请不要包含在结果中。
-`.trim()
+注意：⚠️⚠️如果有语义相近的两个字段优先取中文字段，比如"createByName"和"createBy"，则取"createByName"
+。`.trim()
