@@ -38,6 +38,7 @@ const watchPage = options => {
     try {
         // 首次运行时复制 hooks 和 components 模板到目标项目
         copyTemplateDir(options, 'hooks', config.hooksDir)
+        copyTemplateDir(options, 'utils', config.utilsDir)
         copyTemplateDir(options, 'components', config.componentsDir)
     } catch (error) {
         console.error('❌ 程序运行出错:', error)
