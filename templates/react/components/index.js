@@ -1,10 +1,7 @@
+import { initOSS } from '../utils/utils'
 import { useState, useEffect } from 'react'
 import { UploadOutlined } from '@ant-design/icons'
 import { Button, Tree, Radio, Input, Upload, Select, Cascader, Checkbox, DatePicker, InputNumber, TreeSelect, AutoComplete } from 'antd'
-
-const initOss = async () => {
-    /* 初始化OSS客户端，请自行实现 */
-}
 
 const AliyunOSSUpload = ({ style, value, disabled, onChange }) => {
 
