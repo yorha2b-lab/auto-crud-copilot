@@ -36,7 +36,7 @@ const watchPage = options => {
     const { index, resource } = require(compilerPath)
 
     try {
-        // 首次运行时复制 hooks 和 components 模板到目标项目
+        // 首次运行时复制模板到目标项目
         copyTemplateDir(options, 'hooks', config.hooksDir)
         copyTemplateDir(options, 'utils', config.utilsDir)
         copyTemplateDir(options, 'components', config.componentsDir)
