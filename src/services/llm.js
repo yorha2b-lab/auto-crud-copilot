@@ -117,12 +117,12 @@ module.exports = {
     },
 
     /**
-     * 对齐 Swagger 接口字段与前端字段
-     * @param {string} swaggerStr - 真实接口响应数据
+     * 对齐 Response 接口字段与前端字段
+     * @param {string} responseStr - 真实接口响应数据
      * @param {string} resourceStr - 前端 resource.js 内容
      * @returns {Object} 字段映射对象 { oldName: newName }
      */
-    alignSwaggerFields: async (swaggerStr, resourceStr) => {
+    alignResponseFields: async (responseStr, resourceStr) => {
         const config = getConfig()
         const apiPrompt = require('../prompts/watch-api.js')
         const { API_DESIGNER } = require('../prompts/system.js')
@@ -130,7 +130,7 @@ module.exports = {
             config.textModel,
             [
                 { role: 'system', content: API_DESIGNER },
-                { role: 'user', content: apiPrompt(swaggerStr, resourceStr) }
+                { role: 'user', content: apiPrompt(responseStr, resourceStr) }
             ]
         )
     }

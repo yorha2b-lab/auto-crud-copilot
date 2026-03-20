@@ -2,6 +2,6 @@
 .git
 .npmrc
 node_modules
-swagger/*.json
+response/*.json
 screenShot/*.png
 screenPart/*.png

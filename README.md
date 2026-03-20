@@ -12,7 +12,7 @@
 
 拒绝重复劳动！为什么你需要 Auto CRUD Copilot？
 告别手写 Table/Form：截图即代码，提升你的开发效率，告别烦人的复制粘贴。
-拒绝接口联调痛苦：自动读取 Swagger，AI 帮你抹平前后端字段命名差异。
+拒绝接口联调痛苦：自动读取 Response，AI 帮你抹平前后端字段命名差异。
 架构解耦：核心逻辑与 UI 框架分离，React/Vue/Angular 均可适配。
 
 ## ✨ 特性
@@ -21,7 +21,7 @@
 - 🔧 **智能生成**: 支持React、Vue、Angular等多种前端框架模板
 - 📊 **表格组件**: 自动生成可编辑、可排序、可筛选的数据表格
 - 📝 **表单组件**: 智能生成搜索表单和模态框表单
-- 🔌 **API对齐**: 自动对齐Swagger接口与前端字段映射
+- 🔌 **API对齐**: 自动对齐Response接口与前端字段映射
 - 🎨 **UI组件**: 支持多种UI组件类型（输入框、选择器、日期等）
 - 📱 **响应式**: 生成的代码支持响应式布局
 
@@ -70,7 +70,6 @@ autodev watch:part
 3. **对齐API字段**
 
 ```bash
-# 将Swagger文档放入swagger目录
 autodev watch:api
 ```
 
@@ -97,7 +96,7 @@ autodev watch:part -t vue
 
 ### watch:api 命令
 
-监听 `swagger` 目录下的API文档，自动对齐真实接口字段。
+监听 `response` 目录下的与模块同名的json文件，自动对齐真实接口字段。
 
 ```bash
 autodev watch:api
@@ -109,7 +108,7 @@ autodev watch:api
 your-project/
 ├── screenShot/          # 页面截图目录
 ├── screenPart/          # 组件截图目录
-├── swagger/             # API文档目录
+├── response/            # Response目录
 ├── mock/                # 生成的Mock数据
 ├── src/
 │   ├── pages/           # 生成的页面代码

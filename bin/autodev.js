@@ -25,7 +25,7 @@ program
         const tplEnv = path.resolve(__dirname, '../.env.example')
         const targetEnv = path.join(process.cwd(), '.env')
         const targetConfig = path.join(process.cwd(), 'config.js')
-        fs.mkdirSync(path.join(process.cwd(), 'swagger'), { recursive: true })
+        fs.mkdirSync(path.join(process.cwd(), 'response'), { recursive: true })
         fs.mkdirSync(path.join(process.cwd(), 'screenShot'), { recursive: true })
         fs.mkdirSync(path.join(process.cwd(), 'screenPart'), { recursive: true })
         if (fs.existsSync(targetEnv)) {
@@ -61,7 +61,7 @@ program
 
 program
     .command('watch:api')
-    .description('监听 Swagger，自动对齐真实接口字段')
+    .description('监听 Response，自动对齐真实接口字段')
     .action(() => {
         const watchApi = require('../src/commands/watch-api')
         watchApi()

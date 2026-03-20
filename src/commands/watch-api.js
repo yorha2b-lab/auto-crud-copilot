@@ -7,11 +7,11 @@ const chokidar = require('chokidar')
 const watchApi = () => {
 
     const { getConfig } = require('../utils/utils.js')
-    const { alignSwaggerFields } = require('../services/llm.js')
+    const { alignResponseFields } = require('../services/llm.js')
 
     const config = getConfig()
 
-    const watcher = chokidar.watch('./swagger', {
+    const watcher = chokidar.watch('./response', {
         persistent: true,
         ignored: /(^|[\/\\])\../,
         awaitWriteFinish: {
@@ -23,13 +23,13 @@ const watchApi = () => {
     watcher.on('add', async filePath => {
         const startTime = Date.now()
         const fileName = path.basename(filePath, path.extname(filePath))
-        const spinner = ora(chalk.cyan(`🤖 Pod 153: [报告] 侦测到未知的 Swagger 数据源 [${fileName}]，开始进行语义对齐...`))
+        const spinner = ora(chalk.cyan(`🤖 Pod 153: [报告] 侦测到未知的 Response 数据源 [${fileName}]，开始进行语义对齐...`))
         spinner.start()
 
         try {
-            const swaggerStr = fs.readFileSync(filePath, 'utf8')
+            const responseStr = fs.readFileSync(filePath, 'utf8')
             let resourceStr = fs.readFileSync(`./${config.pagesDir}/${fileName}/resource.js`, 'utf8')
-            const result = await alignSwaggerFields(swaggerStr, resourceStr)
+            const result = await alignResponseFields(responseStr, resourceStr)
             Object.entries(result).forEach(([oldField, newField]) => {
                 if (oldField === newField) return
                 const regex = new RegExp(`(dataIndex|name)\\s*:\\s*['"]${oldField}['"]`, 'g')

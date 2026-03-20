@@ -13,5 +13,5 @@ package-lock.json
 # 项目特定文件
 screenShot/
 screenPart/
+response/
 mock/
-swagger/
