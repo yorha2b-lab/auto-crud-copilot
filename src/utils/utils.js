@@ -1,6 +1,9 @@
 const fs = require('fs')
 const path = require('path')
 
+const isCN = Intl.DateTimeFormat().resolvedOptions().locale.includes('zh')
+const language = (zh, en) => (isCN ? zh : en)
+
 /**
  * 获取项目配置信息
  * 优先读取项目根目录的 config.js，如果不存在则使用默认配置
@@ -106,4 +109,4 @@ const copyTemplateDir = (options, templateSubDir, targetSubDir) => {
 }
 
 // 导出工具函数
-module.exports = { getConfig, cleanCode, getExistingMenus, copyTemplateDir, generateSmartImports }
+module.exports = { language, getConfig, cleanCode, getExistingMenus, copyTemplateDir, generateSmartImports }

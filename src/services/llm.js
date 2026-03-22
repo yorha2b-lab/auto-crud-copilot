@@ -1,16 +1,15 @@
 const fs = require('fs')
 const path = require('path')
 const JSON5 = require('json5')
-const sharp = require('sharp') // 图片压缩库，用于处理截图
+const sharp = require('sharp')
 const chalk = require('chalk')
 const OpenAI = require('openai')
-const { getConfig } = require('../utils/utils.js')
+const { getConfig, language } = require('../utils/utils.js') // 导入语言助手
 
 let client = null
 
 /**
  * 获取 OpenAI 客户端实例（单例模式）
- * 优先使用项目根目录的 .env 文件，其次使用包内的 .env
  */
 const getOpenAI = () => {
     if (!client) {
@@ -26,18 +25,18 @@ const getOpenAI = () => {
 
 /**
  * 调用 AI 模型并解析响应
- * @param {string} model - 模型名称（如 qwen3.5-plus, qwen-turbo）
- * @param {Array} messages - 对话消息数组
- * @param {number} retryCount - 重试次数
- * @returns {Object} 解析后的 JSON 对象
  */
 const askAI = async (model, messages, retryCount = 0) => {
-    // 最多重试 3 次，避免无限循环
-    if (retryCount > 3) throw new Error('YoRHa 司令部连接中断：请检查网络状态或黑盒共鸣情况。')
+    // 最终重试失败：YoRHa 司令部连接中断
+    if (retryCount > 3) {
+        throw new Error(language(
+            'YoRHa 司令部连接中断：请检查网络状态或黑盒共鸣情况。',
+            'YoRHa Command Link Severed: Check network status or Black Box resonance.'
+        ))
+    }
 
     try {
         const openai = getOpenAI()
-        // 调用 AI 模型，强制返回 JSON 格式
         const response = await openai.chat.completions.create({
             model,
             messages,
@@ -45,21 +44,26 @@ const askAI = async (model, messages, retryCount = 0) => {
         })
 
         let raw = response.choices[0].message.content.trim()
-
-        // 清理可能的 Markdown 标记（```json ... ```）
         raw = raw.replace(/^```json\n?/, '').replace(/\n?```$/, '')
-
-        // 提取 JSON 内容（支持对象和数组）
         const match = raw.match(/[\{\[][\s\S]*[\}\]]/)
-
-        // 使用 JSON5 解析（支持单引号、注释等非标准 JSON）
         return JSON5.parse(match ? match[0] : raw)
+
     } catch (err) {
         const isAuthError = err.message.includes('401') || err.message.includes('402');
         if (isAuthError) {
-            throw new Error('[系统警告] YoRHa 司令部拒绝访问：API Key 无效或额度耗尽，请检查！');
+            // 权限错误：司令部拒绝访问
+            throw new Error(language(
+                '[系统警告] YoRHa 司令部拒绝访问：API Key 无效或额度耗尽，请检查！',
+                '[SYSTEM ALERT] YoRHa Command Center Access Denied: Invalid API Key or quota exhausted!'
+            ));
         }
-        console.warn(chalk.yellow(`[系统警告] 神经云网络连接不稳，正在尝试重新链接... (第 ${retryCount + 1} 次重试)`), err.message)
+
+        // 重试警告：神经云网络连接不稳
+        console.warn(chalk.yellow(language(
+            `[系统警告] 神经云网络连接不稳，正在尝试重新链接... (第 ${retryCount + 1} 次重试)`,
+            `[SYSTEM ALERT] Neural Network instability detected. Attempting to re-establish link... (Retry #${retryCount + 1})`
+        )), err.message)
+
         return askAI(model, messages, retryCount + 1)
     }
 }
@@ -67,9 +71,6 @@ const askAI = async (model, messages, retryCount = 0) => {
 module.exports = {
     /**
      * 生成 Mock 数据
-     * @param {Array} columns - 表格列配置
-     * @param {string} fileName - 文件名
-     * @returns {string} 生成的 Mock 数据字符串
      */
     generateMock: async (columns, fileName) => {
         const config = getConfig()
@@ -85,16 +86,12 @@ module.exports = {
     },
 
     /**
-     * 识别页面截图并提取结构信息
-     * @param {string} prompt - 提示词
-     * @param {string} filePath - 截图文件路径
-     * @returns {Object} 识别后的页面配置对象
+     * 识别页面截图
      */
     recognizePage: async (prompt, filePath) => {
         const config = getConfig()
         const { UI_DESIGNER } = require('../prompts/system.js')
 
-        // 压缩图片到 1280px 宽度（避免超出 token 限制），质量 80%
         const compressedBuffer = await sharp(filePath)
             .resize(1280, null, { withoutEnlargement: true })
             .jpeg({ quality: 80 })
@@ -117,10 +114,7 @@ module.exports = {
     },
 
     /**
-     * 对齐 Response 接口字段与前端字段
-     * @param {string} responseStr - 真实接口响应数据
-     * @param {string} resourceStr - 前端 resource.js 内容
-     * @returns {Object} 字段映射对象 { oldName: newName }
+     * 对齐 Response 接口字段
      */
     alignResponseFields: async (responseStr, resourceStr) => {
         const config = getConfig()
