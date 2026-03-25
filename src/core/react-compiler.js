@@ -62,6 +62,7 @@ const index = ({ config, fileName, indexTpl, pageConfig }) => {
         hasOperate, // 是否有操作列
         columnsValue, // columns 引用表达式
         tabs: pageConfig.tabs, // 标签页配置
+        responseSuccess: config.responseSuccess, // 成功回调函数
         hasExpandable: pageConfig.table.expandable, // 是否有展开行
         hasPagination: pageConfig.table.pagination, // 是否有分页
         operations: pageConfig.table.operation || [], // 操作列配置
@@ -72,7 +73,7 @@ const index = ({ config, fileName, indexTpl, pageConfig }) => {
     }
 
     // 渲染模板
-    const bodyCode = indexTpl(viewData).replaceAll('_responseSuccess_', config.responseSuccess)
+    const bodyCode = indexTpl(viewData)
     // 生成智能导入语句
     const importsStr = generateSmartImports(bodyCode, hasTabs)
     // 清理代码并返回

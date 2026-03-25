@@ -25,7 +25,7 @@ export default props => {
     {{#each operations}}
     const {{this.action}} = async record => {
         const response = await request('/api')
-        if(_responseSuccess_){
+        if({{{../responseSuccess}}}){
             refresh()
         }
     }
@@ -40,7 +40,7 @@ export default props => {
             content: '确认{{this.btn}}吗？',
             onOk: async () => {
                 const response = await request('/api')
-                if(_responseSuccess_){
+                if({{{../responseSuccess}}}){
                     refresh()
                 }
             }
