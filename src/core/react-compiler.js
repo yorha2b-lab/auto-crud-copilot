@@ -44,7 +44,7 @@ const resource = ({ pageConfig, resourceTpl }) => {
  * @param {Object} param0.pageConfig - 页面配置对象
  * @returns {string} 生成的 index.js 代码
  */
-const index = ({ fileName, indexTpl, pageConfig }) => {
+const index = ({ config, fileName, indexTpl, pageConfig }) => {
     const hasTabs = pageConfig.tabs?.length > 0
     const hasOperate = pageConfig.table.operation?.length > 0
 
@@ -72,7 +72,7 @@ const index = ({ fileName, indexTpl, pageConfig }) => {
     }
 
     // 渲染模板
-    const bodyCode = indexTpl(viewData)
+    const bodyCode = indexTpl(viewData).replaceAll('_responseSuccess_', config.responseSuccess)
     // 生成智能导入语句
     const importsStr = generateSmartImports(bodyCode, hasTabs)
     // 清理代码并返回

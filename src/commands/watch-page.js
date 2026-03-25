@@ -97,7 +97,7 @@ const watchPage = options => {
 
                 const pageConfig = await recognizePage(pagePrompt, filePath)
                 fs.writeFileSync(path.join(targetDir, 'resource.js'), resource({ pageConfig, resourceTpl }))
-                fs.writeFileSync(path.join(targetDir, 'index.js'), index({ fileName, indexTpl, pageConfig }))
+                fs.writeFileSync(path.join(targetDir, 'index.js'), index({ config, fileName, indexTpl, pageConfig }))
 
                 if (!menus.find(m => m.key === fileName)) {
                     menus.push({ label: fileName, key: fileName })

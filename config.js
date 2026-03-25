@@ -25,4 +25,7 @@ module.exports = {
     // 目标项目的 components 目录路径
     componentsDir: 'src/components',
 
+    // 响应成功条件
+    responseSuccess: 'response?.code === 200',
+
 }
