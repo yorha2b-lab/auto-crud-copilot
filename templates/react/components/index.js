@@ -31,7 +31,8 @@ const AliyunOSSUpload = ({ path, style, value, disabled, onChange }) => {
         key: file.url,
         policy: OSSData?.policy,
         Signature: OSSData?.signature,
-        OSSAccessKeyId: OSSData?.accessId,
+        OSSAccessKeyId: OSSData?.accessKeyId,
+        'x-oss-security-token': OSSData?.stsToken,
     })
 
     const beforeUpload = async file => {
