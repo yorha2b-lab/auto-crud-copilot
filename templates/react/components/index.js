@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { UploadOutlined } from '@ant-design/icons'
 import { Button, Tree, Radio, Input, Upload, Select, Cascader, Checkbox, DatePicker, InputNumber, TreeSelect, AutoComplete } from 'antd'
 
-const AliyunOSSUpload = ({ style, value, disabled, onChange }) => {
+const AliyunOSSUpload = ({ path, style, value, disabled, onChange }) => {
 
     const [OSSData, setOSSData] = useState()
 
@@ -23,7 +23,7 @@ const AliyunOSSUpload = ({ style, value, disabled, onChange }) => {
     const handleChange = ({ fileList }) => onChange?.([...fileList])
 
     const onRemove = file => {
-        const files = (value || []).filter(v => v.url !== file.url)
+        const files = (value || []).filter(v => v.uid !== file.uid)
         onChange?.(files)
     }
 
@@ -42,7 +42,7 @@ const AliyunOSSUpload = ({ style, value, disabled, onChange }) => {
         if (expire < Date.now()) {
             await init()
         }
-        file.url = `${OSSData.dir}/${file.name}`.replace(/\/\//g, '/')
+        file.url = `${OSSData.dir ?? path}/${file.uid}_${file.name}`.replace(/\/\//g, '/')
         return file
     }
 
@@ -94,11 +94,11 @@ export const formNode = ({ item }) => {
         case 'textarea':
             return <Input.TextArea autoSize={{ minRows: 4 }} {...commonProps} />
         case 'cascader':
-            return <Cascader options={item.options} allowClear {...commonProps} />
-        case 'select':
-            return <Select allowClear mode={item.mode} options={item.options} {...commonProps} />
+            return <Cascader showSearch allowClear options={item.options} {...commonProps} />
         case 'upload':
             return <Upload {...item.uploadProps} {...commonProps}>{item.content ?? '上传文件'}</Upload>
+        case 'select':
+            return <Select allowClear showSearch mode={item.mode} options={item.options} {...commonProps} />
         default:
             return <Input allowClear {...commonProps} />
     }

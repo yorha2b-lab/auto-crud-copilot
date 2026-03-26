@@ -6,16 +6,6 @@ export const paramsFormat = params => {
     return new URLSearchParams(cleanParams).toString()
 }
 
-export const formatValue = ({ item, ind }) => {
-    if (dayjs.isDayjs(item[1])) {
-        return item[1].startOf('day').valueOf()
-    }
-    if (dayjs.isDayjs(item[1]?.[ind])) {
-        return ind === 0 ? item[1]?.[ind]?.startOf('day').valueOf() : item[1]?.[ind]?.endOf('day').valueOf()
-    }
-    return item[1]?.toString()?.trim() ?? undefined
-}
-
 export const initOSS = async (url, options) => {
     const OSS = require('ali-oss')
     const crypto = require('crypto-js')
@@ -60,7 +50,17 @@ export const exportDataToExcel = async (url, options, columns, fileName, resultK
     const response = await request(url, options)
     if (response?.[resultKey]?.length > 0) {
         const XLSX = require('xlsx')
-        const datas = response?.[resultKey]?.map(item => Object.fromEntries(columns.map(col => [col.title, col.render ? col.render(item[col.dataIndex])?.props?.children ?? col.render(item[col.dataIndex]) : item[col.dataIndex]])))
+        const datas = response?.[resultKey]?.map(item => Object.fromEntries(columns.map(col => {
+            let value = item[col.dataIndex]
+            if (col.exportRender) {
+                value = col.exportRender(value, item, index)
+            }
+            if (col.render) {
+                const rendered = col.render(value, item, index)
+                value = typeof rendered === 'object' ? (rendered?.props?.children || value) : rendered
+            }
+            return [col.title, value]
+        })))
         const workbook = XLSX.utils.book_new()
         const header = columns.map(item => item.title)
         const worksheet = XLSX.utils.json_to_sheet(datas, { header })

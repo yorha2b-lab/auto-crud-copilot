@@ -4,9 +4,9 @@ import { MySearchForm } from './MySearchForm'
 import { useTableQuery } from '../hooks/useTableQuery'
 
 
-export const MyModalTable = ({ api, onOk, title, width, footer, visible, columns, setModal, formItems, rowSelection, formatResponse }) => {
+export const MyModalTable = ({ api, onOk, title, width, footer, visible, columns, setModal, formItems, rowSelection, formatResponse, extraParams = {} }) => {
 
-    const { total, loading, dataSource, search, setSearch } = useTableQuery(api, formatResponse, {})
+    const { total, loading, dataSource, search, setSearch } = useTableQuery(api, formatResponse, extraParams)
 
     const handleSearch = values => setSearch({ ...search, ...values, pageNo: 1 })
 
@@ -21,7 +21,7 @@ export const MyModalTable = ({ api, onOk, title, width, footer, visible, columns
 
     return (
         <Modal centered destroyOnHidden title={title} width={width} open={visible} onOk={handleOk} footer={footer} onCancel={() => setModal({ visible: false })}>
-            {formItems?.length > 0 && <MySearchForm search={search} formItems={formItems} setSearch={handleSearch} />}
+            {formItems?.length > 0 && <MySearchForm search={search} formItems={formItems} setSearch={handleSearch} syncUrlParams={false} />}
             <MyTable
                 loading={loading}
                 columns={columns}

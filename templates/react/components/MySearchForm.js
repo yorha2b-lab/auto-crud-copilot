@@ -4,12 +4,14 @@ import { MyBaseForm } from './MyBaseForm'
 import { useState, useEffect } from 'react'
 import { Row, Col, Form, Button, Space } from 'antd'
 
-export const MySearchForm = ({ form, search, loading, labelCol, setSearch, formItems, showLimit = 7, initialValues, customReset, extraOperate, customFinish, onValuesChange, defaultPageSize = 10 }) => {
+export const MySearchForm = ({ form, search, loading, labelCol, setSearch, formItems, showLimit = 7, initialValues, customReset, extraOperate, customFinish, onValuesChange, syncUrlParams = true, defaultPageSize = 10 }) => {
 
     const [limit, setLimit] = useState(showLimit)
 
     const handleReset = () => {
-        history.push({ search: '' })
+        if (syncUrlParams) {
+            history.push({ search: '' })
+        }
         if (customReset) {
             customReset()
         } else {
@@ -19,19 +21,24 @@ export const MySearchForm = ({ form, search, loading, labelCol, setSearch, formI
 
     const handleFinish = values => {
         const formattedValues = { ...values }
-        Object.keys(formattedValues).forEach(key => {
-            const val = formattedValues[key]
-            const isDateType = formItems.find(item => item.name === key)?.type?.includes('date')
-            if (isDateType && val) {
-                if (Array.isArray(val)) {
-                    formattedValues[key] = val.map((d, i) => i === 0 ? d.startOf('day').valueOf() : d.endOf('day').valueOf()).join(',')
-                } else {
-                    formattedValues[key] = val.valueOf()
+        if (syncUrlParams) {
+            Object.keys(formattedValues).forEach(key => {
+                const val = formattedValues[key]
+                const isDateType = formItems.find(item => item.name === key)?.type?.includes('date')
+                if (isDateType && val) {
+                    if (Array.isArray(val) && val.length > 0) {
+                        const [startKey, endKey] = key.split(',')
+                        formattedValues[startKey] = val[0].startOf('day').valueOf()
+                        formattedValues[endKey] = val[1].endOf('day').valueOf()
+                        delete formattedValues[key]
+                    } else {
+                        formattedValues[key] = val.valueOf()
+                    }
                 }
-            }
-        })
-        const params = new URLSearchParams(Object.fromEntries(Object.entries(formattedValues).filter(([key, value]) => !['', null, undefined].includes(value))))
-        history.push({ search: params.toString() })
+            })
+            const params = new URLSearchParams(Object.fromEntries(Object.entries(formattedValues).filter(([key, value]) => !['', null, undefined].includes(value))))
+            history.push({ search: params.toString() })
+        }
         if (customFinish) {
             customFinish(formattedValues)
         } else {
@@ -41,11 +48,20 @@ export const MySearchForm = ({ form, search, loading, labelCol, setSearch, formI
 
     useEffect(() => {
         if (Object.values(initialValues).length > 0 && formItems.length > 0) {
-            const entries = Object.entries(initialValues).filter(([key]) => formItems.some(item => item.name === key)).map(([key, value]) => [
-                key,
-                formItems.find(item => item.name === key)?.type?.includes('date') ? (value?.toString()?.includes(',') ? value?.split(',')?.map(item => dayjs(Number(item))) : dayjs(Number(value))) : value
-            ])
-            form.setFieldsValue(Object.fromEntries(entries))
+            const newValues = {}
+            formItems.forEach(item => {
+                if (initialValues[item.name] !== undefined) {
+                    const value = initialValues[item.name]
+                    newValues[item.name] = item.type?.includes('date') ? dayjs(Number(value)) : value
+                }
+                if (item.name.includes(',') && item.type?.includes('date')) {
+                    const [startKey, endKey] = item.name.split(',')
+                    if (initialValues[startKey] && initialValues[endKey]) {
+                        newValues[item.name] = [dayjs(Number(initialValues[startKey])), dayjs(Number(initialValues[endKey]))]
+                    }
+                }
+            })
+            form.setFieldsValue(newValues)
         }
     }, [initialValues, form, formItems])
 

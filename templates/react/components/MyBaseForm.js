@@ -1,6 +1,7 @@
+import { Fragment } from 'react'
 import { formNode } from './index'
-import { Form, Space, Button } from 'antd'
-import { PlusOutlined, PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons'
+import { Form, Button } from 'antd'
+import { PlusOutlined } from '@ant-design/icons'
 
 const getValueFromEvent = e => {
     if (Array.isArray(e)) {
@@ -9,14 +10,16 @@ const getValueFromEvent = e => {
     return e?.fileList
 }
 
-const renderFormContent = ({ item }) => {
+const renderFormContent = ({ item, prefixName = [] }) => {
 
     if (!item.name) {
         return item.value
     }
 
+    const namePath = Array.isArray(prefixName) ? [...prefixName, ...(Array.isArray(item.name) ? item.name : [item.name])] : item.name
+
     const inputNode = (
-        <Form.Item noStyle name={item.name} rules={item.rules} initialValue={item.value} {...(item.type === 'upload' ? { getValueFromEvent, valuePropName: 'fileList' } : { valuePropName: item.valuePropName })}>
+        <Form.Item noStyle name={namePath} rules={item.rules} initialValue={item.value} {...(['upload', 'ossUpload'].includes(item.type) ? { getValueFromEvent, valuePropName: 'fileList' } : { valuePropName: item.valuePropName })}>
             {formNode({ item })}
         </Form.Item>
     )
@@ -41,11 +44,9 @@ export const MyBaseForm = ({ item, form }) => {
                 {(fields, { add, remove }) => (
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                         {fields.map((field, index) => (
-                            <Space key={field.key} style={{ display: 'flex', marginBottom: 8 }} align='baseline'>
-                                {item.render(field, index, { add, remove }, form)}
-                                {index !== 0 && <MinusCircleOutlined onClick={() => remove(field.name)} />}
-                                {fields.length === index + 1 && <PlusCircleOutlined onClick={() => add()} />}
-                            </Space>
+                            <Fragment key={field.key}>
+                                {item.render(field, index, { add, remove }, form, renderFormContent)}
+                            </Fragment>
                         ))}
                         {fields.length === 0 && <Button type='dashed' onClick={() => add()} block icon={<PlusOutlined />}>添加{item.label || '项'}</Button>}
                     </div>

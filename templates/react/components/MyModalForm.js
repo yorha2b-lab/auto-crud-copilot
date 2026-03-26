@@ -12,14 +12,26 @@ export const MyModalForm = ({ width, title, submit, record, visible, setModal, l
         if (visible) {
             form.resetFields()
             if (record && Object.keys(record).length > 0) {
-                const entries = Object.entries(record).map(([key, value]) => [
-                    key,
-                    formItems.find(item => item.name === key)?.type?.includes('date') ? (value?.toString()?.includes(',') ? value?.split(',')?.map(item => dayjs(Number(item))) : dayjs(Number(value))) : value
-                ])
-                form.setFieldsValue(Object.fromEntries(entries))
+                const itemMap = new Map(formItems.map(i => [i.name, i]))
+                const initialData = {}
+                Object.entries(record).forEach(([key, value]) => {
+                    const config = itemMap.get(key)
+                    if (config?.type?.includes('date') && value) {
+                        if (Array.isArray(value)) {
+                            initialData[key] = value.map(v => dayjs(isNaN(v) ? v : Number(v)))
+                        } else if (typeof value === 'string' && value.includes(',')) {
+                            initialData[key] = value.split(',').map(v => dayjs(Number(v)))
+                        } else {
+                            initialData[key] = dayjs(isNaN(value) ? value : Number(value))
+                        }
+                    } else {
+                        initialData[key] = value
+                    }
+                })
+                form.setFieldsValue(initialData)
             }
         }
-    }, [visible, record, form])
+    }, [visible, record, form, formItems])
 
     const handleOk = async () => {
         try {
