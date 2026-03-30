@@ -18,11 +18,11 @@ export const MyModalForm = ({ width, title, submit, record, visible, setModal, l
                     const config = itemMap.get(key)
                     if (config?.type?.includes('date') && value) {
                         if (Array.isArray(value)) {
-                            initialData[key] = value.map(v => dayjs(isNaN(v) ? v : Number(v)))
+                            initialData[key] = value.map(v => dayjs(v))
                         } else if (typeof value === 'string' && value.includes(',')) {
-                            initialData[key] = value.split(',').map(v => dayjs(Number(v)))
+                            initialData[key] = value.split(',').map(v => dayjs(v))
                         } else {
-                            initialData[key] = dayjs(isNaN(value) ? value : Number(value))
+                            initialData[key] = dayjs(value)
                         }
                     } else {
                         initialData[key] = value

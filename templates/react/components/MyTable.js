@@ -48,8 +48,7 @@ export const MyTable = ({ size, query, onSave, autoScroll, onChange, pagination,
             const tr = trList[Number(query.rowIndex)]
             if (tr) {
                 tr.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                tr.classList.add('row-highlight-pulse')
-                setTimeout(() => tr.classList.remove('row-highlight-pulse'), 1000)
+                tr.style.backgroundColor = '#e6f4ff'
                 hasScrolledRef.current = query.rowIndex
             }
         }, 300)
@@ -78,12 +77,6 @@ export const MyTable = ({ size, query, onSave, autoScroll, onChange, pagination,
                     return classes.filter(Boolean).join(' ')
                 }}
             />
-            <style jsx>{`
-                :global(.row-highlight-pulse) {
-                    background-color: #e6f4ff !important;
-                    transition: background-color 0.5s ease;
-                }
-            `}</style>
         </div>
     )
 }

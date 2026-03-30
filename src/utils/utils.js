@@ -77,8 +77,8 @@ const generateSmartImports = (codeStr, hasTabs) => {
     // 构建 import 语句数组
     const imports = [
         usedReact.length && `import { ${usedReact.join(', ')} } from 'react'`,
-        `import { Link, history } from 'umi'`,
         `import { request } from '../../utils/request'`,
+        `import { formatQuery } from '../../utils/utils'`,
         `import { ${hasTabs ? 'tabs, ' : ''}columns, formItems, modalItems } from './resource'`,
         ...usedHooks.map(hook => `import { ${hook} } from '../../hooks/${hook}'`),
         ...usedComps.map(comp => `import { ${comp} } from '../../components/${comp}'`),

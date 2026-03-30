@@ -7,7 +7,7 @@ English | [简体中文](./README.md)
 [![GitHub Stars](https://img.shields.io/github/stars/yorha2b-lab/auto-crud-copilot.svg?style=flat-square)](https://github.com/yorha2b-lab/auto-crud-copilot/stargazers)
 [![License](https://img.shields.io/npm/l/@yorha2b-lab/autodev.svg?style=flat-square)](https://github.com/yorha2b-lab/auto-crud-copilot/blob/main/LICENSE)
 
-An AI-powered frontend CRUD code generator based on vision models (Umi+Antd) 🚀
+An AI-powered frontend CRUD code generator based on vision models (React+Antd) 🚀
 
 <video src="https://github.com/user-attachments/assets/6d42fce1-c815-482b-8c6a-4a3b9415ba47.mp4" controls="controls" muted="muted" style="max-width: 100%; display: block; margin: 20px auto;">
 </video>

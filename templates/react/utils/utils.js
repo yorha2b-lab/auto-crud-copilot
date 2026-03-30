@@ -1,11 +1,6 @@
 import dayjs from 'dayjs'
 import { request } from './request'
 
-export const paramsFormat = params => {
-    const cleanParams = Object.fromEntries(Object.entries(params).filter(([_, v]) => ![null, undefined, ''].includes(v)))
-    return new URLSearchParams(cleanParams).toString()
-}
-
 export const initOSS = async (url, options) => {
     const OSS = require('ali-oss')
     const crypto = require('crypto-js')
@@ -20,6 +15,18 @@ export const initOSS = async (url, options) => {
     }))
     const signature = crypto.enc.Base64.stringify(crypto.HmacSHA1(policy, accessKeySecret))
     return { client, policy, signature, ...response?.data }
+}
+
+export const formatQuery = (params, formItems) => {
+    const cleanParams = {}
+    Object.keys(params).forEach(key => {
+        if (formItems.some(item => item.name.includes(key) && item.type?.includes('date'))) {
+            cleanParams[key] = Number(params[key])
+        } else {
+            cleanParams[key] = params[key] ?? null
+        }
+    })
+    return cleanParams
 }
 
 export const timeRender = ({ time, date, minute }) => {

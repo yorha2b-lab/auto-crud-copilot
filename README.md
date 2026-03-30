@@ -7,7 +7,7 @@
 [![GitHub Stars](https://img.shields.io/github/stars/yorha2b-lab/auto-crud-copilot.svg?style=flat-square)](https://github.com/yorha2b-lab/auto-crud-copilot/stargazers)
 [![License](https://img.shields.io/npm/l/@yorha2b-lab/autodev.svg?style=flat-square)](https://github.com/yorha2b-lab/auto-crud-copilot/blob/main/LICENSE)
 
-基于视觉大模型的前端(Umi+Antd)全自动 CRUD 代码生成器 🚀
+基于视觉大模型的前端(React+Antd)全自动 CRUD 代码生成器 🚀
 
 <video src="https://github.com/user-attachments/assets/6d42fce1-c815-482b-8c6a-4a3b9415ba47.mp4" controls="controls" muted="muted" style="max-width: 100%; display: block; margin: 20px auto;">
 </video>

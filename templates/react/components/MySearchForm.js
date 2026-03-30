@@ -1,5 +1,4 @@
 import dayjs from 'dayjs'
-import { history } from 'umi'
 import { MyBaseForm } from './MyBaseForm'
 import { useState, useEffect } from 'react'
 import { Row, Col, Form, Button, Space } from 'antd'
@@ -10,7 +9,7 @@ export const MySearchForm = ({ form, search, loading, labelCol, setSearch, formI
 
     const handleReset = () => {
         if (syncUrlParams) {
-            history.push({ search: '' })
+            window.history.replaceState(null, '', window.location.pathname)
         }
         if (customReset) {
             customReset()
@@ -37,7 +36,7 @@ export const MySearchForm = ({ form, search, loading, labelCol, setSearch, formI
                 }
             })
             const params = new URLSearchParams(Object.fromEntries(Object.entries(formattedValues).filter(([key, value]) => !['', null, undefined].includes(value))))
-            history.push({ search: params.toString() })
+            window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`)
         }
         if (customFinish) {
             customFinish(formattedValues)

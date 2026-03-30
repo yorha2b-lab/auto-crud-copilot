@@ -1,6 +1,6 @@
 export default props => {
 
-    const query = Object.fromEntries(new URLSearchParams(location.search).entries())
+    const query = formatQuery(Object.fromEntries(new URLSearchParams(location.search).entries()), formItems)
 
     const [form] = Form.useForm()
     const [modal, setModal] = useState({})
