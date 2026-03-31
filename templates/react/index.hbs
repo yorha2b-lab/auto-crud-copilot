@@ -18,7 +18,7 @@ export default props => {
 
     const { total, loading, dataSource, search, setSearch, refresh } = useTableQuery(
          async params => await request('/api/{{fileName}}', { method: 'POST', body: params }),
-         response => response?.data ?? [],
+         response => ({ data: response?.data ?? [], total: response?.total ?? 0 }),
          {...initParams, ...query},
     )
 

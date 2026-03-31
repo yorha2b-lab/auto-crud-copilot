@@ -1,8 +1,10 @@
 import dayjs from 'dayjs'
 import { request } from './request'
 
+//常用工具函数，使用前确保已安装对应模块
+
 export const initOSS = async (url, options) => {
-    const OSS = require('ali-oss')
+    /* const OSS = require('ali-oss')
     const crypto = require('crypto-js')
     const response = await request(url, options)
     const { bucket, endpoint, stsToken, expiration, accessKeyId, accessKeySecret } = response?.data || {}
@@ -14,7 +16,7 @@ export const initOSS = async (url, options) => {
         ],
     }))
     const signature = crypto.enc.Base64.stringify(crypto.HmacSHA1(policy, accessKeySecret))
-    return { client, policy, signature, ...response?.data }
+    return { client, policy, signature, ...response?.data } */
 }
 
 export const formatQuery = (params, formItems) => {
@@ -54,7 +56,7 @@ export const moneyRender = (value, { decimals = 2, showSymbol = true } = {}) => 
 }
 
 export const exportDataToExcel = async (url, options, columns, fileName, resultKey = 'data') => {
-    const response = await request(url, options)
+    /* const response = await request(url, options)
     if (response?.[resultKey]?.length > 0) {
         const XLSX = require('xlsx')
         const datas = response?.[resultKey]?.map(item => Object.fromEntries(columns.map(col => {
@@ -74,7 +76,7 @@ export const exportDataToExcel = async (url, options, columns, fileName, resultK
         worksheet['!cols'] = Array.from(new Array(header.length)).fill({ wpx: 120 })
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1')
         XLSX.writeFile(workbook, `${fileName}.xlsx`)
-    }
+    } */
 }
 
 export const formatUnit = (value, { k = 1024, units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB'], decimals = 2 } = {}) => {

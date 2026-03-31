@@ -59,6 +59,10 @@ const watchApi = () => {
                 `🤖 Pod 153: [警告] 骇入 [${fileName}] 失败。接口数据遭遇强力防火墙：${error}`,
                 `🤖 Pod 153: [Warning] Hacking into [${fileName}] failed. Encountered a powerful firewall in API data: ${error}`
             )))
+        } finally {
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath)
+            }
         }
     })
 }

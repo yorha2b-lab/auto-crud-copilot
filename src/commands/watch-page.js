@@ -122,6 +122,9 @@ const watchPage = options => {
                     `🤖 Pod 042: [报告] 模块 [${fileName}] 物理装配完成！耗时 ${(endTime - startTime) / 1000} 秒`,
                     `🤖 Pod 042: [Report] Module [${fileName}] assembly complete! Elapsed time: ${(endTime - startTime) / 1000}s`
                 )))
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath)
+                }
             } catch (error) {
                 spinner.fail(chalk.red(language(
                     `🤖 Pod 042: [警告] 模块 [${fileName}] 构筑失败。原因：${error}`,

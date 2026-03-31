@@ -21,8 +21,9 @@ export const useTableQuery = (api, formatResponse, initialParams = {}) => {
         try {
             const response = await apiRef.current(search)
             if (currentFetchId !== fetchIdRef.current) return
-            setDataSource(formatResponse(response))
-            setTotal(response?.total || 0)
+            const { data, total } = formatResponse(response ?? {})
+            setDataSource(data)
+            setTotal(total ?? 0)
         } catch (error) {
             console.error('查询失败', error)
         } finally {
