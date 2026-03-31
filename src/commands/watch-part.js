@@ -57,17 +57,15 @@ const watchPart = () => {
                 `🤖 Pod 042: [报告] 识别程序结束！耗时 ${(endTime - startTime) / 1000} 秒\n================\n\n${finalResult}\n\n================`,
                 `🤖 Pod 042: [Report] Recognition complete! Elapsed time: ${(endTime - startTime) / 1000}s\n================\n\n${finalResult}\n\n================`
             ))
-
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath)
+            }
         } catch (error) {
             // 失败报告
             spinner.fail(chalk.red(language(
                 `🤖 Pod 042: [警告] 识别程序失败。原因：${error}`,
                 `🤖 Pod 042: [Warning] Recognition failed. Reason: ${error}`
             )))
-        } finally {
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath)
-            }
         }
     })
 }
