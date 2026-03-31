@@ -54,7 +54,7 @@ export const MyModalForm = ({ width, title, submit, record, visible, setModal, l
     }
 
     return (
-        <Modal centered title={title} width={width} open={visible} onOk={handleOk} destroyOnHidden onCancel={handleCancel} confirmLoading={pending}>
+        <Modal centered title={title} width={width} open={visible} onOk={handleOk} destroyOnClose onCancel={handleCancel} confirmLoading={pending}>
             <Form form={form} preserve={false} labelCol={labelCol} wrapperCol={wrapperCol} onValuesChange={(changed, all) => onValuesChange?.({ changed, all, form, record })}>
                 <Row gutter={[24, 0]}>
                     {formItems.map((item, index) =>

@@ -20,7 +20,7 @@ export const MyModalTable = ({ api, onOk, title, width, footer, visible, columns
     }
 
     return (
-        <Modal centered destroyOnHidden title={title} width={width} open={visible} onOk={handleOk} footer={footer} onCancel={() => setModal({ visible: false })}>
+        <Modal centered destroyOnClose title={title} width={width} open={visible} onOk={handleOk} footer={footer} onCancel={() => setModal({ visible: false })}>
             {formItems?.length > 0 && <MySearchForm search={search} formItems={formItems} setSearch={handleSearch} syncUrlParams={false} />}
             <MyTable
                 loading={loading}
