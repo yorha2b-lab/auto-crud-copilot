@@ -105,7 +105,6 @@ const watchPage = options => {
                 } else {
                     pageConfig = await recognizePage(pagePrompt, filePath)
                 }
-                console.log(stringify.default(pageConfig, { indent: 4, maxLength: 200 }))
                 fs.writeFileSync(path.join(targetDir, 'resource.js'), resource({ pageConfig, resourceTpl }))
                 fs.writeFileSync(path.join(targetDir, 'index.js'), index({ config, fileName, indexTpl, pageConfig }))
 
