@@ -125,6 +125,9 @@ your-project/
 
 ```javascript
 module.exports = {
+    // 是否使用演示模式
+    useDemo: true,
+
     // 是否需要生成 Mock 数据
     needMock: false,
 

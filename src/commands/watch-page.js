@@ -64,7 +64,7 @@ const watchPage = options => {
         )))
         const constantDir = path.join(process.cwd(), config.utilsDir)
         if (!fs.existsSync(constantDir)) fs.mkdirSync(constantDir, { recursive: true })
-        fs.writeFileSync(path.join(constantDir, 'constant.js'), `export const menus = ${stringify.default(menus, { indent: 4, maxLength: 50 })}`)
+        fs.writeFileSync(path.join(constantDir, 'menus.js'), `export const menus = ${stringify.default(menus, { indent: 4, maxLength: 50 })}`)
         console.log(chalk.green(language(
             '🤖 Pod 042: [肯定] Menu 配置同步成功。',
             '🤖 Pod 042: [Affirmative] Menu configuration synced successfully.'
@@ -95,7 +95,17 @@ const watchPage = options => {
                 if (!fs.existsSync(mockDir)) fs.mkdirSync(mockDir, { recursive: true })
                 if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true })
 
-                const pageConfig = await recognizePage(pagePrompt, filePath)
+                let pageConfig
+                if (config.useDemo) {
+                    console.log(chalk.yellow(language(
+                        `\nPod 042: [报告] 使用演示数据...`,
+                        `\nPod 042: [Report] Using demo data...`
+                    )))
+                    pageConfig = require(path.join(__dirname, '../../example/example.json'))
+                } else {
+                    pageConfig = await recognizePage(pagePrompt, filePath)
+                }
+                console.log(stringify.default(pageConfig, { indent: 4, maxLength: 200 }))
                 fs.writeFileSync(path.join(targetDir, 'resource.js'), resource({ pageConfig, resourceTpl }))
                 fs.writeFileSync(path.join(targetDir, 'index.js'), index({ config, fileName, indexTpl, pageConfig }))
 

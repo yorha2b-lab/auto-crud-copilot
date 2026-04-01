@@ -15,7 +15,7 @@ module.exports = `
     如果是下拉框,请加入type:'select',options:_CODE_对应的英文名词Options_CODE_
     如果是时间范围查询,请加入type:'daterange',name:'对应的英文名词start,对应的英文名词end'
 3.下拉选项字典
-    optionDict:{_CODE_对应的英文名词Options_CODE:[]]}
+    optionDict:{_CODE_对应的英文名词Options_CODE_:[]]}
     数组值为对应列展示的内容组成的类似{label:'',value:''}的数组
 4.弹窗表单
     modalItems:[{label:'基础项',name:'对应的英文名词',type:'text',rules:[{required:true,message:'字段不能为空'}]}]

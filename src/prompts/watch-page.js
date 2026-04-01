@@ -33,8 +33,8 @@ module.exports = `
     如果和表格行操作重复请在action加上BySelected前缀
     如果是导出功能,对应的动词为export+对应的英文名词,没有名词则为exportData
 6.下拉选项字典
-    optionDict:{_CODE_对应的英文名词Options_CODE:[]]}
-    数组值为对应列展示的内容组成的类似{label:'',value:''}的数组
+    optionDict:{_CODE_对应的英文名词Options_CODE_:[]]}
+    ⚠️⚠️⚠️注意：数组值为对应列展示的内容组成的类似{label:'',value:''}的数组
 最后输出一个JSON对象,不要包含任何Markdown标签,格式如下
     { tabs: [], table: {}, formItems: [], optionDict: {}, functionButton: []}
 `

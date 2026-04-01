@@ -28,7 +28,7 @@ const resource = ({ pageConfig, resourceTpl }) => {
         // 提取所有下拉框字典配置
         dictBlocks: pageConfig.formItems
             ?.filter(item => item.type === 'select') // 过滤出下拉框类型
-            ?.map(item => ({ name: item.options.replace('_CODE_', ''), data: pageConfig.optionDict[item.options] ?? [] })) // 转换为字典格式
+            ?.map(item => ({ name: item.options.replaceAll('_CODE_', ''), data: pageConfig.optionDict[item.options] ?? [] })) // 转换为字典格式
     }
 
     // 渲染模板并清理代码

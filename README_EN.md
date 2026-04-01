@@ -125,6 +125,9 @@ You can configure the following options in `config.js`:
 
 ```javascript
 module.exports = {
+    // Whether to use demo mode
+    useDemo: true,
+
     // Whether to generate Mock data
     needMock: false,
 

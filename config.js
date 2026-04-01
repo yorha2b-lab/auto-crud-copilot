@@ -5,6 +5,9 @@
  */
 
 module.exports = {
+
+    useDemo: true,
+
     // 是否需要生成 Mock 数据
     needMock: false,
 

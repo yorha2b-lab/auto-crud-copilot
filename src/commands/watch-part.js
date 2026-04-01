@@ -43,7 +43,7 @@ const watchPart = () => {
 
             let optionsCodeStr = ''
             Object.keys(optionDict).forEach(key => {
-                const varName = key.replace('_CODE_', '')
+                const varName = key.replaceAll('_CODE_', '')
                 const optionsArray = optionDict[key]
                 const arrayItemsStr = optionsArray.map(opt => `    { label: '${opt.label}', value: '${opt.value}' }`).join(',\n')
                 optionsCodeStr += `\nexport const ${varName} = [\n${arrayItemsStr}\n]\n`
