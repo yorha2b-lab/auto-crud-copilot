@@ -98,8 +98,8 @@ const watchPage = options => {
                 let pageConfig
                 if (config.useDemo) {
                     console.log(chalk.yellow(language(
-                        `\nPod 042: [报告] 使用演示数据...`,
-                        `\nPod 042: [Report] Using demo data...`
+                        `\nPod 042: [警告] 当前处于模拟模式。检测到视觉样本，但 Bunker 已拦截实弹请求，正在空投标准构筑包`,
+                        `\nPod 042: [Warning] Current mode is demo. Visual sample detected, but Bunker has intercepted real requests. Sending standard package.`
                     )))
                     pageConfig = require(path.join(__dirname, '../../example/example.json'))
                 } else {

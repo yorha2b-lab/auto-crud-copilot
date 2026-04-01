@@ -43,6 +43,13 @@ Quick start
 autodev init
 ```
 
+> ### 💡 Zero-Config Quick Start (Simulation Mode)
+> To allow YoRHa units to experience the construction power immediately, Demo Mode is enabled by default:
+> No API_KEY required. Simply run autodev watch:page.
+> Drop any image into the screenShot directory (the system will ignore the image content and deploy a standard example.json construction package).
+> Watch the Magic: Command line flashes, and React code is physically assembled in seconds.
+> Note: To recognize actual screenshots, set useDemo: false in config.js and configure the environment variables above.*
+
 Create a `.env` file and configure the following environment variables:
 
 ```bash

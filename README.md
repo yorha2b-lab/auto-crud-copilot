@@ -43,6 +43,14 @@ npm install -g @yorha2b-lab/autodev
 autodev init
 ```
 
+> ### 💡 零配置快速体验 (模拟模式)
+> 为了能立即感受到 Bunker 的构筑力量，项目默认开启了 **Demo 模式**：
+> 1. **无需配置 API_KEY**，直接运行 `autodev watch:page`。
+> 2. 向 `screenShot` 目录丢入任意图片（系统将忽略图片内容，自动空投标准 `example.json` 构筑包）。
+> 3. **观察效果**：你会看到命令行刷刷闪过，React 代码瞬间物理装配完成。
+>
+> *注：若想识别真实截图，请在 `config.js` 中将 `useDemo` 设为 `false` 并配置下方环境变量。*
+
 创建 `.env` 文件并配置以下环境变量：
 
 ```bash
