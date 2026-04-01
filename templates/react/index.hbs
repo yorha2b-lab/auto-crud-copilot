@@ -1,7 +1,5 @@
 export default props => {
 
-    const query = formatQuery(Object.fromEntries(new URLSearchParams(location.search).entries()), formItems)
-
     const [form] = Form.useForm()
     const [modal, setModal] = useState({})
     {{#if hasTabs}}
@@ -15,6 +13,8 @@ export default props => {
     {{/if}}
 
     const initParams = {{#if hasTabs}}{ type: tabs[0].key }{{else}}{}{{/if}}
+
+    const query = formatQuery(Object.fromEntries(new URLSearchParams(location.search).entries()), {{#if hasTabs}}formItems[activeKey]{{else}}formItems{{/if}})
 
     const { total, loading, dataSource, search, setSearch, refresh } = useTableQuery(
          async params => await request('/api/{{fileName}}', { method: 'POST', body: params }),
