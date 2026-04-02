@@ -119,10 +119,10 @@ const watchPage = options => {
                         `🧑‍💻 9S: Leave it to me, 2B! Hacking and forging Mock data for [${fileName}]...`
                     )))
                     const rawContent = await generateMock(pageConfig.table.columns, fileName)
-                    fs.writeFileSync(path.join(mockDir, `${fileName}.js`), `export default ${stringify.default(rawContent, { indent: 4, maxLength: 200 })}`.replaceAll(`"'`, `"`).replaceAll(`'"`, `"`))
+                    fs.writeFileSync(path.join(mockDir, `${fileName}.js`), `export default ${stringify.default(rawContent, { indent: 4, maxLength: 200 })}`)
                     console.log(chalk.green(language(
-                        `🤖 Pod 042: [报告] Mock 数据注入完成，耗时: ${(Date.now() - startTime) / 1000} 秒`,
-                        `🤖 Pod 042: [Report] Mock data injection complete. Elapsed time: ${(Date.now() - startTime) / 1000}s`
+                        `\n🤖 Pod 042: [报告] Mock 数据注入完成，耗时: ${(Date.now() - startTime) / 1000} 秒`,
+                        `\n🤖 Pod 042: [Report] Mock data injection complete. Elapsed time: ${(Date.now() - startTime) / 1000}s`
                     )))
                 }
 
