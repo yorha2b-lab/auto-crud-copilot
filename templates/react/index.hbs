@@ -88,6 +88,15 @@ export default props => {
     }
     {{/if}}
 
+    {{#if hasTabs}}
+    /**
+      * 多页签时功能按钮会根据页签数动态循环渲染
+      * 因为截图限制，其他页签的功能按钮直接复制第一个页签的功能按钮占位
+      * 如果每个页签的功能按钮都一样,下方循环处需要手动删除;不同则视情况决定是否有必要使用watch:part补充
+      * resource.js中的columns和formItems同理,自行根据情况调整
+    */
+    {{/if}}
+
     return (
         <Card {{#if hasTabs}}tabList={tabs} activeTabKey={activeKey} onTabChange={onTabChange}{{/if}}>
             {modal.visible && <MyModalForm {...modal} formItems={modalItems} submit={modalSubmit} setModal={setModal} />}
