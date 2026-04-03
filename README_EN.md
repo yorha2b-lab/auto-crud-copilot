@@ -143,6 +143,11 @@ module.exports = {
     visionModel: 'qwen3.5-plus',
     textModel: 'qwen-turbo',
 
+    // Custom template directory path
+    // If empty, will use built-in templates
+    // Custom templates need to create their own index.hbs and resource.hbs files in the hbsdir directory
+    hbsDir: '',
+
     // Target project directory paths
     hooksDir: 'src/hooks',
     pagesDir: 'src/pages',

@@ -16,6 +16,11 @@ module.exports = {
 
     textModel: 'qwen-turbo',
 
+    // 自定义模板目录
+    // 如果为空，将使用内置模板
+    // 自定义模板需要在hbsdir目录创建自己的index.hbs和resource.hbs文件
+    hbsDir: '',
+
     // 目标项目的 hooks 目录路径
     hooksDir: 'src/hooks',
 

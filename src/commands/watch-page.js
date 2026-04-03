@@ -42,9 +42,12 @@ const watchPage = options => {
     const { index, resource } = require(compilerPath)
 
     try {
-        copyTemplateDir(options, 'hooks', config.hooksDir)
-        copyTemplateDir(options, 'utils', config.utilsDir)
-        copyTemplateDir(options, 'components', config.componentsDir)
+        //默认使用内置模板
+        if (config.hbsDir === '') {
+            copyTemplateDir(options, 'hooks', config.hooksDir)
+            copyTemplateDir(options, 'utils', config.utilsDir)
+            copyTemplateDir(options, 'components', config.componentsDir)
+        }
     } catch (error) {
         console.error(language('❌ 程序运行出错:', '❌ Runtime error:'), error)
     }
@@ -52,7 +55,7 @@ const watchPage = options => {
     const queue = createTaskQueue(2)
     const menus = getExistingMenus()
 
-    const tplDir = path.join(__dirname, `../../templates/${options.template}`)
+    const tplDir = config.hbsDir !== '' ? path.join(process.cwd(), config.hbsDir) : path.join(__dirname, `../../templates/${options.template}`)
     const indexTpl = Handlebars.compile(fs.readFileSync(path.join(tplDir, 'index.hbs'), 'utf-8'))
     const resourceTpl = Handlebars.compile(fs.readFileSync(path.join(tplDir, 'resource.hbs'), 'utf-8'))
 
