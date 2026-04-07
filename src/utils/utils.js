@@ -42,6 +42,22 @@ const cleanCode = str => {
 }
 
 /**
+ * 检查 Prompt 文件是否存在
+ * @param {string} promptPath - Prompt 文件路径
+ * @returns {void}
+ */
+const checkPromptPath = promptPath => {
+    const promptAbsPath = path.resolve(__dirname, promptPath)
+    if (!fs.existsSync(promptAbsPath)) {
+        const displayPath = promptPath.slice(3)
+        throw new Error(language(
+            `🤖 Pod 042: [警告] 侦测到未知的构筑协议 ${displayPath}，地堡数据库暂无此类资料。`,
+            `🤖 Pod 042: [Warning] Unknown construction protocol ${displayPath}. No such protocol found in the bunker database.`
+        ))
+    }
+}
+
+/**
  * 获取已有的页面菜单配置
  * @param {string} dir - 页面目录路径（默认 'src/pages'）
  * @returns {Array} 菜单数组 [{ label: '页面名', key: '页面名' }]
@@ -109,4 +125,4 @@ const copyTemplateDir = (options, templateSubDir, targetSubDir) => {
 }
 
 // 导出工具函数
-module.exports = { language, getConfig, cleanCode, getExistingMenus, copyTemplateDir, generateSmartImports }
+module.exports = { language, getConfig, cleanCode, getExistingMenus, copyTemplateDir, checkPromptPath, generateSmartImports }

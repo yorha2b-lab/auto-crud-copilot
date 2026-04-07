@@ -4,7 +4,7 @@ const path = require('path')
 const chalk = require('chalk')
 const chokidar = require('chokidar')
 
-const watchApi = () => {
+const watchApi = options => {
     // 导入配置文件和多语言函数
     const { getConfig, language } = require('../utils/utils.js')
     const { alignResponseFields } = require('../services/llm.js')
@@ -36,7 +36,7 @@ const watchApi = () => {
             let resourceStr = fs.readFileSync(`./${config.pagesDir}/${fileName}/resource.js`, 'utf8')
 
             // 调用 AI 服务进行字段对齐
-            const result = await alignResponseFields(responseStr, resourceStr)
+            const result = await alignResponseFields(options, responseStr, resourceStr)
 
             Object.entries(result).forEach(([oldField, newField]) => {
                 if (oldField === newField) return

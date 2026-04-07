@@ -91,7 +91,7 @@ program
     .description(language('监听 Response，自动对齐真实接口字段', 'Watch responses and auto-align real API fields'))
     .action(() => {
         const watchApi = require('../src/commands/watch-api')
-        watchApi()
+        watchApi(program.opts())
     })
 
 program.parse(process.argv)

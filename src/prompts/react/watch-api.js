@@ -1,7 +1,7 @@
 module.exports = (responseStr, resourceStr) => `
 responseStr: ${responseStr}
 resourceStr: ${resourceStr}
-resourceStr是前端目前猜测的字段名列表(请从resourceStr中提取dataIndex和name)，
+resourceStr是前端目前猜测的字段名(请从resourceStr中提取dataIndex和name)，
 responseStr是后端的真实响应。
 请比对两者，找出现有前端字段名应该被替换为哪个真实的后端字段名。
 匹配规则: 1.完全相同 2.下划线/驼峰转换 3.语义相似。

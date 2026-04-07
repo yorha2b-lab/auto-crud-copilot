@@ -4,10 +4,15 @@ const chalk = require('chalk')
 const chokidar = require('chokidar')
 const stringify = require('json-stringify-pretty-compact')
 
-const watchPart = () => {
-    // 导入核心逻辑和多语言函数
+const watchPart = options => {
+
+    const { language, checkPromptPath } = require('../utils/utils.js')
+
+    const promptPath = `../prompts/${options.template}/watch-part.js`
+
+    checkPromptPath(promptPath)
+    const partPrompt = require(promptPath)
     const { recognizePage } = require('../services/llm.js')
-    const { language } = require('../utils/utils.js')
 
     const watcher = chokidar.watch('./screenPart', {
         persistent: true,
@@ -28,7 +33,6 @@ const watchPart = () => {
 
         try {
             const startTime = Date.now()
-            const partPrompt = require('../prompts/watch-part.js')
             const pageConfig = await recognizePage(partPrompt, filePath)
 
             const optionDict = pageConfig.optionDict || {}

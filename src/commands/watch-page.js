@@ -9,14 +9,19 @@ const chalk = require('chalk')
  * @param {string} options.template - 前端框架模板
  */
 const watchPage = options => {
+
+    const { language, getConfig, copyTemplateDir, checkPromptPath, getExistingMenus } = require('../utils/utils.js')
+
+    const promptPath = `../prompts/${options.template}/watch-page.js`
+
+    checkPromptPath(promptPath)
+
     const chokidar = require('chokidar')
+    const pagePrompt = require(promptPath)
     const Handlebars = require('handlebars')
-    const pagePrompt = require('../prompts/watch-page.js')
     const { createTaskQueue } = require('../core/task-queue')
     const stringify = require('json-stringify-pretty-compact')
     const { recognizePage, generateMock } = require('../services/llm.js')
-
-    const { language, getConfig, copyTemplateDir, getExistingMenus } = require('../utils/utils.js')
 
     const config = getConfig()
 
@@ -118,8 +123,8 @@ const watchPage = options => {
                 // 4. 生成 Mock 数据
                 if (config.needMock) {
                     console.log(chalk.yellow(language(
-                        `🧑‍💻 9S: 交给我吧 2B！正在骇入并伪造 [${fileName}] 的 Mock 数据...`,
-                        `🧑‍💻 9S: Leave it to me, 2B! Hacking and forging Mock data for [${fileName}]...`
+                        `\n🧑‍💻 9S: 交给我吧 2B！正在骇入并伪造 [${fileName}] 的 Mock 数据...`,
+                        `\n🧑‍💻 9S: Leave it to me, 2B! Hacking and forging Mock data for [${fileName}]...`
                     )))
                     const rawContent = await generateMock(pageConfig.table.columns, fileName)
                     fs.writeFileSync(path.join(mockDir, `${fileName}.js`), `export default ${stringify.default(rawContent, { indent: 4, maxLength: 200 })}`)
