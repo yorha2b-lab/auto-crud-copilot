@@ -22,5 +22,6 @@ module.exports = `
     ⚠️⚠️⚠️注意:
     type:text/date/daterange/radio/checkbox/select/auto/textarea,如果是text可以省略
     如果type是auto/radio/select/checkbox,请加入options:_CODE_对应的英文名词Options_CODE_
+    如果表单项末尾有文字描述，请将文字描述放在unit属性中
     ** 只输出modalItems就可以，不需要对应的formItems和columns **
 `
