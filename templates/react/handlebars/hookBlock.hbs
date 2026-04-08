@@ -1,0 +1,9 @@
+const initParams = {{#if hasTabs}}{ type: tabs[0].key }{{else}}{}{{/if}}
+
+const query = formatQuery(Object.fromEntries(new URLSearchParams(location.search).entries()),  {{formItems}})
+
+const { total, loading, dataSource, search, setSearch, refresh } = useTableQuery(
+    async params => await request('/api/{{fileName}}', { method: 'POST', body: params }),
+    response => ({ data: response?.data ?? [], total: response?.total ?? 0 }),
+    {...initParams, ...query},
+)

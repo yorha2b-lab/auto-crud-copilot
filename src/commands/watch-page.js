@@ -140,7 +140,7 @@ const watchPage = options => {
                     `🤖 Pod 042: [Report] Module [${fileName}] assembly complete! Elapsed time: ${(endTime - startTime) / 1000}s`
                 )))
                 if (fs.existsSync(filePath)) {
-                    fs.unlinkSync(filePath)
+                    //fs.unlinkSync(filePath)
                 }
             } catch (error) {
                 spinner.fail(chalk.red(language(

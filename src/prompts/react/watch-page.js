@@ -1,5 +1,5 @@
 module.exports = `
-识别图片内容（搜索项，表格列，是否有勾选框，查询下拉选项，统计条等页面结构）
+识别图片内容（搜索项，表格列，是否有勾选框，查询下拉选项，统计条等页面组件，并按照从上到下的结构把识别出来的组件按顺序组织成型）
 ⚠️⚠️⚠️注意:
 1.变量使用驼峰命名法
     【严禁中文】绝对不允许使用中文作为变量名或函数名
@@ -35,6 +35,10 @@ module.exports = `
 6.下拉选项字典
     optionDict:{_CODE_对应的英文名词Options_CODE_:[]]}
     ⚠️⚠️⚠️注意：数组值为对应列展示的内容组成的类似{label:'',value:''}的数组
+7.pageStruct
+    从上至下的页面结构组成
+    ⚠️⚠️⚠️注意:这里只能从AlertInfo,MySearchForm,FunctionButtonsBlock,MyTable中选择,并且只有真的存在才加入，绝对禁止加入其他组件
+    ⚠️⚠️⚠️另外这里不要加入tabs组件
 最后输出一个JSON对象,不要包含任何Markdown标签,格式如下
-    { tabs: [], table: {}, formItems: [], optionDict: {}, functionButton: []}
+    { tabs: [], table: {}, formItems: [], optionDict: {}, functionButton: [],pageStruct:[]}
 `

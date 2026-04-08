@@ -1,7 +1,11 @@
+const fs = require('fs')
+const path = require('path')
 const Handlebars = require('handlebars')
 const stringify = require('json-stringify-pretty-compact')
 const { cleanCode, generateSmartImports } = require('../utils/utils.js')
 
+// 注册 Handlebars 辅助函数，用于将原始内容渲染到模板中，不进行任何处理
+Handlebars.registerHelper('raw', options => options.fn())
 // 注册 Handlebars 辅助函数，用于将对象格式化为 JSON 字符串
 Handlebars.registerHelper('stringify', (context, maxLength = 200) => context ? new Handlebars.SafeString(stringify.default(context, { indent: 4, maxLength })) : '[]')
 
@@ -45,7 +49,9 @@ const resource = ({ pageConfig, resourceTpl }) => {
  * @returns {string} 生成的 index.js 代码
  */
 const index = ({ config, fileName, indexTpl, pageConfig }) => {
+
     const hasTabs = pageConfig.tabs?.length > 0
+    const hasFormItems = pageConfig.formItems?.length > 0
     const hasOperate = pageConfig.table.operation?.length > 0
 
     // 动态确定 columns 引用方式：有标签页时使用 activeKey 索引，否则直接使用 columns
@@ -57,20 +63,41 @@ const index = ({ config, fileName, indexTpl, pageConfig }) => {
 
     // 构建模板数据
     const viewData = {
-        hasTabs, // 是否有标签页
-        fileName, // 页面文件名
-        hasOperate, // 是否有操作列
-        columnsValue, // columns 引用表达式
-        tabs: pageConfig.tabs, // 标签页配置
-        responseSuccess: config.responseSuccess, // 成功回调函数
-        hasExpandable: pageConfig.table.expandable, // 是否有展开行
-        hasPagination: pageConfig.table.pagination, // 是否有分页
-        operations: pageConfig.table.operation || [], // 操作列配置
-        hasRowSelection: pageConfig.table.rowSelection, // 是否有行选择
-        hasStaticInfo: pageConfig.table.staticInfo?.has, // 是否有静态信息
-        staticInfoText: pageConfig.table.staticInfo?.text, // 静态信息文本
-        functionButtons: pageConfig.functionButton?.filter(item => !['查询', '重置'].includes(item.btn)) || [] // 功能按钮（排除查询和重置）
+        hasTabs,
+        fileName,
+        hasOperate,
+        columnsValue,
+        hasFormItems,
+        tabs: pageConfig.tabs,
+        pageStruct: pageConfig.pageStruct,
+        responseSuccess: config.responseSuccess,
+        hasExpandable: pageConfig.table.expandable,
+        hasPagination: pageConfig.table.pagination,
+        operations: pageConfig.table.operation || [],
+        hasRowSelection: pageConfig.table.rowSelection,
+        hasStaticInfo: pageConfig.table.staticInfo?.has,
+        staticInfoText: pageConfig.table.staticInfo?.text,
+        formItems: hasTabs ? 'formItems[activeKey]' : 'formItems',
+        functionButtons: pageConfig.functionButton?.filter(item => !['查询', '重置'].includes(item.btn)) || []
     }
+
+    if (viewData.hasOperate) {
+        Handlebars.registerPartial('tableOperate', `${fs.readFileSync(path.join(__dirname, '../../templates/react/handlebars/tableOperate.hbs'), 'utf-8')}\n`)
+    }
+
+    if (viewData.hasFormItems) {
+        Handlebars.registerPartial('MySearchForm', `${fs.readFileSync(path.join(__dirname, '../../templates/react/handlebars/MySearchForm.hbs'), 'utf-8')}\n`)
+    }
+
+    if (viewData.hasStaticInfo) {
+        Handlebars.registerPartial('AlertInfo', `{{{{raw}}}}<Alert showIcon title='${pageConfig.table.staticInfo?.text}' type='info' style={{ marginBottom: 16 }} />\n{{{{/raw}}}}`)
+    }
+
+    Handlebars.registerPartial('MyTable', `${fs.readFileSync(path.join(__dirname, '../../templates/react/handlebars/MyTable.hbs'), 'utf-8')}\n`)
+    Handlebars.registerPartial('hookBlock', `${fs.readFileSync(path.join(__dirname, '../../templates/react/handlebars/hookBlock.hbs'), 'utf-8')}\n`)
+    Handlebars.registerPartial('stateBlock', `${fs.readFileSync(path.join(__dirname, '../../templates/react/handlebars/stateBlock.hbs'), 'utf-8')}\n`)
+    Handlebars.registerPartial('handleBlock', `${fs.readFileSync(path.join(__dirname, '../../templates/react/handlebars/handleBlock.hbs'), 'utf-8')}\n`)
+    Handlebars.registerPartial('FunctionButtonsBlock', `${fs.readFileSync(path.join(__dirname, '../../templates/react/handlebars/functionButtonsBlock.hbs'), 'utf-8')}\n`)
 
     // 渲染模板
     const bodyCode = indexTpl(viewData)

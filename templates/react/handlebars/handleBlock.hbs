@@ -1,0 +1,52 @@
+{{#each operations}}
+const {{this.action}} = async record => {
+    const response = await request('/api')
+    if({{{../responseSuccess}}}){
+        refresh()
+    }
+}
+
+{{/each}}
+
+{{#each functionButtons}}
+const {{this.action}} = () => {
+    Modal.confirm({
+        title: '确认',
+        centered: true,
+        content: '确认{{this.btn}}吗？',
+        onOk: async () => {
+            const response = await request('/api')
+            if({{{../responseSuccess}}}){
+                refresh()
+            }
+        }
+    })
+}
+
+{{/each}}
+
+{{#if hasTabs}}
+const onTabChange = key => {
+    setActiveKey(key)
+    {{#if hasRowSelection}}setSelectedRows([]){{/if}}
+    setSearch({ pageNo: 1, pageSize: 10, type: key })
+}
+{{/if}}
+
+{{#if hasExpandable}}
+const onExpand = async (expanded, record) => {
+    if (expanded) {
+        setExpandedRowKeys([...expandedRowKeys, record.key])
+    } else {
+        setExpandedRowKeys(expandedRowKeys.filter(item => item !== record.key))
+    }
+}
+
+const expandedRowRender = record => (<div>自定义渲染</div>)
+
+{{/if}}
+
+const modalSubmit = async values => {
+    const response = await request('/api')
+    refresh()
+}

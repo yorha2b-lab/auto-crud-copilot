@@ -2,7 +2,7 @@
     "tabs": [
         {
             "tab": "鬼剑士",
-            "key": "ghostKnight"
+            "key": "ghostSwordsman"
         },
         {
             "tab": "格斗家",
@@ -15,35 +15,6 @@
         {
             "tab": "魔法师",
             "key": "mage"
-        }
-    ],
-    "formItems": [
-        {
-            "label": "转职职业",
-            "name": "transferJob",
-            "type": "select",
-            "options": "_CODE_transferJobOptions_CODE_"
-        },
-        {
-            "label": "武器类型",
-            "name": "weaponType",
-            "type": "select",
-            "options": "_CODE_weaponTypeOptions_CODE_"
-        },
-        {
-            "label": "职业类型",
-            "name": "jobType",
-            "type": "select",
-            "options": "_CODE_jobTypeOptions_CODE_"
-        },
-        {
-            "label": "觉醒名称关键词",
-            "name": "awakeningNameKeyword"
-        },
-        {
-            "label": "登场时间",
-            "name": "releaseDateStart,releaseDateEnd",
-            "type": "daterange"
         }
     ],
     "table": {
@@ -71,7 +42,7 @@
         "columns": [
             {
                 "title": "职业",
-                "dataIndex": "jobName"
+                "dataIndex": "job"
             },
             {
                 "title": "一觉",
@@ -102,17 +73,37 @@
             }
         ]
     },
+    "formItems": [
+        {
+            "label": "转职职业",
+            "name": "transferJob",
+            "type": "select",
+            "options": "_CODE_transferJobOptions_CODE_"
+        },
+        {
+            "label": "武器类型",
+            "name": "weaponType",
+            "type": "select",
+            "options": "_CODE_weaponTypeOptions_CODE_"
+        },
+        {
+            "label": "职业类型",
+            "name": "jobType",
+            "type": "select",
+            "options": "_CODE_jobTypeOptions_CODE_"
+        },
+        {
+            "label": "觉醒名称关键词",
+            "name": "awakeningKeyword"
+        },
+        {
+            "label": "登场时间",
+            "name": "releaseDateStart,releaseDateEnd",
+            "type": "daterange"
+        }
+    ],
     "optionDict": {
-        "_CODE_transferJobOptions_CODE_": [
-            {
-                "label": "剑魂",
-                "value": "swordSoul"
-            },
-            {
-                "label": "狂战士",
-                "value": "berserker"
-            }
-        ],
+        "_CODE_transferJobOptions_CODE_": [],
         "_CODE_weaponTypeOptions_CODE_": [
             {
                 "label": "光剑",
@@ -134,26 +125,31 @@
             },
             {
                 "label": "魔法",
-                "value": "magic"
+                "value": "magical"
             }
         ]
     },
     "functionButton": [
         {
-            "btn": "查询",
-            "action": "queryJobList"
-        },
-        {
-            "btn": "重置",
-            "action": "resetJobList"
-        },
-        {
             "btn": "批量删除",
-            "action": "deleteBySelectedJobList"
+            "action": "batchDeleteBySelected"
         },
         {
             "btn": "批量导出",
-            "action": "exportJobList"
+            "action": "exportData"
+        },
+        {
+            "btn": "查询",
+            "action": "search"
+        },
+        {
+            "btn": "重置",
+            "action": "reset"
         }
+    ],
+    "pageStruct": [
+        "MySearchForm",
+        "FunctionButtonsBlock",
+        "MyTable"
     ]
 }

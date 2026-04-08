@@ -1,0 +1,11 @@
+const [form] = Form.useForm()
+const [modal, setModal] = useState({})
+{{#if hasRowSelection}}
+const [selectedRows, setSelectedRows] = useState([])
+{{/if}}
+{{#if hasTabs}}
+const [activeKey, setActiveKey] = useState(tabs[0].key)
+{{/if}}
+{{#if hasExpandable}}
+const [expandedRowKeys, setExpandedRowKeys] = useState([])
+{{/if}}

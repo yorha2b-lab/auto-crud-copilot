@@ -1,0 +1,26 @@
+<MyTable
+    rowKey='id'
+    query={query}
+    loading={loading}
+    dataSource={dataSource}
+    columns={ {{columnsValue}} }
+    {{#if hasExpandable}}
+    {{{{raw}}}}
+    expandable={{ onExpand, expandedRowKeys, expandedRowRender, columnWidth: 24 }}
+    {{{{/raw}}}}
+    {{/if}}
+    {{#if hasPagination}}
+    {{{{raw}}}}
+    pagination={{ total, showSizeChanger: true, current: search.pageNo, pageSize: search.pageSize }}
+    onChange={(pagination, filters, sorter) => setSearch({ ...search , pageNo: pagination.current, pageSize: pagination.pageSize, orderBy: sorter.column ? sorter.field : undefined })}
+    {{{{/raw}}}}
+    {{/if}}
+    {{#if hasRowSelection}}
+    {{{{raw}}}}
+    rowSelection={{
+        selectedRowKeys: selectedRows.map(item => item.id),
+        onChange: (keys, rows) => setSelectedRows(rows)
+    }}
+    {{{{/raw}}}}
+    {{/if}}
+/>
