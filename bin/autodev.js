@@ -50,9 +50,10 @@ program
             console.log(chalk.green(language('🤖 Pod 042: [报告] config.js 存储完毕。', '🤖 Pod 042: [Report] config.js storage complete.')))
         }
 
+        const bunkerCmd = chalk.yellow('"bunker": "autodev watch"')
         console.log(chalk.cyan(language(
-            '📡 Operator 6O: 呼叫 2B，地堡部署完毕，请开启 watch 模式进入战场！',
-            '📡 Operator 6O: Calling 2B, Bunker deployed. Execute [watch] to enter the battlefield!'
+            `📡 Operator 6O: 呼叫 2B, 地堡部署完毕, 为了更快捷地进入战场，建议手动执行 [物理装配]: 将 ${bunkerCmd} 加入您的 package.json scripts 中`,
+            `📡 Operator 6O: Calling 2B! Bunker deployment is complete. To expedite your entry into the battlefield, I recommend a manual [Physical Assembly]: Add ${bunkerCmd} to your package.json scripts.`
         )))
     })
 
