@@ -12,8 +12,7 @@
 
 基于视觉大模型的前端(React+Antd)全自动 CRUD 代码生成器 🚀
 
-<video src="https://github.com/user-attachments/assets/6d42fce1-c815-482b-8c6a-4a3b9415ba47.mp4" controls="controls" muted="muted" style="max-width: 100%; display: block; margin: 20px auto;">
-</video>
+![Auto CRUD Copilot 2.0 Demo](https://github.com/user-attachments/assets/cb46f2de-d533-4df1-a1ac-2092680aecd7)
 
 ## 💡 为什么选择 2.0 版本？
 在 2.0 时代，我们放弃了繁琐的分散指令，全面进化为 “全频道集成指挥中心”

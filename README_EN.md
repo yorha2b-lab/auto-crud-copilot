@@ -12,8 +12,7 @@
 
 Vision-based LLM-powered frontend (React+Antd) fully automatic CRUD code generator 🚀
 
-<video src="https://github.com/user-attachments/assets/6d42fce1-c815-482b-8c6a-4a3b9415ba47.mp4" controls="controls" muted="muted" style="max-width: 100%; display: block; margin: 20px auto;">
-</video>
+![Auto CRUD Copilot 2.0 Demo](https://github.com/user-attachments/assets/cb46f2de-d533-4df1-a1ac-2092680aecd7)
 
 ## 💡 Why Choose Version 2.0?
 In the 2.0 era, we abandoned cumbersome scattered instructions and fully evolved into a "Full-Channel Integrated Command Center"
