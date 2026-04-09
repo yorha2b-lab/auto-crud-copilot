@@ -1,32 +1,32 @@
 # Auto CRUD Copilot
 
-English | [简体中文](./README.md)
+[简体中文](./README.md) | English
 
 ![Auto CRUD Copilot Banner](https://github.com/user-attachments/assets/e168ef33-7616-434c-91e6-e2c9eef017c0)
+
 
 [![NPM Version](https://img.shields.io/npm/v/@yorha2b-lab/autodev.svg?style=flat-square)](https://www.npmjs.com/package/@yorha2b-lab/autodev)
 [![NPM Downloads](https://img.shields.io/npm/dm/@yorha2b-lab/autodev.svg?style=flat-square)](https://www.npmjs.com/package/@yorha2b-lab/autodev)
 [![GitHub Stars](https://img.shields.io/github/stars/yorha2b-lab/auto-crud-copilot.svg?style=flat-square)](https://github.com/yorha2b-lab/auto-crud-copilot/stargazers)
 [![License](https://img.shields.io/npm/l/@yorha2b-lab/autodev.svg?style=flat-square)](https://github.com/yorha2b-lab/auto-crud-copilot/blob/main/LICENSE)
 
-An AI-powered frontend CRUD code generator based on vision models (React+Antd) 🚀
+Vision-based LLM-powered frontend (React+Antd) fully automatic CRUD code generator 🚀
 
 <video src="https://github.com/user-attachments/assets/6d42fce1-c815-482b-8c6a-4a3b9415ba47.mp4" controls="controls" muted="muted" style="max-width: 100%; display: block; margin: 20px auto;">
 </video>
 
-Say goodbye to repetitive work! Why do you need Auto CRUD Copilot?
-Stop writing Tables/Forms manually: Screenshot to code, boost your development efficiency, and say goodbye to tedious copy-paste.
-Eliminate API integration pain: Automatically read Response data, and let AI help you bridge frontend-backend field naming differences.
-Decoupled architecture: Core logic separated from UI frameworks, supporting React/Vue/Angular.
+## 💡 Why Choose Version 2.0?
+In the 2.0 era, we abandoned cumbersome scattered instructions and fully evolved into a "Full-Channel Integrated Command Center"
+- Full-Channel Linkage: No need to open multiple processes. One watch command listens to Page, Component, and API sensors simultaneously.
+- Semantic Hacking: Not just replicating UI, but automatically smoothing out frontend-backend field differences through the 9S dedicated semantic bridge protocol.
+- Engineering-Grade Quality: Generated code is not "demo-grade" but high-quality code with useTableQuery, EditableCell, OSS upload, and other practical logic.
 
 ## ✨ Features
 
-- 🖼️ **Visual Recognition**: Automatically recognize page structures from screenshots and generate corresponding CRUD code
-- 🔧 **Smart Generation**: Support multiple frontend framework templates including React, Vue, and Angular
-- 📊 **Table Components**: Automatically generate editable, sortable, and filterable data tables
-- 📝 **Form Components**: Intelligently generate search forms and modal forms
-- 🔌 **API Alignment**: Automatically align Response interfaces with frontend field mappings
-- 🎨 **UI Components**: Support various UI component types (input, select, date picker, etc.)
+- 🖼️ **Visual Construction (Page)**: Drop screenshots into screenShot, Pod 042 automatically generates complete CRUD pages with Table/Form/Tabs.
+- 🧩 **Fragment Extraction (Part)**: Drop partial screenshots into screenPart, terminal instantly pops up "plug-and-play" UI configuration snippets.
+- 🔌 **Semantic Alignment (API)**: Drop interface JSON into response, automatically corrects frontend field names to achieve 100% protocol consistency between frontend and backend.
+- 🔧 **Smart Assembly**: Automatically completes import statements, handles date format conversion, currency thousand separators, upload authorization, and all other dirty work.
 - 📱 **Responsive**: Generated code supports responsive layout
 
 ## 🚀 Quick Start
@@ -37,21 +37,18 @@ Decoupled architecture: Core logic separated from UI frameworks, supporting Reac
 npm install -g @yorha2b-lab/autodev
 ```
 
-### Environment Setup
-
-Quick start
+### Environment Configuration
 
 ```bash
 autodev init
 ```
 
-> ### 💡 Zero-Config Quick Start (Simulation Mode)
-> To allow YoRHa units to experience the construction power immediately, **Demo Mode** is enabled by default:
-> 1. **No API_KEY required**. Simply run `autodev watch:page`.
-> 2. Drop any image into the `screenShot` directory (the system will ignore the image content and deploy a standard `example.json` construction package).
-> 3. **Watch the Magic**: The terminal will flash, and React code is physically assembled in seconds.
->
-> *Note: To recognize actual screenshots, set `useDemo: false` in `config.js` and configure the environment variables above.*
+> ### 💡 Zero-Configuration Quick Experience (Demo Mode)
+> The project enables Demo mode by default:
+> 1. **No API_KEY configuration required**, just run `autodev watch`.
+> 2. Drop any image into the `screenShot` directory (the system will ignore image content and automatically airdrop the standard `example.json` construction package).
+> 3. **Observe the effect**: You'll see the command line flash by, and React code is instantly physically assembled.
+> *Note: To recognize real screenshots, please set `useDemo` to `false` in `config.js` and configure the environment variables below.*
 
 Create a `.env` file and configure the following environment variables:
 
@@ -61,60 +58,24 @@ API_KEY=your_api_key_here
 BASE_URL=your_api_base_url_here
 ```
 
-🚗 **Get API Key**: [Alibaba Cloud Bailian Console](https://bailian.console.aliyun.com/cn-beijing?tab=doc#/doc/)
+🚗 **Direct Link to Get API Key**: [Alibaba Cloud Bailian Console](https://bailian.console.aliyun.com/cn-beijing?tab=doc#/doc/)
 
-### Basic Usage
-
-1. **Generate Complete CRUD Pages**
-
-```bash
-# Put page screenshots in the screenShot directory
-autodev watch:page
-```
-
-2. **Generate Partial UI Components**
+### 📖 Command Center Operation Guide (v2.0 Workflow)
+Entering the 2.0 era, you only need to remember one command:
 
 ```bash
-# Put component screenshots in the screenPart directory
-autodev watch:part
+autodev watch
 ```
 
-3. **Align API Fields**
+After startup, the bunker system will enter Full-Channel Linkage Listening State:
 
-```bash
-autodev watch:api
-```
+| Action | Target Directory | Construction Effect |
+| :--- | :--- | :--- |
+| **Full Page Screenshot** | `./screenShot` | Automatically generates `index.js`, `resource.js` and synchronizes route configuration |
+| **Partial Screenshot** | `./screenPart` | Terminal prints code snippets in real-time (copy and use instantly) |
+| **API JSON** | `./response` | Automatically executes semantic alignment, correcting field names in `resource.js` |
 
-## 📖 Detailed Usage Guide
-
-### watch:page Command
-
-Monitor screenshot files in the `screenShot` directory and automatically generate complete CRUD pages.
-
-```bash
-autodev watch:page -t react
-```
-
-Parameters:
-- `-t, --template <type>`: Specify frontend framework template, default is `react`
-
-### watch:part Command
-
-Monitor screenshot files in the `screenPart` directory and automatically generate partial UI components.
-
-```bash
-autodev watch:part -t vue
-```
-
-### watch:api Command
-
-Monitor JSON files in the `response` directory (named after modules) and automatically align real API fields.
-
-```bash
-autodev watch:api
-```
-
-## 📁 Project Structure
+## 📁 2.0 Bunker Structure Description
 
 ```
 your-project/
@@ -131,25 +92,21 @@ your-project/
 
 ## ⚙️ Configuration
 
-You can configure the following options in `config.js`:
+The following options can be configured in `config.js`:
 
 ```javascript
 module.exports = {
     // Whether to use demo mode
     useDemo: true,
-
     // Whether to generate Mock data
     needMock: false,
-
-    // AI model types to use
+    // AI model type used
     visionModel: 'qwen3.5-plus',
     textModel: 'qwen-turbo',
-
-    // Custom template directory path
-    // If empty, will use built-in templates
-    // Custom templates need to create their own index.hbs and resource.hbs files in the hbsdir directory
+    // Custom template directory
+    // If empty, built-in templates will be used
+    // Custom templates need to create your own index.hbs and resource.hbs files in the hbsdir directory
     hbsDir: '',
-
     // Target project directory paths
     hooksDir: 'src/hooks',
     pagesDir: 'src/pages',
@@ -158,44 +115,33 @@ module.exports = {
 }
 ```
 
-## 🎯 Supported UI Components
-
-- Input
-- InputNumber
-- Select
-- Radio
-- Checkbox
-- DatePicker
-- RangePicker
-- Cascader
-- AutoComplete
-- TextArea
-- Upload
-
 ## 🤝 Contributing
 
 Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) to learn how to participate in project development.
 
 ## 📄 License
 
-This project is licensed under the [MIT](LICENSE) license.
+This project is licensed under the [MIT](LICENSE) License.
 
 ## 🙏 Acknowledgments
 
-Thanks to the following open-source projects:
+Thanks to the following open source projects for providing the core power of the bunker system:
 
-- [OpenAI](https://openai.com/) - Providing powerful AI capabilities
+- [OpenAI](https://openai.com/) / [Alibaba Qwen](https://tongyi.aliyun.com/) - Powerful AI capabilities
 - [Ant Design](https://ant.design/) - Excellent enterprise-level UI design language
-- [UmiJS](https://umijs.org/) - Enterprise-level frontend application framework
+- [Handlebars](https://handlebarsjs.com/) / [Chokidar](https://github.com/paulmillr/chokidar) - Stable construction engine and listener mechanism
 
 ## 📞 Contact
 
-If you have any questions or suggestions, feel free to submit an [Issue](https://github.com/yorha2b-lab/auto-crud-copilot/issues).
+If you have any questions or suggestions, please submit an [Issue](https://github.com/yorha2b-lab/auto-crud-copilot/issues).
 
 ## 🛠️ FAQ
 
-**Q: Is this tool free?**
-A: The tool itself is open-source and free, but the AI models it calls (such as GPT-4v, Qwen-VL) may require you to configure your own API Key. We recommend using cost-effective models like Alibaba Cloud's Qwen-VL.
+Q: Is this tool free?
+A: The tool itself is open source and free, but the AI models called (such as GPT-4v, Qwen-VL) may require you to configure your own API Key. It is recommended to use cost-effective models like Alibaba Cloud Qwen-VL.
+
+Q: How to customize the generated code style?
+A: You can configure hbsDir to point to your own Handlebars template directory to create your own exclusive bunker construction specifications.
 
 ---
 
@@ -209,4 +155,4 @@ Auto CRUD Copilot is a **fan-made, non-commercial, open-source tool**.
 
 **Glory to Mankind.**
 
-⭐ If this project helps you, please give it a Star to show your support!
+⭐ If this project helps you, please give it a Star!

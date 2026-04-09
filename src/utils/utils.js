@@ -25,7 +25,6 @@ const getConfig = () => {
  * 大模型输出的标准 JSON 无法携带 render: (text) => <Tag> 等箭头函数。
  * 我们在 Prompt 中要求大模型用 _CODE_ 占位符包裹函数字符串，
  * 在此处用正则剥离外层的双引号和占位符，将其还原为真正的可执行 JS 代码。
- *
  * @param {string} str - 大模型返回的 JSON 字符串
  * @returns {string} 清理后的可执行 JS 代码
  */
@@ -39,22 +38,6 @@ const cleanCode = str => {
         .replace(/\n{3,}/g, '\n\n')  // 将3个或以上的换行符压缩成2个换行符
         .replace(/^\s+/, '')         // 去掉文件头部的空行
         .trim() + '\n'
-}
-
-/**
- * 检查 Prompt 文件是否存在
- * @param {string} promptPath - Prompt 文件路径
- * @returns {void}
- */
-const checkPromptPath = promptPath => {
-    const promptAbsPath = path.resolve(__dirname, promptPath)
-    if (!fs.existsSync(promptAbsPath)) {
-        const displayPath = promptPath.slice(3)
-        throw new Error(language(
-            `🤖 Pod 042: [警告] 侦测到未知的构筑协议 ${displayPath}，地堡数据库暂无此类资料。`,
-            `🤖 Pod 042: [Warning] Unknown construction protocol ${displayPath}. No such protocol found in the bunker database.`
-        ))
-    }
 }
 
 /**
@@ -73,24 +56,21 @@ const getExistingMenus = (dir = 'src/pages') => {
 /**
  * 生成智能导入语句
  * 根据代码中实际使用的依赖，自动生成对应的 import 语句
- *
  * @param {string} codeStr - 生成的代码字符串
  * @param {boolean} hasTabs - 是否包含标签页
  * @returns {string} 拼接后的 import 语句
  */
 const generateSmartImports = (codeStr, hasTabs) => {
-    const hooksLib = ['useTableQuery'] // 自定义 hooks 库
-    const reactLib = ['useState', 'useEffect', 'useRef', 'useMemo'] // React 核心库
-    const componentsLib = ['MyTable', 'MyModalForm', 'MySearchForm'] // 自定义组件库
-    const antdLib = ['Card', 'Space', 'Modal', 'Button', 'Alert', 'Table', 'Input', 'Select'] // Ant Design 组件库
+    const hooksLib = ['useTableQuery']
+    const reactLib = ['useState', 'useEffect', 'useRef', 'useMemo']
+    const componentsLib = ['MyTable', 'MyModalForm', 'MySearchForm']
+    const antdLib = ['Card', 'Space', 'Modal', 'Button', 'Alert', 'Table', 'Input', 'Select']
 
-    // 检测代码中实际使用的组件
     const usedAntd = antdLib.filter(name => new RegExp(`\\b${name}\\b`).test(codeStr))
     const usedHooks = hooksLib.filter(name => new RegExp(`\\b${name}\\b`).test(codeStr))
     const usedReact = reactLib.filter(name => new RegExp(`\\b${name}\\b`).test(codeStr))
     const usedComps = componentsLib.filter(name => new RegExp(`\\b${name}\\b`).test(codeStr))
 
-    // 构建 import 语句数组
     const imports = [
         usedReact.length && `import { ${usedReact.join(', ')} } from 'react'`,
         `import { request } from '../../utils/request'`,
@@ -99,9 +79,9 @@ const generateSmartImports = (codeStr, hasTabs) => {
         ...usedHooks.map(hook => `import { ${hook} } from '../../hooks/${hook}'`),
         ...usedComps.map(comp => `import { ${comp} } from '../../components/${comp}'`),
         usedAntd.length && `import { Form, ${usedAntd.join(', ')} } from 'antd'`
-    ].sort((a, b) => a.length - b.length) // 按长度排序（短的在前）
+    ].sort((a, b) => a.length - b.length)
 
-    return imports.filter(Boolean).join('\n') // 过滤空值并拼接
+    return imports.filter(Boolean).join('\n')
 }
 
 /**
@@ -124,5 +104,4 @@ const copyTemplateDir = (options, templateSubDir, targetSubDir) => {
     })
 }
 
-// 导出工具函数
-module.exports = { language, getConfig, cleanCode, getExistingMenus, copyTemplateDir, checkPromptPath, generateSmartImports }
+module.exports = { language, getConfig, cleanCode, getExistingMenus, copyTemplateDir, generateSmartImports }
