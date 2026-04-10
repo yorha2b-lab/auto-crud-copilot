@@ -40,9 +40,9 @@ module.exports = async (filePath, context) => {
 
         let pageConfig
         if (config.useDemo) {
-            spinner.warn(chalk.yellow(language(
-                `🤖 Pod 042: [报告] 拦截到实弹请求。正在空投标准模拟包: example.json`,
-                `🤖 Pod 042: [Report] Real-fire request intercepted. Dropping simulation package: example.json`
+            console.log(chalk.yellow(language(
+                `\n🤖 Pod 042: [报告] 拦截到实弹请求。正在空投标准模拟包: example.json\n`,
+                `\n🤖 Pod 042: [Report] Real-fire request intercepted. Dropping simulation package: example.json\n`
             )))
             pageConfig = require(path.join(__dirname, '../../../example/example.json'))
         } else {
