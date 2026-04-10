@@ -2,20 +2,11 @@
 const fs = require('fs')
 const path = require('path')
 const chalk = require('chalk')
-const figlet = require('figlet')
 const { program } = require('commander')
 const pkg = require(path.join(__dirname, '../package.json'))
-const { language, matrixEffect } = require(path.join(__dirname, '../src/utils/utils.js'))
+const { language, matrixEffect, bootSequence } = require(path.join(__dirname, '../src/utils/utils.js'))
 
-console.log(chalk.cyan(figlet.textSync('AutoDev', { horizontalLayout: 'full' })))
-console.log(chalk.gray('Booting System...'))
-console.log(chalk.white(' [System] ') + chalk.green('Locale Detection: ') + chalk.cyan(language('ZH-CN', 'EN-US')))
-console.log(chalk.white(' [System] ') + chalk.green('YoRHa No.2 Type B Unit: ') + chalk.cyan('Online'))
-console.log(chalk.white(' [System] ') + chalk.green('Scanner Type 9S Unit: ') + chalk.cyan('Standby'))
-console.log(chalk.white(' [System] ') + chalk.green('Full-Channel Link: ') + chalk.cyan('Established')) // 2.0 新增
-console.log(chalk.white(' [Mission] ') + chalk.yellow('Bunker Construction Protocol: ') + chalk.cyan('v' + pkg.version))
-console.log(chalk.white(' [Bunker] ') + chalk.magenta('Glory to mankind. (人类荣光永存)'))
-console.log(chalk.gray('--------------------------------------------------\n'))
+bootSequence(pkg.version)
 
 program
     .version(pkg.version)

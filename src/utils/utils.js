@@ -1,9 +1,12 @@
 const fs = require('fs')
 const path = require('path')
 const chalk = require('chalk')
+const figlet = require('figlet')
 
 const isCN = Intl.DateTimeFormat().resolvedOptions().locale.includes('zh')
 const language = (zh, en) => (isCN ? zh : en)
+
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 /**
  * 获取项目配置信息
@@ -39,6 +42,29 @@ const cleanCode = str => {
         .replace(/\n{3,}/g, '\n\n')  // 将3个或以上的换行符压缩成2个换行符
         .replace(/^\s+/, '')         // 去掉文件头部的空行
         .trim() + '\n'
+}
+
+/**
+ * 引导序列
+ * 模拟系统引导过程中的动画效果
+ * @returns {void}
+ */
+const bootSequence = async version => {
+    const lines = [
+        chalk.cyan(figlet.textSync('AutoDev', { horizontalLayout: 'full' })),
+        chalk.gray('Booting System...'),
+        chalk.white(' [System] ') + chalk.green('Locale Detection: ') + chalk.cyan(language('ZH-CN', 'EN-US')),
+        chalk.white(' [System] ') + chalk.green('YoRHa No.2 Type B Unit: ') + chalk.cyan('Online'),
+        chalk.white(' [System] ') + chalk.green('Scanner Type 9S Unit: ') + chalk.cyan('Standby'),
+        chalk.white(' [System] ') + chalk.green('Full-Channel Link: ') + chalk.cyan('Established'),
+        chalk.white(' [Mission] ') + chalk.yellow('Bunker Construction Protocol: ') + chalk.cyan('v' + version),
+        chalk.white(' [Bunker] ') + chalk.magenta('Glory to mankind. (人类荣光永存)'),
+        chalk.gray('--------------------------------------------------\n')
+    ]
+    for (const line of lines) {
+        console.log(line)
+        await sleep(line.includes('AutoDev') ? 300 : 80)
+    }
 }
 
 /**
@@ -151,4 +177,4 @@ const copyTemplateDir = (options, templateSubDir, targetSubDir) => {
     })
 }
 
-module.exports = { language, getConfig, cleanCode, matrixEffect, getExistingMenus, copyTemplateDir, generateSmartImports }
+module.exports = { language, getConfig, cleanCode, matrixEffect, bootSequence, getExistingMenus, copyTemplateDir, generateSmartImports }
