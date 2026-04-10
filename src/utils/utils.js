@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const chalk = require('chalk')
 
 const isCN = Intl.DateTimeFormat().resolvedOptions().locale.includes('zh')
 const language = (zh, en) => (isCN ? zh : en)
@@ -38,6 +39,52 @@ const cleanCode = str => {
         .replace(/\n{3,}/g, '\n\n')  // 将3个或以上的换行符压缩成2个换行符
         .replace(/^\s+/, '')         // 去掉文件头部的空行
         .trim() + '\n'
+}
+
+/**
+ * 矩阵效果
+ * 模拟数据物理封存过程中的矩阵效果
+ * @param {number} duration - 持续时间（毫秒）
+ * @returns {void}
+ */
+const matrixEffect = (duration = 1500) => {
+
+    const coreFragments = [
+        '47 4c 4f 52 59', // GLORY
+        '54 4f 20 4d 41', // TO MA
+        '4e 4b 49 4e 44', // NKIND
+        '59 6f 52 48 61', // YoRHa
+        '32 42 2d 55 6e', // 2B-Un
+        '69 74 20 4f 4b', // it OK
+        '39 53 2d 48 61', // 9S-Ha
+        '63 6b 69 6e 67', // cking
+        '5f 43 4f 44 45 5f' // _CODE_
+    ]
+
+    const width = process.stdout.columns || 80
+    const endTime = Date.now() + duration
+
+    const interval = setInterval(() => {
+        if (Date.now() > endTime) {
+            clearInterval(interval)
+            console.log(chalk.white(' [System] ') + chalk.green(language('所有构筑数据已同步至 Bunker 存储节点。', 'All data synced to Bunker storage nodes.')))
+            console.log(chalk.cyan('\n[System] Signal Lost. Glory to Mankind.\n'))
+            process.exit(0)
+            return
+        }
+        let line = ''
+        while (line.length < width) {
+            if (Math.random() > 0.8) {
+                const frag = coreFragments[Math.floor(Math.random() * coreFragments.length)]
+                line += chalk.white.bold(frag) + ' '
+            } else {
+                const hex = Math.floor(Math.random() * 256).toString(16).padStart(2, '0').toUpperCase()
+                const color = Math.random() > 0.5 ? chalk.cyan : chalk.cyan.dim
+                line += color(hex) + ' '
+            }
+        }
+        process.stdout.write(line.substring(0, width * 10) + '\n')
+    }, 40)
 }
 
 /**
@@ -104,4 +151,4 @@ const copyTemplateDir = (options, templateSubDir, targetSubDir) => {
     })
 }
 
-module.exports = { language, getConfig, cleanCode, getExistingMenus, copyTemplateDir, generateSmartImports }
+module.exports = { language, getConfig, cleanCode, matrixEffect, getExistingMenus, copyTemplateDir, generateSmartImports }

@@ -5,7 +5,7 @@ const chalk = require('chalk')
 const figlet = require('figlet')
 const { program } = require('commander')
 const pkg = require(path.join(__dirname, '../package.json'))
-const { language } = require(path.join(__dirname, '../src/utils/utils.js'))
+const { language, matrixEffect } = require(path.join(__dirname, '../src/utils/utils.js'))
 
 console.log(chalk.cyan(figlet.textSync('AutoDev', { horizontalLayout: 'full' })))
 console.log(chalk.gray('Booting System...'))
@@ -67,16 +67,8 @@ program
         process.on('SIGINT', () => {
             console.log('\n')
             console.log(chalk.gray('--------------------------------------------------'))
-            console.log(chalk.white(' [System] ') + chalk.yellow(language('正在断开神经云链接...', 'Disconnecting Neural Link...')))
-            console.log(chalk.white(' [System] ') + chalk.green(language('所有构筑数据已同步至 Bunker 存储节点。', 'All data synced to Bunker storage nodes.')))
-            setTimeout(() => {
-                console.log(chalk.cyan(language(
-                    '📡 Operator 6O: 辛苦了，2B！地堡系统已进入待机状态，愿人类荣光永存。',
-                    '📡 Operator 6O: Well done, 2B! Bunker system is in standby. Glory to mankind.'
-                )))
-                console.log(chalk.gray(' [Bunker] ') + chalk.white('Signal Lost... Bye.\n'))
-                process.exit(0)
-            }, 500)
+            console.log(chalk.white(' [System] ') + chalk.yellow(language('正在断开神经云链接,执行数据物理封存...', 'Disconnecting Neural Link, Executing Physical Assembly...')))
+            matrixEffect(1500)
         })
     })
 
