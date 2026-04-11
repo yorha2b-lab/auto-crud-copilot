@@ -22,8 +22,8 @@ module.exports = async (filePath, context) => {
     try {
         if (!fs.existsSync(resourcePath)) {
             throw new Error(language(
-                `地堡数据库中未检索到模块 [${fileName}] 的资源文件。请先执行视觉构筑。`,
-                `Module [${fileName}] resource not found in Bunker database. Please execute visual construction first.`
+                `🤖 Pod 153: [警告] 地堡数据库中未检索到模块 [${fileName}] 的资源文件。请先执行视觉构筑。`,
+                `🤖 Pod 153: [Warning] Module [${fileName}] resource not found in Bunker database. Please execute visual construction first.`
             ))
         }
 
