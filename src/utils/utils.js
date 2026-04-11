@@ -94,6 +94,7 @@ const matrixEffect = (duration = 1500) => {
         if (Date.now() > endTime) {
             clearInterval(interval)
             console.log(chalk.white(' [System] ') + chalk.green(language('所有构筑数据已同步至 Bunker 存储节点。', 'All data synced to Bunker storage nodes.')))
+            console.log(chalk.cyan(language('如果它能帮您节省时间，请在 GitHub 上给它点个赞 ⭐。', 'If it saves you time, feel free to give it a ⭐ on GitHub.')))
             console.log(chalk.cyan('\n[System] Signal Lost. Glory to Mankind.\n'))
             process.exit(0)
             return
