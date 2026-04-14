@@ -6,8 +6,6 @@ const { program } = require('commander')
 const pkg = require(path.join(__dirname, '../package.json'))
 const { language, matrixEffect, bootSequence } = require(path.join(__dirname, '../src/utils/utils.js'))
 
-bootSequence(pkg.version)
-
 program
     .version(pkg.version)
     .description(language('AI驱动的前端CRUD代码生成器', 'AI-powered frontend CRUD code generator'))
@@ -53,6 +51,7 @@ program
     .alias('start')
     .description(language('开启全频道联动监控：支持 Page/Part/API 协同构筑', 'Start full-channel linked monitoring: Coordinated Page/Part/API construction'))
     .action(() => {
+        bootSequence(pkg.version)
         const watch = require('../src/commands/watch')
         watch(program.opts())
         process.on('SIGINT', () => {
