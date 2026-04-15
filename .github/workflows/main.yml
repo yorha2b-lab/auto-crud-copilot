@@ -11,31 +11,12 @@ jobs:
     permissions:
       contents: write
     steps:
-      # 第一步：只下载 .github 文件夹，不下载源代码（防止把代码带过去）
-      - name: Checkout Workflows
-        uses: actions/checkout@v3
-        with:
-          sparse-checkout: .github
-
-      # 第二步：跑统计
+      # 注意：这里我们删掉了所有的 checkout 步骤！
+      # 我们不下载代码，直接空手套白狼。
       - name: run-ghrs
         uses: jgehrcke/github-repo-stats@v1.4.1
         with:
           repository: ${{ github.repository }}
           ghtoken: ${{ secrets.STATS_TOKEN }}
-          databranch: gh-stats 
-          ghpagesprefix: "."
-
-      # 第三步：手动大扫除（关键！）
-      # 在推送之前，强行删除除了统计文件以外的所有代码目录
-      - name: Purge source code from stats branch
-        run: |
-          git checkout gh-stats
-          # 删除所有你不想看到的文件夹
-          rm -rf src bin example templates .github config.js package.json package-lock.json .env.example .gitignore .npmignore CONTRIBUTING.md LICENSE README_EN.md
-          # 提交删除操作
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add -A
-          git commit -m "cleanup: remove source code from stats branch" || echo "nothing to clean"
-          git push origin gh-stats
+          # 换回你最开始想要的名字，这次它绝对干干净净
+          databranch: github-repo-stats
