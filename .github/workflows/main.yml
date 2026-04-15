@@ -11,12 +11,40 @@ jobs:
     permissions:
       contents: write
     steps:
-      # 注意：这里我们删掉了所有的 checkout 步骤！
-      # 我们不下载代码，直接空手套白狼。
+      # 1. 下载代码（为了跑脚本，不得不下载）
+      - name: Checkout main
+        uses: actions/checkout@v3
+
+      # 2. 跑统计（这时候它会产生那堆烦人的套娃文件夹）
       - name: run-ghrs
         uses: jgehrcke/github-repo-stats@v1.4.1
         with:
           repository: ${{ github.repository }}
           ghtoken: ${{ secrets.STATS_TOKEN }}
-          # 换回你最开始想要的名字，这次它绝对干干净净
           databranch: github-repo-stats
+
+      # 3. 终极暴力大扫除！
+      # 我们切换到统计分支，把所有源代码文件夹统统删光，只留下报表
+      - name: Force Clean Stats Branch
+        run: |
+          git fetch origin github-repo-stats
+          git checkout github-repo-stats
+          
+          # 第一步：把深层套娃里的东西挪到根目录
+          # 路径是：用户名/仓库名/latest-report
+          REPO_PATH="${{ github.repository }}"
+          if [ -d "$REPO_PATH" ]; then
+            cp -r $REPO_PATH/latest-report/* .
+            cp -r $REPO_PATH/ghrs-data . || true
+            cp -r $REPO_PATH/plots . || true
+          fi
+          
+          # 第二步：核平所有源代码文件夹和多余的套娃
+          rm -rf src bin example templates .github config.js package.json package-lock.json .env.example .gitignore .npmignore CONTRIBUTING.md LICENSE README_EN.md yorha2b-lab
+          
+          # 第三步：强行提交
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add -A
+          git commit -m "chore: format stats branch and remove source code" || echo "nothing to clean"
+          git push origin github-repo-stats --force
