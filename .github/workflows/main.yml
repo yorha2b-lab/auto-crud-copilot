@@ -2,19 +2,21 @@ name: GitHub Repo Stats
 
 on:
   schedule:
-    # 每天凌晨 0 点（UTC 时间）运行一次
     - cron: '0 0 * * *'
-  # 支持手动触发，方便你现在测试
   workflow_dispatch:
 
 jobs:
   run-stats:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: run-ghrs
         uses: jgehrcke/github-repo-stats@v1.4.1
         with:
-          # 这里填你的仓库名，格式为 "用户名/仓库名"
-          repository: ${{ github.repository }}
-          # 使用我们刚才设置的 Secret
+          repository: yorha2b-lab/auto-crud-copilot
           ghtoken: ${{ secrets.STATS_TOKEN }}
+          databranch: github-repo-stats
+          # 💡 核心修正：
+          ghpagesprefix: "."          # 让所有文件直接放在根目录，别再套娃了
+          create_extradata_release: false # 关掉那个烦人的 PDF 和 HTML 文件夹
