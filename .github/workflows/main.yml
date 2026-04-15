@@ -20,6 +20,10 @@ jobs:
           repository: ${{ github.repository }}
           ghtoken: ${{ secrets.STATS_TOKEN }}
           databranch: github-repo-stats
+          ghpagesprefix: "."
+          # 💡 加这两行可以消灭那堆密密麻麻的文字：
+          show_referrer_totals: true
+          create_all_snapshots: false
 
       - name: Clean and Format Stats Branch
         run: |
