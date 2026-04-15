@@ -23,30 +23,37 @@ jobs:
 
       - name: Clean and Format Stats Branch
         run: |
+          # 1. 强行拉取分支并切换
           git fetch origin github-repo-stats
           git checkout github-repo-stats
           
-          # 1. 找到那个躲在深处的统计文件夹（不管是哪个日期命名的）
-          # 我们把里面所有的 report.* 和 plots 文件夹都捞出来
+          # 2. 备份好东西：创建一个临时目录，把所有统计报表挪进去
+          mkdir -p ../temp_backup
           REPORT_DIR=$(find . -type d -name "latest-report" | head -n 1)
           DATA_DIR=$(find . -type d -name "ghrs-data" | head -n 1)
           PLOT_DIR=$(find . -type d -name "plots" | head -n 1)
 
-          # 2. 把好东西挪到根目录
-          if [ -d "$REPORT_DIR" ]; then cp -r $REPORT_DIR/* .; fi
-          if [ -d "$DATA_DIR" ]; then cp -r $DATA_DIR .; fi
-          if [ -d "$PLOT_DIR" ]; then cp -r $PLOT_DIR .; fi
+          if [ -d "$REPORT_DIR" ]; then sudo cp -r $REPORT_DIR/* ../temp_backup/; fi
+          if [ -d "$DATA_DIR" ]; then sudo cp -r $DATA_DIR ../temp_backup/; fi
+          if [ -d "$PLOT_DIR" ]; then sudo cp -r $PLOT_DIR ../temp_backup/; fi
 
-          # 3. 【核心修正】把 report.md 强行改名为 README.md，这样 GitHub 才会默认显示它！
-          if [ -f "report.md" ]; then mv report.md README.md; fi
+          # 3. 【暴力核平】用 sudo 强行删除当前目录下所有东西
+          # 这样什么权限问题都没了
+          sudo rm -rf *
+          sudo rm -rf .github .env.example .gitignore .npmignore # 删除隐藏文件
 
-          # 4. 暴力删除所有源代码和套娃文件夹
-          # 这里排除掉我们刚才挪出来的文件和 Git 自身文件
-          find . -maxdepth 1 ! -name '.' ! -name '..' ! -name '.git' ! -name 'README.md' ! -name 'plots' ! -name 'ghrs-data' ! -name 'report.html' ! -name 'report.pdf' -exec rm -rf {} +
+          # 4. 还原好东西：把备份的东西放回根目录
+          sudo cp -r ../temp_backup/* .
+          
+          # 5. README 改名：确保统计表变成主页
+          if [ -f "report.md" ]; then sudo mv report.md README.md; fi
+          
+          # 6. 修正所有权，防止 git 报错
+          sudo chown -R runner:docker .
 
-          # 5. 强行推送到 GitHub
+          # 7. 强行推送到 GitHub
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add -A
-          git commit -m "style: perfect stats layout" || echo "no changes"
+          git commit -m "style: clean stats layout with sudo power" || echo "no changes"
           git push origin github-repo-stats --force
