@@ -12,7 +12,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout main
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 # 顺手帮你升个级，消掉第一个 Node.js 警告
 
       - name: run-ghrs
         uses: jgehrcke/github-repo-stats@v1.4.1
@@ -20,18 +20,12 @@ jobs:
           repository: ${{ github.repository }}
           ghtoken: ${{ secrets.STATS_TOKEN }}
           databranch: github-repo-stats
-          ghpagesprefix: "."
-          # 💡 加这两行可以消灭那堆密密麻麻的文字：
-          show_referrer_totals: true
-          create_all_snapshots: false
 
       - name: Clean and Format Stats Branch
         run: |
-          # 1. 强行拉取分支并切换
           git fetch origin github-repo-stats
           git checkout github-repo-stats
           
-          # 2. 备份好东西：创建一个临时目录，把所有统计报表挪进去
           mkdir -p ../temp_backup
           REPORT_DIR=$(find . -type d -name "latest-report" | head -n 1)
           DATA_DIR=$(find . -type d -name "ghrs-data" | head -n 1)
@@ -41,23 +35,14 @@ jobs:
           if [ -d "$DATA_DIR" ]; then sudo cp -r $DATA_DIR ../temp_backup/; fi
           if [ -d "$PLOT_DIR" ]; then sudo cp -r $PLOT_DIR ../temp_backup/; fi
 
-          # 3. 【暴力核平】用 sudo 强行删除当前目录下所有东西
-          # 这样什么权限问题都没了
           sudo rm -rf *
-          sudo rm -rf .github .env.example .gitignore .npmignore # 删除隐藏文件
-
-          # 4. 还原好东西：把备份的东西放回根目录
+          sudo rm -rf .github .env.example .gitignore .npmignore
           sudo cp -r ../temp_backup/* .
-          
-          # 5. README 改名：确保统计表变成主页
           if [ -f "report.md" ]; then sudo mv report.md README.md; fi
-          
-          # 6. 修正所有权，防止 git 报错
           sudo chown -R runner:docker .
 
-          # 7. 强行推送到 GitHub
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add -A
-          git commit -m "style: clean stats layout with sudo power" || echo "no changes"
+          git commit -m "style: clean stable stats" || echo "no changes"
           git push origin github-repo-stats --force
