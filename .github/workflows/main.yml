@@ -14,9 +14,6 @@ jobs:
       - name: run-ghrs
         uses: jgehrcke/github-repo-stats@v1.4.1
         with:
-          repository: yorha2b-lab/auto-crud-copilot
+          repository: ${{ github.repository }}
           ghtoken: ${{ secrets.STATS_TOKEN }}
-          databranch: github-repo-stats
-          # 💡 核心修正：
-          ghpagesprefix: "."          # 让所有文件直接放在根目录，别再套娃了
-          create_extradata_release: false # 关掉那个烦人的 PDF 和 HTML 文件夹
+          databranch: gh-stats  # 我们换个名字，彻底摆脱旧缓存
