@@ -10,7 +10,7 @@ module.exports = `
 - ⚠️ 字段白名单: [title, dataIndex, sorter, render, filters, onFilter]
 - 禁止输出:
     - 严禁在 columns 中包含“操作”列。
-    - 严禁输出formItems,只允许输出coloumns
+    - ***⚠️⚠️⚠️严禁输出formItems,只允许输出coloumns⚠️⚠️⚠️***
 - 特殊逻辑:
     - 时间列: render 必须为 _CODE_text=>timeRender({time:text})_CODE_
     - 序号列: render 必须为 _CODE_(_, record, index) => index + 1_CODE_
@@ -19,7 +19,7 @@ module.exports = `
 ## 2. 表单 (Form)
 - 结构: formItems: [{label:'',name:'',type:'',options:[]}]
 - 禁止输出:
-    - 严禁输出columns,只允许输出formItems
+    - ***⚠️⚠️⚠️严禁输出columns,只允许输出formItems⚠️⚠️⚠️***
 - ⚠️ 属性精简规则:
     - 默认输入框: 仅保留 [label, name] 属性。**严禁出现 type 属性**。
     - 非默认组件: 仅当类型为 [auto, date, radio, select, upload, checkbox, textarea, daterange] 时才允许添加 type 属性。

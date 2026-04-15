@@ -62,10 +62,10 @@ export const exportDataToExcel = async (url, options, columns, fileName, resultK
         const datas = response?.[resultKey]?.map(item => Object.fromEntries(columns.map(col => {
             let value = item[col.dataIndex]
             if (col.exportRender) {
-                value = col.exportRender(value, item, index)
+                value = col.exportRender(value, item)
             }
             if (col.render) {
-                const rendered = col.render(value, item, index)
+                const rendered = col.render(value, item)
                 value = typeof rendered === 'object' ? (rendered?.props?.children || value) : rendered
             }
             return [col.title, value]
