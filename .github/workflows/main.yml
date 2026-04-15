@@ -11,11 +11,9 @@ jobs:
     permissions:
       contents: write
     steps:
-      # 1. 下载代码（为了跑脚本，不得不下载）
       - name: Checkout main
         uses: actions/checkout@v3
 
-      # 2. 跑统计（这时候它会产生那堆烦人的套娃文件夹）
       - name: run-ghrs
         uses: jgehrcke/github-repo-stats@v1.4.1
         with:
@@ -23,28 +21,32 @@ jobs:
           ghtoken: ${{ secrets.STATS_TOKEN }}
           databranch: github-repo-stats
 
-      # 3. 终极暴力大扫除！
-      # 我们切换到统计分支，把所有源代码文件夹统统删光，只留下报表
-      - name: Force Clean Stats Branch
+      - name: Clean and Format Stats Branch
         run: |
           git fetch origin github-repo-stats
           git checkout github-repo-stats
           
-          # 第一步：把深层套娃里的东西挪到根目录
-          # 路径是：用户名/仓库名/latest-report
-          REPO_PATH="${{ github.repository }}"
-          if [ -d "$REPO_PATH" ]; then
-            cp -r $REPO_PATH/latest-report/* .
-            cp -r $REPO_PATH/ghrs-data . || true
-            cp -r $REPO_PATH/plots . || true
-          fi
-          
-          # 第二步：核平所有源代码文件夹和多余的套娃
-          rm -rf src bin example templates .github config.js package.json package-lock.json .env.example .gitignore .npmignore CONTRIBUTING.md LICENSE README_EN.md yorha2b-lab
-          
-          # 第三步：强行提交
+          # 1. 找到那个躲在深处的统计文件夹（不管是哪个日期命名的）
+          # 我们把里面所有的 report.* 和 plots 文件夹都捞出来
+          REPORT_DIR=$(find . -type d -name "latest-report" | head -n 1)
+          DATA_DIR=$(find . -type d -name "ghrs-data" | head -n 1)
+          PLOT_DIR=$(find . -type d -name "plots" | head -n 1)
+
+          # 2. 把好东西挪到根目录
+          if [ -d "$REPORT_DIR" ]; then cp -r $REPORT_DIR/* .; fi
+          if [ -d "$DATA_DIR" ]; then cp -r $DATA_DIR .; fi
+          if [ -d "$PLOT_DIR" ]; then cp -r $PLOT_DIR .; fi
+
+          # 3. 【核心修正】把 report.md 强行改名为 README.md，这样 GitHub 才会默认显示它！
+          if [ -f "report.md" ]; then mv report.md README.md; fi
+
+          # 4. 暴力删除所有源代码和套娃文件夹
+          # 这里排除掉我们刚才挪出来的文件和 Git 自身文件
+          find . -maxdepth 1 ! -name '.' ! -name '..' ! -name '.git' ! -name 'README.md' ! -name 'plots' ! -name 'ghrs-data' ! -name 'report.html' ! -name 'report.pdf' -exec rm -rf {} +
+
+          # 5. 强行推送到 GitHub
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add -A
-          git commit -m "chore: format stats branch and remove source code" || echo "nothing to clean"
+          git commit -m "style: perfect stats layout" || echo "no changes"
           git push origin github-repo-stats --force
