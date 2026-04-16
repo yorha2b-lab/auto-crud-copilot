@@ -2,7 +2,7 @@ name: GitHub Repo Stats
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '45 19 * * *'
   workflow_dispatch:
 
 # 💡 在这里全局开启 Node.js 24 强制模式，消灭警告
@@ -29,7 +29,7 @@ jobs:
         run: |
           git fetch origin github-repo-stats
           git checkout github-repo-stats
-          
+
           mkdir -p ../temp_backup
           REPORT_DIR=$(find . -type d -name "latest-report" | head -n 1)
           DATA_DIR=$(find . -type d -name "ghrs-data" | head -n 1)
