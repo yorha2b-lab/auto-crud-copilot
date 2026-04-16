@@ -2,7 +2,7 @@ name: GitHub Repo Stats
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '45 19 * * *'
   workflow_dispatch:
 
 # 💡 在这里全局开启 Node.js 24 强制模式，消灭警告
