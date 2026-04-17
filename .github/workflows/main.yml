@@ -5,6 +5,7 @@ on:
     - cron: '45 19 * * *'
   workflow_dispatch:
 
+# 💡 在这里全局开启 Node.js 24 强制模式，消灭警告
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -15,7 +16,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout main
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4 # 已经是最新版
 
       - name: run-ghrs
         uses: jgehrcke/github-repo-stats@v1.4.1
@@ -24,40 +25,28 @@ jobs:
           ghtoken: ${{ secrets.STATS_TOKEN }}
           databranch: github-repo-stats
 
-      - name: Debug and Extreme Purification
+      - name: Clean and Format Stats Branch
         run: |
-          # 1. 现场侦察：查看当前地堡里到底有什么
-          echo "🤖 Pod 042: 正在扫描战场平面图..."
-          ls -R
+          git fetch origin github-repo-stats
+          git checkout github-repo-stats
 
-          # 2. 检查核心数据是否存在
-          if [ ! -d "ghrs-data" ]; then
-            echo "❌ [致命错误] Pod 042 确认：未发现 ghrs-data 数据目录！"
-            echo "💡 解决方案：请检查 STATS_TOKEN 是否为具有 'repo' 权限的 PAT (Personal Access Token)。"
-            echo "💡 默认的 GITHUB_TOKEN 无法读取流量数据（Clones/Views）。"
-            exit 1
-          fi
+          mkdir -p ../temp_backup
+          REPORT_DIR=$(find . -type d -name "latest-report" | head -n 1)
+          DATA_DIR=$(find . -type d -name "ghrs-data" | head -n 1)
+          PLOT_DIR=$(find . -type d -name "plots" | head -n 1)
 
-          # 3. 物理备份：将统计数据提取到外部缓存
-          echo "🤖 Pod 042: 核心数据已确认。正在执行物理隔离..."
-          mkdir -p /tmp/ghrs_backup
-          cp -r ghrs-data/* /tmp/ghrs_backup/
+          if [ -d "$REPORT_DIR" ]; then sudo cp -r $REPORT_DIR/* ../temp_backup/; fi
+          if [ -d "$DATA_DIR" ]; then sudo cp -r $DATA_DIR ../temp_backup/; fi
+          if [ -d "$PLOT_DIR" ]; then sudo cp -r $PLOT_DIR ../temp_backup/; fi
 
-          # 4. 分支重构：强制切换/创建独立的“孤儿分支”
-          git fetch origin
-          git checkout --orphan github-repo-stats || git checkout github-repo-stats
+          sudo rm -rf *
+          sudo rm -rf .github .env.example .gitignore .npmignore
+          sudo cp -r ../temp_backup/* .
+          if [ -f "report.md" ]; then sudo mv report.md README.md; fi
+          sudo chown -R runner:docker .
 
-          # 5. 彻底清场
-          git rm -rf . 2>/dev/null || true
-          find . -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} +
-
-          # 6. 数据物理还原
-          mkdir -p ghrs-data
-          cp -r /tmp/ghrs_backup/* ghrs-data/
-
-          # 7. 封存推送
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add ghrs-data/
-          git commit -m "data: bunker synced at $(date) [Physical Isolation]" || echo "no changes"
+          git add -A
+          git commit -m "style: clean stable stats with node24" || echo "no changes"
           git push origin github-repo-stats --force
