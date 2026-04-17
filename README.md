@@ -9,6 +9,7 @@
 [![NPM Downloads](https://img.shields.io/npm/dm/@yorha2b-lab/autodev.svg?style=flat-square)](https://www.npmjs.com/package/@yorha2b-lab/autodev)
 [![GitHub Stars](https://img.shields.io/github/stars/yorha2b-lab/auto-crud-copilot.svg?style=flat-square)](https://github.com/yorha2b-lab/auto-crud-copilot/stargazers)
 [![License](https://img.shields.io/npm/l/@yorha2b-lab/autodev.svg?style=flat-square)](https://github.com/yorha2b-lab/auto-crud-copilot/blob/main/LICENSE)
+![Total Clones](https://img.shields.io/badge/dynamic/json?query=clones_total&url=https://raw.githubusercontent.com/yorha2b-lab/auto-crud-copilot/github-repo-stats/ghrs-data/cumulative-stats.json&label=Total%20Clones&color=33cc33&style=flat-square&logo=github)
 
 基于视觉大模型的前端(React+Antd)全自动 CRUD 代码生成器 🚀
 
