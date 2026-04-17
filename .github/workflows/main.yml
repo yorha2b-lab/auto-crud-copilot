@@ -24,35 +24,42 @@ jobs:
           ghtoken: ${{ secrets.STATS_TOKEN }}
           databranch: github-repo-stats
 
-      - name: Execute Purification Protocol (Anti-Taowa & Anti-Pollution)
+      - name: Execute Purification Protocol (Root Level Access)
         run: |
-          # 1. 侦察与提取：使用长官信赖的 find 逻辑定位数据
+          # 1. 侦察与提取：使用 sudo 提取数据，防止权限拦截
           DATA_DIR=$(find . -type d -name "ghrs-data" | head -n 1)
           if [ -d "$DATA_DIR" ]; then
-            echo "🤖 Pod 042: 侦测到数据核心，正在提取至外部空间..."
+            echo "🤖 Pod 042: 正在执行超级权限提取协议..."
             mkdir -p /tmp/bunker_data
-            cp -r $DATA_DIR/* /tmp/bunker_data/
+            sudo cp -r $DATA_DIR/* /tmp/bunker_data/
           else
             echo "❌ 严重错误：未发现数据核心，构筑失败。" && exit 1
           fi
 
-          # 2. 切换位面：切换到数据分支
+          # 2. 切换位面
           git fetch origin github-repo-stats
           git checkout github-repo-stats
 
-          # 3. 维度清理：物理抹除该分支下所有来自 main 的残留（源码/README/图片）
-          # 这是解决“显示 main 的 readme”和“源码污染”的关键
-          git rm -rf . 2>/dev/null || true
-          rm -rf *
+          # 3. 强制夺权与净化：这是解决 Permission Denied 的关键
+          echo "🤖 Pod 042: 正在夺回工作区控制权，物理抹除残留碎片..."
+          # 强行将当前目录下所有文件（包括 root 创建的）的所有权转给 runner
+          sudo chown -R runner:docker .
           
-          # 4. 纯净灌装：将数据直接放入根目录下的 ghrs-data
-          # 解决“文件夹套娃”问题
+          # 执行全量删除
+          git rm -rf . 2>/dev/null || true
+          # 使用 sudo 确保删除那些顽固的 Docker 残留目录
+          sudo rm -rf *
+          
+          # 4. 纯净灌装：数据回归
+          echo "🤖 Pod 042: 正在重新灌装数据..."
           mkdir -p ghrs-data
-          cp -r /tmp/bunker_data/* ghrs-data/
+          sudo cp -r /tmp/bunker_data/* ghrs-data/
+          # 再次确保推送前的权限正确
+          sudo chown -R runner:docker .
 
           # 5. 封存推送
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add ghrs-data/
-          git commit -m "data: bunker update at $(date) [No Source, No Taowa]" || echo "no changes"
+          git commit -m "data: bunker update at $(date) [Sudo Purified]" || echo "no changes"
           git push origin github-repo-stats --force
