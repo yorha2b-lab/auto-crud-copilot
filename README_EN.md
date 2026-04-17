@@ -9,6 +9,7 @@
 [![NPM Downloads](https://img.shields.io/npm/dm/@yorha2b-lab/autodev.svg?style=flat-square)](https://www.npmjs.com/package/@yorha2b-lab/autodev)
 [![GitHub Stars](https://img.shields.io/github/stars/yorha2b-lab/auto-crud-copilot.svg?style=flat-square)](https://github.com/yorha2b-lab/auto-crud-copilot/stargazers)
 [![License](https://img.shields.io/npm/l/@yorha2b-lab/autodev.svg?style=flat-square)](https://github.com/yorha2b-lab/auto-crud-copilot/blob/main/LICENSE)
+![Total Clones](https://img.shields.io/badge/dynamic/json?query=total_clones&url=https%3A%2F%2Fraw.githubusercontent.com%2Fyorha2b-lab%2Fauto-crud-copilot%2Fgithub-repo-stats%2Fbunker-stats.json&label=Total%20Clones&color=33cc33&style=flat-square&logo=github)
 
 Vision-based LLM-powered frontend (React+Antd) fully automatic CRUD code generator 🚀
 
