@@ -24,42 +24,47 @@ jobs:
           ghtoken: ${{ secrets.STATS_TOKEN }}
           databranch: github-repo-stats
 
-      - name: Execute Purification Protocol (Root Level Access)
+      - name: Execute Dashboard Reconstruction Protocol
         run: |
-          # 1. 侦察与提取：使用 sudo 提取数据，防止权限拦截
+          # 1. 侦察与三维提取：提取核心组件到临时空间
+          echo "🤖 Pod 042: 正在执行‘三维提取协议’（数据+报告+图表）..."
+          mkdir -p /tmp/bunker_assets
+          
+          # 寻找并备份三个核心目录
           DATA_DIR=$(find . -type d -name "ghrs-data" | head -n 1)
-          if [ -d "$DATA_DIR" ]; then
-            echo "🤖 Pod 042: 正在执行超级权限提取协议..."
-            mkdir -p /tmp/bunker_data
-            sudo cp -r $DATA_DIR/* /tmp/bunker_data/
-          else
-            echo "❌ 严重错误：未发现数据核心，构筑失败。" && exit 1
-          fi
+          REPORT_DIR=$(find . -type d -name "latest-report" | head -n 1)
+          PLOT_DIR=$(find . -type d -name "plots" | head -n 1)
+
+          if [ -d "$DATA_DIR" ]; then sudo cp -r $DATA_DIR /tmp/bunker_assets/; fi
+          if [ -d "$REPORT_DIR" ]; then sudo cp -r $REPORT_DIR /tmp/bunker_assets/; fi
+          if [ -d "$PLOT_DIR" ]; then sudo cp -r $PLOT_DIR /tmp/bunker_assets/; fi
 
           # 2. 切换位面
           git fetch origin github-repo-stats
           git checkout github-repo-stats
 
-          # 3. 强制夺权与净化：这是解决 Permission Denied 的关键
-          echo "🤖 Pod 042: 正在夺回工作区控制权，物理抹除残留碎片..."
-          # 强行将当前目录下所有文件（包括 root 创建的）的所有权转给 runner
+          # 3. 强制夺权与绝对净化：抹除 main 分支的所有源码干扰
+          echo "🤖 Pod 042: 正在物理抹除源码碎片，准备灌装仪表盘..."
           sudo chown -R runner:docker .
-          
-          # 执行全量删除
           git rm -rf . 2>/dev/null || true
-          # 使用 sudo 确保删除那些顽固的 Docker 残留目录
           sudo rm -rf *
+
+          # 4. 物理还原与门面装修
+          echo "🤖 Pod 042: 正在重新构筑地堡仪表盘..."
+          # 还原三个目录
+          if [ -d "/tmp/bunker_assets/ghrs-data" ]; then sudo cp -r /tmp/bunker_assets/ghrs-data . ; fi
+          if [ -d "/tmp/bunker_assets/latest-report" ]; then sudo cp -r /tmp/bunker_assets/latest-report/* . ; fi
+          if [ -d "/tmp/bunker_assets/plots" ]; then sudo cp -r /tmp/bunker_assets/plots . ; fi
+
+          # 5. 将报告设为首页（解决‘显示 main 的 readme’问题）
+          if [ -f "report.md" ]; then sudo mv report.md README.md; fi
           
-          # 4. 纯净灌装：数据回归
-          echo "🤖 Pod 042: 正在重新灌装数据..."
-          mkdir -p ghrs-data
-          sudo cp -r /tmp/bunker_data/* ghrs-data/
-          # 再次确保推送前的权限正确
+          # 最终权限校准
           sudo chown -R runner:docker .
 
-          # 5. 封存推送
+          # 6. 封存推送
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add ghrs-data/
-          git commit -m "data: bunker update at $(date) [Sudo Purified]" || echo "no changes"
+          git add -A
+          git commit -m "style: bunker dashboard updated at $(date) [Refined Assets]" || echo "no changes"
           git push origin github-repo-stats --force
