@@ -24,47 +24,45 @@ jobs:
           ghtoken: ${{ secrets.STATS_TOKEN }}
           databranch: github-repo-stats
 
-      - name: Execute Dashboard Reconstruction Protocol
+      - name: Execute Dashboard Reconstruction & JSON Generation
         run: |
-          # 1. 侦察与三维提取：提取核心组件到临时空间
-          echo "🤖 Pod 042: 正在执行‘三维提取协议’（数据+报告+图表）..."
+          # 1. 提取组件
+          echo "🤖 Pod 042: 正在执行‘三维提取协议’..."
           mkdir -p /tmp/bunker_assets
-          
-          # 寻找并备份三个核心目录
           DATA_DIR=$(find . -type d -name "ghrs-data" | head -n 1)
           REPORT_DIR=$(find . -type d -name "latest-report" | head -n 1)
           PLOT_DIR=$(find . -type d -name "plots" | head -n 1)
-
           if [ -d "$DATA_DIR" ]; then sudo cp -r $DATA_DIR /tmp/bunker_assets/; fi
           if [ -d "$REPORT_DIR" ]; then sudo cp -r $REPORT_DIR /tmp/bunker_assets/; fi
           if [ -d "$PLOT_DIR" ]; then sudo cp -r $PLOT_DIR /tmp/bunker_assets/; fi
 
-          # 2. 切换位面
+          # 2. 切换并净化分支
           git fetch origin github-repo-stats
           git checkout github-repo-stats
-
-          # 3. 强制夺权与绝对净化：抹除 main 分支的所有源码干扰
-          echo "🤖 Pod 042: 正在物理抹除源码碎片，准备灌装仪表盘..."
           sudo chown -R runner:docker .
           git rm -rf . 2>/dev/null || true
           sudo rm -rf *
 
-          # 4. 物理还原与门面装修
-          echo "🤖 Pod 042: 正在重新构筑地堡仪表盘..."
-          # 还原三个目录
+          # 3. 物理还原
           if [ -d "/tmp/bunker_assets/ghrs-data" ]; then sudo cp -r /tmp/bunker_assets/ghrs-data . ; fi
           if [ -d "/tmp/bunker_assets/latest-report" ]; then sudo cp -r /tmp/bunker_assets/latest-report/* . ; fi
           if [ -d "/tmp/bunker_assets/plots" ]; then sudo cp -r /tmp/bunker_assets/plots . ; fi
-
-          # 5. 将报告设为首页（解决‘显示 main 的 readme’问题）
           if [ -f "report.md" ]; then sudo mv report.md README.md; fi
-          
-          # 最终权限校准
-          sudo chown -R runner:docker .
 
-          # 6. 封存推送
+          # 4. 🔥 核心逻辑：将 CSV 战绩转化为 JSON 勋章素材
+          echo "🤖 Pod 042: 正在将 CSV 数据转化为勋章协议 JSON..."
+          CSV_FILE="ghrs-data/views_clones_aggregate.csv"
+          if [ -f "$CSV_FILE" ]; then
+            # 提取最后一行，获取第 4 列 (clones_total)
+            TOTAL_CLONES=$(tail -n 1 "$CSV_FILE" | awk -F',' '{print $4}')
+            echo "{\"total_clones\": $TOTAL_CLONES}" > bunker-stats.json
+            echo "✅ 转化成功：目前总克隆数为 $TOTAL_CLONES"
+          fi
+
+          # 5. 封存推送
+          sudo chown -R runner:docker .
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add -A
-          git commit -m "style: bunker dashboard updated at $(date) [Refined Assets]" || echo "no changes"
+          git commit -m "style: bunker update with json stats at $(date)" || echo "no changes"
           git push origin github-repo-stats --force
