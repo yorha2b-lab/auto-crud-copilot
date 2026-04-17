@@ -2,11 +2,10 @@ name: GitHub Repo Stats
 
 on:
   schedule:
-    - cron: '45 19 * * *' # 每天北京时间凌晨 03:45 运行
-  workflow_dispatch:      # 允许手动触发
+    - cron: '45 19 * * *'
+  workflow_dispatch:
 
 env:
-  # 强制使用 Node.js 24 消除警告
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
@@ -23,41 +22,42 @@ jobs:
         with:
           repository: ${{ github.repository }}
           ghtoken: ${{ secrets.STATS_TOKEN }}
-          # 临时存储在地堡数据库分支名
           databranch: github-repo-stats
 
-      - name: Extreme Purification (Data Only, No Source)
+      - name: Debug and Extreme Purification
         run: |
-          # 1. 物理备份：将刚刚生成的统计数据提取到外部缓存
-          echo "🤖 Pod 042: 正在提取神经云数据碎片..."
-          mkdir -p /tmp/ghrs_backup
-          if [ -d "ghrs-data" ]; then
-            cp -r ghrs-data/* /tmp/ghrs_backup/
-          else
-            echo "❌ 严重错误：未侦测到构筑数据，请检查 STATS_TOKEN 权限。" && exit 1
+          # 1. 现场侦察：查看当前地堡里到底有什么
+          echo "🤖 Pod 042: 正在扫描战场平面图..."
+          ls -R
+
+          # 2. 检查核心数据是否存在
+          if [ ! -d "ghrs-data" ]; then
+            echo "❌ [致命错误] Pod 042 确认：未发现 ghrs-data 数据目录！"
+            echo "💡 解决方案：请检查 STATS_TOKEN 是否为具有 'repo' 权限的 PAT (Personal Access Token)。"
+            echo "💡 默认的 GITHUB_TOKEN 无法读取流量数据（Clones/Views）。"
+            exit 1
           fi
 
-          # 2. 分支重构：强制切换/创建独立的“孤儿分支”
-          # 这个步骤会彻底切断与 main 分支的联系，不继承任何历史
-          echo "🤖 Pod 042: 正在执行‘孤儿协议’，重构物理存储空间..."
+          # 3. 物理备份：将统计数据提取到外部缓存
+          echo "🤖 Pod 042: 核心数据已确认。正在执行物理隔离..."
+          mkdir -p /tmp/ghrs_backup
+          cp -r ghrs-data/* /tmp/ghrs_backup/
+
+          # 4. 分支重构：强制切换/创建独立的“孤儿分支”
           git fetch origin
           git checkout --orphan github-repo-stats || git checkout github-repo-stats
 
-          # 3. 彻底清场：物理抹除所有从 main 分支带过来的源码、图片和 README
-          # 确保该分支里绝对没有 package.json, src/, screenShot/ 等文件
+          # 5. 彻底清场
           git rm -rf . 2>/dev/null || true
           find . -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} +
 
-          # 4. 数据物理还原：只把核心数据放回干净的分支
-          echo "🤖 Pod 042: 正在重新灌装数据碎片..."
+          # 6. 数据物理还原
           mkdir -p ghrs-data
           cp -r /tmp/ghrs_backup/* ghrs-data/
 
-          # 5. 封存推送：同步到地堡数据库
+          # 7. 封存推送
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add ghrs-data/
           git commit -m "data: bunker synced at $(date) [Physical Isolation]" || echo "no changes"
-          
-          # 强制推送，确保分支保持“纯数据”状态
           git push origin github-repo-stats --force
