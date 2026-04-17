@@ -49,14 +49,16 @@ jobs:
           if [ -d "/tmp/bunker_assets/plots" ]; then sudo cp -r /tmp/bunker_assets/plots . ; fi
           if [ -f "report.md" ]; then sudo mv report.md README.md; fi
 
-          # 4. 🔥 核心逻辑：将 CSV 战绩转化为 JSON 勋章素材
-          echo "🤖 Pod 042: 正在将 CSV 数据转化为勋章协议 JSON..."
+          # 4. 🔥 核心逻辑：执行全量战绩加和
+          echo "🤖 Pod 042: 正在执行‘战绩全量加和协议’..."
           CSV_FILE="ghrs-data/views_clones_aggregate.csv"
           if [ -f "$CSV_FILE" ]; then
-            # 提取最后一行，获取第 4 列 (clones_total)
-            TOTAL_CLONES=$(tail -n 1 "$CSV_FILE" | awk -F',' '{print $4}')
+            # 使用 awk 物理加和第 2 列 (clones_total)
+            TOTAL_CLONES=$(awk -F',' 'NR>1 {sum+=$2} END {print sum}' "$CSV_FILE")
             echo "{\"total_clones\": $TOTAL_CLONES}" > bunker-stats.json
-            echo "✅ 转化成功：目前总克隆数为 $TOTAL_CLONES"
+            echo "✅ 构筑成功：地堡全时段总克隆数为 $TOTAL_CLONES"
+          else
+            echo "❌ 严重错误：未发现 CSV 核心文件。" && exit 1
           fi
 
           # 5. 封存推送
