@@ -2,10 +2,11 @@ name: GitHub Repo Stats
 
 on:
   schedule:
-    - cron: '45 19 * * *'
-  workflow_dispatch:
+    - cron: '45 19 * * *' # 每天北京时间凌晨 03:45 运行
+  workflow_dispatch:      # 允许手动触发
 
 env:
+  # 强制使用 Node.js 24 消除警告
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
@@ -22,26 +23,41 @@ jobs:
         with:
           repository: ${{ github.repository }}
           ghtoken: ${{ secrets.STATS_TOKEN }}
+          # 临时存储在地堡数据库分支名
           databranch: github-repo-stats
 
-      - name: Update Bunker Database (No Garbage README)
+      - name: Extreme Purification (Data Only, No Source)
         run: |
-          git fetch origin github-repo-stats
-          git checkout github-repo-stats
+          # 1. 物理备份：将刚刚生成的统计数据提取到外部缓存
+          echo "🤖 Pod 042: 正在提取神经云数据碎片..."
+          mkdir -p /tmp/ghrs_backup
+          if [ -d "ghrs-data" ]; then
+            cp -r ghrs-data/* /tmp/ghrs_backup/
+          else
+            echo "❌ 严重错误：未侦测到构筑数据，请检查 STATS_TOKEN 权限。" && exit 1
+          fi
 
-          # 1. 物理隔离：确保核心数据库 ghrs-data 绝对安全
-          mkdir -p ../temp_data
-          if [ -d "ghrs-data" ]; then cp -r ghrs-data ../temp_data/; fi
+          # 2. 分支重构：强制切换/创建独立的“孤儿分支”
+          # 这个步骤会彻底切断与 main 分支的联系，不继承任何历史
+          echo "🤖 Pod 042: 正在执行‘孤儿协议’，重构物理存储空间..."
+          git fetch origin
+          git checkout --orphan github-repo-stats || git checkout github-repo-stats
 
-          # 2. 彻底清场：删除该分支下所有文件（包括那个乱码的 README.md 和 report.md）
-          sudo rm -rf *
-          
-          # 3. 还原核心数据
-          if [ -d "../temp_data/ghrs-data" ]; then cp -r ../temp_data/ghrs-data . ; fi
+          # 3. 彻底清场：物理抹除所有从 main 分支带过来的源码、图片和 README
+          # 确保该分支里绝对没有 package.json, src/, screenShot/ 等文件
+          git rm -rf . 2>/dev/null || true
+          find . -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} +
 
-          # 4. 执行封存推送
+          # 4. 数据物理还原：只把核心数据放回干净的分支
+          echo "🤖 Pod 042: 正在重新灌装数据碎片..."
+          mkdir -p ghrs-data
+          cp -r /tmp/ghrs_backup/* ghrs-data/
+
+          # 5. 封存推送：同步到地堡数据库
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add ghrs-data/
-          git commit -m "data: bunker synced - total clones updated" || echo "no changes"
+          git commit -m "data: bunker synced at $(date) [Physical Isolation]" || echo "no changes"
+          
+          # 强制推送，确保分支保持“纯数据”状态
           git push origin github-repo-stats --force
