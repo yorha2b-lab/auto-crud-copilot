@@ -5,7 +5,6 @@ on:
     - cron: '45 19 * * *'
   workflow_dispatch:
 
-# 💡 在这里全局开启 Node.js 24 强制模式，消灭警告
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -16,7 +15,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout main
-        uses: actions/checkout@v4 # 已经是最新版
+        uses: actions/checkout@v4
 
       - name: run-ghrs
         uses: jgehrcke/github-repo-stats@v1.4.1
@@ -25,28 +24,35 @@ jobs:
           ghtoken: ${{ secrets.STATS_TOKEN }}
           databranch: github-repo-stats
 
-      - name: Clean and Format Stats Branch
+      - name: Execute Purification Protocol (Anti-Taowa & Anti-Pollution)
         run: |
+          # 1. 侦察与提取：使用长官信赖的 find 逻辑定位数据
+          DATA_DIR=$(find . -type d -name "ghrs-data" | head -n 1)
+          if [ -d "$DATA_DIR" ]; then
+            echo "🤖 Pod 042: 侦测到数据核心，正在提取至外部空间..."
+            mkdir -p /tmp/bunker_data
+            cp -r $DATA_DIR/* /tmp/bunker_data/
+          else
+            echo "❌ 严重错误：未发现数据核心，构筑失败。" && exit 1
+          fi
+
+          # 2. 切换位面：切换到数据分支
           git fetch origin github-repo-stats
           git checkout github-repo-stats
 
-          mkdir -p ../temp_backup
-          REPORT_DIR=$(find . -type d -name "latest-report" | head -n 1)
-          DATA_DIR=$(find . -type d -name "ghrs-data" | head -n 1)
-          PLOT_DIR=$(find . -type d -name "plots" | head -n 1)
+          # 3. 维度清理：物理抹除该分支下所有来自 main 的残留（源码/README/图片）
+          # 这是解决“显示 main 的 readme”和“源码污染”的关键
+          git rm -rf . 2>/dev/null || true
+          rm -rf *
+          
+          # 4. 纯净灌装：将数据直接放入根目录下的 ghrs-data
+          # 解决“文件夹套娃”问题
+          mkdir -p ghrs-data
+          cp -r /tmp/bunker_data/* ghrs-data/
 
-          if [ -d "$REPORT_DIR" ]; then sudo cp -r $REPORT_DIR/* ../temp_backup/; fi
-          if [ -d "$DATA_DIR" ]; then sudo cp -r $DATA_DIR ../temp_backup/; fi
-          if [ -d "$PLOT_DIR" ]; then sudo cp -r $PLOT_DIR ../temp_backup/; fi
-
-          sudo rm -rf *
-          sudo rm -rf .github .env.example .gitignore .npmignore
-          sudo cp -r ../temp_backup/* .
-          if [ -f "report.md" ]; then sudo mv report.md README.md; fi
-          sudo chown -R runner:docker .
-
+          # 5. 封存推送
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add -A
-          git commit -m "style: clean stable stats with node24" || echo "no changes"
+          git add ghrs-data/
+          git commit -m "data: bunker update at $(date) [No Source, No Taowa]" || echo "no changes"
           git push origin github-repo-stats --force
