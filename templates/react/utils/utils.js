@@ -45,16 +45,6 @@ export const timeRender = ({ time, date, minute }) => {
     }
 }
 
-export const moneyRender = (value, { decimals = 2, showSymbol = true } = {}) => {
-    if (value === null || value === undefined || value === '') return '-'
-    const number = Number(value)
-    if (isNaN(number)) return '-'
-    const options = showSymbol
-        ? { style: 'currency', currency: 'CNY', minimumFractionDigits: decimals }
-        : { style: 'decimal', minimumFractionDigits: decimals, maximumFractionDigits: decimals }
-    return new Intl.NumberFormat('zh-CN', options).format(number)
-}
-
 export const exportDataToExcel = async (url, options, columns, fileName, resultKey = 'data') => {
     /* const response = await request(url, options)
     if (response?.[resultKey]?.length > 0) {
@@ -77,6 +67,16 @@ export const exportDataToExcel = async (url, options, columns, fileName, resultK
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1')
         XLSX.writeFile(workbook, `${fileName}.xlsx`)
     } */
+}
+
+export const moneyRender = (value, { decimals = 2, currency = 'CNY', language = 'zh-CN', showSymbol = true } = {}) => {
+    if (value === null || value === undefined || value === '') return '-'
+    const number = Number(value)
+    if (isNaN(number)) return '-'
+    const options = showSymbol
+        ? { style: 'currency', currency, minimumFractionDigits: decimals }
+        : { style: 'decimal', minimumFractionDigits: decimals, maximumFractionDigits: decimals }
+    return new Intl.NumberFormat(language, options).format(number)
 }
 
 export const formatUnit = (value, { k = 1024, units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB'], decimals = 2 } = {}) => {
