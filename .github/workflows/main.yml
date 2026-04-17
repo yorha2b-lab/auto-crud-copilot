@@ -5,7 +5,6 @@ on:
     - cron: '45 19 * * *'
   workflow_dispatch:
 
-# 💡 在这里全局开启 Node.js 24 强制模式，消灭警告
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -16,7 +15,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout main
-        uses: actions/checkout@v4 # 已经是最新版
+        uses: actions/checkout@v4
 
       - name: run-ghrs
         uses: jgehrcke/github-repo-stats@v1.4.1
@@ -30,39 +29,19 @@ jobs:
           git fetch origin github-repo-stats
           git checkout github-repo-stats
 
-          # 1. 物理封存：只保留数据目录，删除旧的垃圾文件
+          # 1. 物理隔离：确保核心数据库 ghrs-data 绝对安全
           mkdir -p ../temp_data
           if [ -d "ghrs-data" ]; then cp -r ghrs-data ../temp_data/; fi
 
-          rm -rf *
+          # 2. 彻底清场：删除该分支下所有文件（包括那个乱码的 README.md 和 report.md）
+          sudo rm -rf *
+          
+          # 3. 还原核心数据
           if [ -d "../temp_data/ghrs-data" ]; then cp -r ../temp_data/ghrs-data . ; fi
 
-          # 2. 提交数据更新到专用分支
+          # 4. 执行封存推送
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add ghrs-data/
-          git commit -m "data: sync total clones to bunker database" || echo "no changes"
-          git push origin github-repo-stats --force
-          git fetch origin github-repo-stats
-          git checkout github-repo-stats
-
-          mkdir -p ../temp_backup
-          REPORT_DIR=$(find . -type d -name "latest-report" | head -n 1)
-          DATA_DIR=$(find . -type d -name "ghrs-data" | head -n 1)
-          PLOT_DIR=$(find . -type d -name "plots" | head -n 1)
-
-          if [ -d "$REPORT_DIR" ]; then sudo cp -r $REPORT_DIR/* ../temp_backup/; fi
-          if [ -d "$DATA_DIR" ]; then sudo cp -r $DATA_DIR ../temp_backup/; fi
-          if [ -d "$PLOT_DIR" ]; then sudo cp -r $PLOT_DIR ../temp_backup/; fi
-
-          sudo rm -rf *
-          sudo rm -rf .github .env.example .gitignore .npmignore
-          sudo cp -r ../temp_backup/* .
-          if [ -f "report.md" ]; then sudo mv report.md README.md; fi
-          sudo chown -R runner:docker .
-
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add -A
-          git commit -m "style: clean stable stats with node24" || echo "no changes"
+          git commit -m "data: bunker synced - total clones updated" || echo "no changes"
           git push origin github-repo-stats --force
