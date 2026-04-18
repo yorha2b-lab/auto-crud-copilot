@@ -8,7 +8,7 @@
 [![NPM Version](https://img.shields.io/npm/v/@yorha2b-lab/autodev.svg?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@yorha2b-lab/autodev)
 [![NPM Downloads](https://img.shields.io/npm/dm/@yorha2b-lab/autodev.svg?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@yorha2b-lab/autodev)
 [![GitHub Stars](https://img.shields.io/github/stars/yorha2b-lab/auto-crud-copilot.svg?style=flat-square&logo=github&logoColor=white)](https://github.com/yorha2b-lab/auto-crud-copilot/stargazers)
-[![License](https://img.shields.io/npm/l/@yorha2b-lab/autodev.svg?style=flat-square&logo=open-source-initiative&logoColor=white)](https://github.com/yorha2b-lab/auto-crud-copilot/blob/main/LICENSE)
+[![License](https://img.shields.io/npm/l/@yorha2b-lab/autodev.svg?style=flat-square&logo=gnu&logoColor=white)](https://github.com/yorha2b-lab/auto-crud-copilot/blob/main/LICENSE)
 ![Total Clones](https://img.shields.io/badge/dynamic/json?query=total_clones&url=https%3A%2F%2Fraw.githubusercontent.com%2Fyorha2b-lab%2Fauto-crud-copilot%2Fgithub-repo-stats%2Fbunker-stats.json&label=Total%20Clones&color=33cc33&style=flat-square&logo=github&logoColor=white)
 
 基于视觉大模型的前端(React+Antd)全自动 CRUD 代码生成器 🚀
@@ -20,6 +20,21 @@
 - 全频道联动：不再需要开启多个进程。一个 watch 指令，同时监听 页面、组件、API 三大传感器。
 - 语义化骇入：不仅仅是复刻 UI，通过 9S 专用语义桥接协议，自动抹平前后端字段差异。
 - 工程级质量：生成的代码不是“演示用”，而是带 useTableQuery、EditableCell、OSS上传 等实战逻辑的高质量代码。
+
+## 🛡️ 开源协议升级公告
+
+> **[重要] 自 v2.1.0 起，本项目由 MIT 协议正式升级为 AGPL-3.0 协议。**
+
+**💡 为什么要调整协议？**
+随着“地堡”系统的影响力扩大，我们希望确保本项目的核心技术能够始终保持开放与透明。采用 **AGPL-3.0** 旨在鼓励开发者在改进本工具的同时，能将这些优化回馈给社区，共同构建一个可持续进化的“前端自动化构筑”生态。
+
+**✅ 开发者友好声明 (重要)：**
+我们深知开发者在实际业务场景中的合规需求。为了让地堡工具在商业环境中更安全、顺畅地运行，特此声明：
+1. **源码约束**：AGPL-3.0 仅约束 **AutoDev 工具自身的源代码**。
+2. **产出物豁免**：使用本工具生成的所有代码、Mock数据及配置文件被视为 **独立** 作品，不具备 AGPL 的传染性特征。
+3. **商业兼容**：您可以在商业项目、企业环境中使用本工具，且 **无需** 因此开源您的业务逻辑代码。
+
+*一句话总结：地堡的进化归属于社区，您构筑的战果归属于您自己。*
 
 ## ✨ 特性
 
@@ -120,7 +135,7 @@ module.exports = {
 
 ## 📄 许可证
 
-本项目采用 [MIT](LICENSE) 许可证。
+本项目采用 [GNU AGPL v3.0](LICENSE) 许可证。
 
 ## 🙏 致谢
 

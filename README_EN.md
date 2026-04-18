@@ -8,7 +8,7 @@
 [![NPM Version](https://img.shields.io/npm/v/@yorha2b-lab/autodev.svg?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@yorha2b-lab/autodev)
 [![NPM Downloads](https://img.shields.io/npm/dm/@yorha2b-lab/autodev.svg?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@yorha2b-lab/autodev)
 [![GitHub Stars](https://img.shields.io/github/stars/yorha2b-lab/auto-crud-copilot.svg?style=flat-square&logo=github&logoColor=white)](https://github.com/yorha2b-lab/auto-crud-copilot/stargazers)
-[![License](https://img.shields.io/npm/l/@yorha2b-lab/autodev.svg?style=flat-square&logo=open-source-initiative&logoColor=white)](https://github.com/yorha2b-lab/auto-crud-copilot/blob/main/LICENSE)
+[![License](https://img.shields.io/npm/l/@yorha2b-lab/autodev.svg?style=flat-square&logo=gnu&logoColor=white)](https://github.com/yorha2b-lab/auto-crud-copilot/blob/main/LICENSE)
 ![Total Clones](https://img.shields.io/badge/dynamic/json?query=total_clones&url=https%3A%2F%2Fraw.githubusercontent.com%2Fyorha2b-lab%2Fauto-crud-copilot%2Fgithub-repo-stats%2Fbunker-stats.json&label=Total%20Clones&color=33cc33&style=flat-square&logo=github&logoColor=white)
 
 Vision-based LLM-powered frontend (React+Antd) fully automatic CRUD code generator 🚀
@@ -20,6 +20,21 @@ In the 2.0 era, we abandoned cumbersome scattered instructions and fully evolved
 - Full-Channel Linkage: No need to open multiple processes. One watch command listens to Page, Component, and API sensors simultaneously.
 - Semantic Hacking: Not just replicating UI, but automatically smoothing out frontend-backend field differences through the 9S dedicated semantic bridge protocol.
 - Engineering-Grade Quality: Generated code is not "demo-grade" but high-quality code with useTableQuery, EditableCell, OSS upload, and other practical logic.
+
+## 🛡️ Open Source License Upgrade
+
+**[IMPORTANT] Since v2.1.0, this project has been officially upgraded from MIT to the AGPL-3.0 License.**
+
+**💡 Why the change?**
+As the "Bunker" system continues to evolve, we aim to ensure the core technology remains open and transparent for everyone. Adopting **AGPL-3.0** encourages the community to contribute improvements back, fostering a sustainable ecosystem for frontend automation.
+
+**✅ Developer-Friendly Clause (Crucial):**
+We value the contribution of developers in corporate environments. To ensure a smooth and safe operational experience:
+1. **Scope**: The AGPL-3.0 license applies strictly to the **AutoDev source code itself**.
+2. **Output Exemption**: All generated code, mock data, and configurations produced by this tool are legally considered **separate** works and are NOT affected by the copyleft (infectious) nature of the AGPL.
+3. **Commercial Usage**: You are permitted to use this CLI in commercial/corporate environments. Your business logic remains **Private** and is NOT affected by the AGPL's nature.
+
+*Summary: The Bunker's evolution belongs to the community; the armor you forge belongs to you.*
 
 ## ✨ Features
 
@@ -121,7 +136,7 @@ Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) to lea
 
 ## 📄 License
 
-This project is licensed under the [MIT](LICENSE) License.
+This project is licensed under the [GNU AGPL v3.0](LICENSE) License.
 
 ## 🙏 Acknowledgments
 
