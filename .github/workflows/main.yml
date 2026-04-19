@@ -49,29 +49,31 @@ jobs:
           if [ -d "/tmp/bunker_assets/plots" ]; then sudo cp -r /tmp/bunker_assets/plots . ; fi
           if [ -f "report.md" ]; then sudo mv report.md README.md; fi
 
-          # 4. 🔥 核心逻辑优化：直接从 README 提取最新的累计克隆数
-          echo "🤖 Pod 042: 正在执行‘README 数据提取协议’..."
+          # 4. 🔥 核心逻辑优化：精准定位 README 中的 Total Clones 累计值
+          echo "🤖 Pod 042: 正在执行‘精准数据侦察协议’..."
           
-          # 确保文件存在，不存在则用 report.md
           TARGET_FILE="README.md"
           if [ ! -f "$TARGET_FILE" ]; then TARGET_FILE="report.md"; fi
           
           if [ -f "$TARGET_FILE" ]; then
-            # 💡 这里的逻辑：找最后一次出现的 Cumulative 关键字后面的数字
-            # 为什么是最后一次？因为在报表里，Total Clones 总是排在最后面的。
-            # 加 || true 是为了防止由于格式变动导致提取失败时直接崩掉。
-            TOTAL_CLONES=$(grep "Cumulative" "$TARGET_FILE" | tail -n 1 | grep -oE "[0-9]+" || echo "")
+            # 💡 精准定位逻辑：
+            # 1. 寻找包含 "Total clones" 的行
+            # 2. 锁定该行之后的第一个 "Cumulative" 关键字
+            # 3. 提取其中的数字
+            TOTAL_CLONES=$(awk '/Total clones/{flag=1; next} flag && /Cumulative/{print $0; flag=0}' "$TARGET_FILE" | grep -oE "[0-9]+" | head -n 1 || echo "")
             
             if [ ! -z "$TOTAL_CLONES" ] && [ "$TOTAL_CLONES" -gt 0 ]; then
               echo "{\"total_clones\": $TOTAL_CLONES}" > bunker-stats.json
-              echo "✅ 成功：从前线报表提取到最新数据：$TOTAL_CLONES"
+              echo "✅ 成功：已精准定位克隆总数：$TOTAL_CLONES"
             else
-              echo "⚠️ 警告：报表数据解析为空，正在启动 CSV 账本回溯..."
-              TOTAL_CLONES=$(awk -F',' 'NR>1 {sum+=$2} END {print sum}' ghrs-data/views_clones_aggregate.csv || echo "0")
+              echo "⚠️ 警告：精准提取失败，正在启动 CSV 账本回溯..."
+              # 最后的兜底：计算 CSV 的总和
+              CSV_FILE="ghrs-data/views_clones_aggregate.csv"
+              TOTAL_CLONES=$(awk -F',' 'NR>1 {sum+=$2} END {print sum}' "$CSV_FILE" || echo "0")
               echo "{\"total_clones\": $TOTAL_CLONES}" > bunker-stats.json
             fi
           else
-            echo "❌ 严重错误：未发现报表文件，无法执行构筑。"
+            echo "❌ 严重错误：未发现任何报表文件。"
             exit 1
           fi
           
