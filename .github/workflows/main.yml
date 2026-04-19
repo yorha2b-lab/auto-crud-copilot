@@ -49,16 +49,22 @@ jobs:
           if [ -d "/tmp/bunker_assets/plots" ]; then sudo cp -r /tmp/bunker_assets/plots . ; fi
           if [ -f "report.md" ]; then sudo mv report.md README.md; fi
 
-          # 4. 🔥 核心逻辑：执行全量战绩加和
-          echo "🤖 Pod 042: 正在执行‘战绩全量加和协议’..."
-          CSV_FILE="ghrs-data/views_clones_aggregate.csv"
-          if [ -f "$CSV_FILE" ]; then
-            # 使用 awk 物理加和第 2 列 (clones_total)
+          # 4. 🔥 核心逻辑优化：直接从 README 提取最新的累计克隆数
+          echo "🤖 Pod 042: 正在执行‘README 数据提取协议’..."
+          
+          # 从生成的 README.md 中精准提取总克隆数
+          # 逻辑：找 Total clones 下面那行 Cumulative 后面的数字
+          TOTAL_CLONES=$(grep -A 1 "Total clones" README.md | grep "Cumulative" | grep -oE "[0-9]+")
+
+          if [ ! -z "$TOTAL_CLONES" ] && [ "$TOTAL_CLONES" -gt 0 ]; then
+            echo "{\"total_clones\": $TOTAL_CLONES}" > bunker-stats.json
+            echo "✅ 成功：从前线报表(README)提取到最新数据：$TOTAL_CLONES"
+          else
+            echo "⚠️ 警告：README 数据提取异常，正在启动 CSV 账本回溯..."
+            CSV_FILE="ghrs-data/views_clones_aggregate.csv"
             TOTAL_CLONES=$(awk -F',' 'NR>1 {sum+=$2} END {print sum}' "$CSV_FILE")
             echo "{\"total_clones\": $TOTAL_CLONES}" > bunker-stats.json
-            echo "✅ 构筑成功：地堡全时段总克隆数为 $TOTAL_CLONES"
-          else
-            echo "❌ 严重错误：未发现 CSV 核心文件。" && exit 1
+            echo "✅ 降级成功：从 CSV 提取到历史数据：$TOTAL_CLONES"
           fi
 
           # 5. 封存推送
