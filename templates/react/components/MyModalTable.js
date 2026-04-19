@@ -1,5 +1,5 @@
 import { MyTable } from './MyTable'
-import { Modal, Button } from 'antd'
+import { Modal, Space, Button } from 'antd'
 import { MySearchForm } from './MySearchForm'
 import { useTableQuery } from '../hooks/useTableQuery'
 
@@ -22,7 +22,7 @@ export const MyModalTable = ({ api, onOk, title, width, footer, visible, columns
     return (
         <Modal centered destroyOnClose title={title} width={width} open={visible} onOk={handleOk} footer={footer} onCancel={() => setModal({ visible: false })}>
             {formItems?.length > 0 && <MySearchForm search={search} formItems={formItems} setSearch={handleSearch} syncUrlParams={false} />}
-            {functionButtons?.length > 0 && functionButtons.map(item => <Button key={item.name} type={item.type} onClick={item.onClick}>{item.name}</Button>)}
+            {functionButtons?.length > 0 && <Space>{functionButtons.map(item => <Button key={item.name} type={item.type} onClick={item.onClick}>{item.name}</Button>)}</Space>}
             <MyTable
                 loading={loading}
                 columns={columns}
