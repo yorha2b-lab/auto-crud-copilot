@@ -58,7 +58,7 @@ program
             console.log('\n')
             console.log(chalk.gray('--------------------------------------------------'))
             console.log(chalk.white(' [System] ') + chalk.yellow(language('正在断开神经云链接,执行数据物理封存...', 'Disconnecting Neural Link, Executing Physical Assembly...')))
-            matrixEffect(1500)
+            matrixEffect(500)
         })
     })
 

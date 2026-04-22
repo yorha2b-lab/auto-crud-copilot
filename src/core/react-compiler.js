@@ -46,6 +46,8 @@ const index = ({ config, fileName, indexTpl, pageConfig }) => {
     const hasTabs = pageConfig.tabs?.length > 0
     const hasFormItems = pageConfig.formItems?.length > 0
     const hasOperate = pageConfig.table.operation?.length > 0
+    const functionButtons = pageConfig.functionButton?.filter(item => !['查询', '重置'].includes(item.btn)) || []
+    const hasFunctionButtons = functionButtons.length > 0
 
     let columnsValue = hasTabs ? 'columns[activeKey]' : 'columns'
     if (hasOperate) {
@@ -58,17 +60,16 @@ const index = ({ config, fileName, indexTpl, pageConfig }) => {
         hasOperate,
         columnsValue,
         hasFormItems,
+        functionButtons,
         tabs: pageConfig.tabs,
-        pageStruct: pageConfig.pageStruct,
         responseSuccess: config.responseSuccess,
+        hasStaticInfo: pageConfig.staticInfo?.has,
         hasExpandable: pageConfig.table.expandable,
         hasPagination: pageConfig.table.pagination,
         operations: pageConfig.table.operation || [],
         hasRowSelection: pageConfig.table.rowSelection,
-        hasStaticInfo: pageConfig.table.staticInfo?.has,
-        staticInfoText: pageConfig.table.staticInfo?.text,
         formItems: hasTabs ? 'formItems[activeKey]' : 'formItems',
-        functionButtons: pageConfig.functionButton?.filter(item => !['查询', '重置'].includes(item.btn)) || []
+        pageStruct: hasFunctionButtons ? pageConfig.pageStruct : pageConfig.pageStruct?.filter(item => item !== 'FunctionButtonsBlock'),
     }
 
     if (viewData.hasOperate) {
@@ -79,15 +80,18 @@ const index = ({ config, fileName, indexTpl, pageConfig }) => {
         Handlebars.registerPartial('MySearchForm', `${fs.readFileSync(path.join(__dirname, '../../templates/react/handlebars/MySearchForm.hbs'), 'utf-8')}\n`)
     }
 
+    if (hasFunctionButtons) {
+        Handlebars.registerPartial('FunctionButtonsBlock', `${fs.readFileSync(path.join(__dirname, '../../templates/react/handlebars/functionButtonsBlock.hbs'), 'utf-8')}\n`)
+    }
+
     if (viewData.hasStaticInfo) {
-        Handlebars.registerPartial('AlertInfo', `{{{{raw}}}}<Alert showIcon title='${pageConfig.table.staticInfo?.text}' type='info' style={{ marginBottom: 16 }} />\n{{{{/raw}}}}`)
+        Handlebars.registerPartial('AlertInfo', `{{{{raw}}}}<Alert showIcon title='${pageConfig.staticInfo?.text}' type='info' style={{ marginBottom: 16 }} />\n{{{{/raw}}}}`)
     }
 
     Handlebars.registerPartial('MyTable', `${fs.readFileSync(path.join(__dirname, '../../templates/react/handlebars/MyTable.hbs'), 'utf-8')}\n`)
     Handlebars.registerPartial('hookBlock', `${fs.readFileSync(path.join(__dirname, '../../templates/react/handlebars/hookBlock.hbs'), 'utf-8')}\n`)
     Handlebars.registerPartial('stateBlock', `${fs.readFileSync(path.join(__dirname, '../../templates/react/handlebars/stateBlock.hbs'), 'utf-8')}\n`)
     Handlebars.registerPartial('handleBlock', `${fs.readFileSync(path.join(__dirname, '../../templates/react/handlebars/handleBlock.hbs'), 'utf-8')}\n`)
-    Handlebars.registerPartial('FunctionButtonsBlock', `${fs.readFileSync(path.join(__dirname, '../../templates/react/handlebars/functionButtonsBlock.hbs'), 'utf-8')}\n`)
 
     const bodyCode = indexTpl(viewData)
     const importsStr = generateSmartImports(bodyCode, hasTabs)

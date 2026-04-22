@@ -12,12 +12,13 @@ module.exports = `
     ⚠️⚠️⚠️注意：
     如果是下拉框,请加入type:'select',options:_CODE_对应的英文名词Options_CODE_
     如果是时间范围查询,请加入type:'daterange',name:'对应的英文名词start,对应的英文名词end'
-4.表格:
+4.统计条:
+    staticInfo:{has:true/false,text:'具体统计内容'},
+5.表格:
     {
         pagination: true/false,
         expandable: true/false,
         rowSelection: true/false,
-        staticInfo:{has:true/false,text:''},
         operation: [{label:'操作',action:'操作动词+ByRecord'}],
         columns: [{ title: '普通列', dataIndex:'对应的英文名词' }],
     }
@@ -28,17 +29,17 @@ module.exports = `
     如果是序号列直接渲染为{ title: '序号',render: _CODE_(_, record, index) => index + 1_CODE_ }
     如果是下拉框列(所对应的查询项明确是下拉框),请加入render:_CODE_text=>对应的options.find(item=>item.value===text)?.label_CODE_
     如果列需要过滤请加上filters:[],onFilter: _CODE_(value, record) => record[对应的英文名词].includes(value)_CODE_
-5.功能按钮
+6.功能按钮
     functionButton:[{btn:'btn',action:'操作动词+模块英文名词'}]
     如果和表格行操作重复请在action加上BySelected前缀
     如果是导出功能,对应的动词为export+对应的英文名词,没有名词则为exportData
-6.下拉选项字典
+7.下拉选项字典
     optionDict:{_CODE_对应的英文名词Options_CODE_:[]]}
     ⚠️⚠️⚠️注意：数组值为对应列展示的内容组成的类似{label:'',value:''}的数组
-7.pageStruct
+8.pageStruct
     从上至下的页面结构组成
     ⚠️⚠️⚠️注意:这里只能从AlertInfo,MySearchForm,FunctionButtonsBlock,MyTable中选择,并且只有真的存在才加入，绝对禁止加入其他组件
     ⚠️⚠️⚠️另外这里不要加入tabs组件
 最后输出一个JSON对象,不要包含任何Markdown标签,格式如下
-    { tabs: [], table: {}, formItems: [], optionDict: {}, functionButton: [],pageStruct:[]}
+    { tabs: [], table: {}, formItems: [],staticInfo:{}, optionDict: {}, functionButton: [],pageStruct:[]}
 `

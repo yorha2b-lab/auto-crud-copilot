@@ -19,8 +19,8 @@ module.exports = async (filePath, context) => {
 
     const spinner = ora({
         text: chalk.cyan(language(
-            `[System] 视觉传感器捕捉完成: [${fileName}]。正在调配地堡资源进行物理构筑...`,
-            `[System] Visual sensor captured: [${fileName}]. Allocating Bunker resources for physical construction...`
+            `[System] 视觉传感器捕捉完成: [${fileName}]。正在调配地堡资源进行物理构筑...\n`,
+            `[System] Visual sensor captured: [${fileName}]. Allocating Bunker resources for physical construction...\n`
         )),
         color: 'cyan'
     }).start()
