@@ -17,14 +17,14 @@
             "key": "mage"
         }
     ],
+    "staticInfo": {
+        "has": false,
+        "text": ""
+    },
     "table": {
         "pagination": true,
         "expandable": true,
         "rowSelection": true,
-        "staticInfo": {
-            "has": false,
-            "text": ""
-        },
         "operation": [
             {
                 "label": "查看",
