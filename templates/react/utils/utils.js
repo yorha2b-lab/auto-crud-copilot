@@ -45,11 +45,12 @@ export const timeRender = ({ time, date, minute }) => {
     }
 }
 
-export const exportDataToExcel = async (url, options, columns, fileName, resultKey = 'data') => {
+export const exportDataToExcel = async (url, options, columns, fileName, formatter) => {
     /* const response = await request(url, options)
-    if (response?.[resultKey]?.length > 0) {
+    const result = formatter ? formatter(response) : (response?.data ?? [])
+    if (result?.length > 0) {
         const XLSX = require('xlsx')
-        const datas = response?.[resultKey]?.map(item => Object.fromEntries(columns.map(col => {
+        const datas = result.map(item => Object.fromEntries(columns.map(col => {
             let value = item[col.dataIndex]
             if (col.exportRender) {
                 value = col.exportRender(value, item)
