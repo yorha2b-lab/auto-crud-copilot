@@ -68,9 +68,7 @@ jobs:
           echo "### 📊 累计物理克隆总数: **$TOTAL_CLONES**" >> README.md
           echo "数据已根据 AGPL-3.0 协议物理封存。愿人类荣光永存。" >> README.md
           echo "" >> README.md
-          echo "| 记录日期 | 当日克隆数 | 独立指挥官 |" >> README.md
-          echo "| :--- | :--- | :--- |" >> README.md
-          head -n 11 "$LEDGER" | tail -n +2 | awk -F',' '{print "| "$1" | "$2" | "$3" |"}' >> README.md
+          echo "> 📡 信号状态：全频道在线 | 战绩自动核算中..." >> README.md
 
       # 3. 封存并强力同步
       - name: Commit and Push
