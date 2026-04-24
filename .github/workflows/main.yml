@@ -1,86 +1,70 @@
-name: GitHub Repo Stats
+name: Bunker Native Stats
 
 on:
   schedule:
-    - cron: '45 19 * * *'
+    - cron: '45 19 * * *' # 北京时间凌晨 03:45
   workflow_dispatch:
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
-  run-stats:
+  update-ledger:
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - name: Checkout main
+      - name: Checkout Data Branch
         uses: actions/checkout@v4
-
-      - name: run-ghrs
-        uses: jgehrcke/github-repo-stats@v1.4.1
         with:
-          repository: ${{ github.repository }}
-          ghtoken: ${{ secrets.STATS_TOKEN }}
-          databranch: github-repo-stats
+          ref: github-repo-stats
+          token: ${{ secrets.STATS_TOKEN }}
 
-      - name: Execute Dashboard Reconstruction & JSON Generation
+      - name: Fetch and Smart Merge
         run: |
-          # 1. 提取组件
-          echo "🤖 Pod 042: 正在执行‘三维提取协议’..."
-          mkdir -p /tmp/bunker_assets
-          DATA_DIR=$(find . -type d -name "ghrs-data" | head -n 1)
-          REPORT_DIR=$(find . -type d -name "latest-report" | head -n 1)
-          PLOT_DIR=$(find . -type d -name "plots" | head -n 1)
-          if [ -d "$DATA_DIR" ]; then sudo cp -r $DATA_DIR /tmp/bunker_assets/; fi
-          if [ -d "$REPORT_DIR" ]; then sudo cp -r $REPORT_DIR /tmp/bunker_assets/; fi
-          if [ -d "$PLOT_DIR" ]; then sudo cp -r $PLOT_DIR /tmp/bunker_assets/; fi
-
-          # 2. 切换并净化分支
-          git fetch origin github-repo-stats
-          git checkout github-repo-stats
-          sudo chown -R runner:docker .
-          git rm -rf . 2>/dev/null || true
-          sudo rm -rf *
-
-          # 3. 物理还原
-          if [ -d "/tmp/bunker_assets/ghrs-data" ]; then sudo cp -r /tmp/bunker_assets/ghrs-data . ; fi
-          if [ -d "/tmp/bunker_assets/latest-report" ]; then sudo cp -r /tmp/bunker_assets/latest-report/* . ; fi
-          if [ -d "/tmp/bunker_assets/plots" ]; then sudo cp -r /tmp/bunker_assets/plots . ; fi
-          if [ -f "report.md" ]; then sudo mv report.md README.md; fi
-
-          # 4. 🔥 核心逻辑优化：精准定位 README 中的 Total Clones 累计值
-          echo "🤖 Pod 042: 正在执行‘精准数据侦察协议’..."
+          echo "🤖 Pod 042: 启动‘智能格式识别与物理融合协议’..."
           
-          TARGET_FILE="README.md"
-          if [ ! -f "$TARGET_FILE" ]; then TARGET_FILE="report.md"; fi
-          
-          if [ -f "$TARGET_FILE" ]; then
-            # 💡 精准定位逻辑：
-            # 1. 寻找包含 "Total clones" 的行
-            # 2. 锁定该行之后的第一个 "Cumulative" 关键字
-            # 3. 提取其中的数字
-            TOTAL_CLONES=$(awk '/Total clones/{flag=1; next} flag && /Cumulative/{print $0; flag=0}' "$TARGET_FILE" | grep -oE "[0-9]+" | head -n 1 || echo "")
-            
-            if [ ! -z "$TOTAL_CLONES" ] && [ "$TOTAL_CLONES" -gt 0 ]; then
-              echo "{\"total_clones\": $TOTAL_CLONES}" > bunker-stats.json
-              echo "✅ 成功：已精准定位克隆总数：$TOTAL_CLONES"
-            else
-              echo "⚠️ 警告：精准提取失败，正在启动 CSV 账本回溯..."
-              # 最后的兜底：计算 CSV 的总和
-              CSV_FILE="ghrs-data/views_clones_aggregate.csv"
-              TOTAL_CLONES=$(awk -F',' 'NR>1 {sum+=$2} END {print sum}' "$CSV_FILE" || echo "0")
-              echo "{\"total_clones\": $TOTAL_CLONES}" > bunker-stats.json
-            fi
+          # 1. 抓取 API 数据
+          curl -H "Authorization: token ${{ secrets.STATS_TOKEN }}" \
+               -H "Accept: application/vnd.github.v3+json" \
+               https://api.github.com/repos/${{ github.repository }}/traffic/clones > raw.json
+
+          # 2. 解析新数据并格式化为 YYYY-MM-DD
+          echo "date,clones,uniques" > /tmp/new_data.csv
+          jq -r '.clones[] | "\(.timestamp | substr(0,10)),\(.count),\(.uniques)"' raw.json >> /tmp/new_data.csv
+
+          # 3. 🧬 核心：智能清洗并合并
+          LEDGER="ghrs-data/clones_ledger.csv"
+          mkdir -p ghrs-data
+
+          if [ ! -f "$LEDGER" ]; then
+            cp /tmp/new_data.csv "$LEDGER"
           else
-            echo "❌ 严重错误：未发现任何报表文件。"
-            exit 1
+            echo "📡 检测到旧账本，正在执行‘格式归一化’物理对账..."
+            
+            # 【黑科技逻辑】：
+            # 1. 把所有 / 换成 -
+            # 2. 补齐位宽（比如把 2026-4-3 变成 2026-04-03）
+            # 3. 截取前 10 位
+            cat "$LEDGER" /tmp/new_data.csv | \
+            sed 's/\//-/g' | \
+            awk -F',' 'NR>1 {
+                split($1, a, "-"); 
+                if(length(a[2])==1) a[2]="0"a[2]; 
+                if(length(a[3])==1) a[3]="0"a[3];
+                # 重新拼装日期并去重
+                printf "%s-%s-%s,%s,%s\n", substr(a[1],1,4), substr(a[2],1,2), substr(a[3],1,2), $2, $3
+            }' | awk -F',' '!a[$1]++' | sort -r > /tmp/final_ledger.csv
+            
+            echo "date,clones,uniques" > "$LEDGER"
+            cat /tmp/final_ledger.csv >> "$LEDGER"
           fi
+
+          # 4. 🔥 战绩核算
+          TOTAL_CLONES=$(awk -F',' 'NR>1 {sum+=$2} END {print sum}' "$LEDGER")
+          echo "{\"total_clones\": $TOTAL_CLONES}" > bunker-stats.json
           
-          # 5. 封存推送
-          sudo chown -R runner:docker .
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add -A
-          git commit -m "style: bunker update with json stats at $(date)" || echo "no changes"
-          git push origin github-repo-stats --force
+          # 5. 生成 README
+          echo "# 🛰️ 地堡运行报告 (Sovereign Report)" > README.md
+          echo "### 📊 累计物理克隆总数: **$TOTAL_CLONES**" >> README.md
+          echo "" >> README.md
+          echo "| 记录日期 | 当日克隆数 | 独立指挥官 |" >> README.md
+          echo "| :--- | :--- | :--- |" >> README.md
+          head -n 11 "$LEDGER" | tail -n +2 | awk -F',' '{print "| "$1" | "$2" | "$3" |"}' >> README.md
