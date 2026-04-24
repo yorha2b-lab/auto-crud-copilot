@@ -19,38 +19,38 @@ jobs:
 
       - name: Fetch and Smart Merge
         run: |
-          echo "🤖 Pod 042: 启动‘智能格式识别与物理融合协议’..."
+          echo "🤖 Pod 042: 启动‘逻辑语法校准与全量合并协议’..."
           
           # 1. 抓取 API 数据
           curl -H "Authorization: token ${{ secrets.STATS_TOKEN }}" \
                -H "Accept: application/vnd.github.v3+json" \
                https://api.github.com/repos/${{ github.repository }}/traffic/clones > raw.json
 
-          # 2. 解析新数据并格式化为 YYYY-MM-DD
+          # 2. 【核心修正】使用 jq 的切片语法 [0:10] 提取 YYYY-MM-DD
           echo "date,clones,uniques" > /tmp/new_data.csv
-          jq -r '.clones[] | "\(.timestamp | substr(0,10)),\(.count),\(.uniques)"' raw.json >> /tmp/new_data.csv
+          jq -r '.clones[] | "\(.timestamp[0:10]),\(.count),\(.uniques)"' raw.json >> /tmp/new_data.csv
 
-          # 3. 🧬 核心：智能清洗并合并
+          # 3. 🧬 执行智能格式识别与物理合并
           LEDGER="ghrs-data/clones_ledger.csv"
           mkdir -p ghrs-data
 
           if [ ! -f "$LEDGER" ]; then
             cp /tmp/new_data.csv "$LEDGER"
           else
-            echo "📡 检测到旧账本，正在执行‘格式归一化’物理对账..."
+            echo "📡 检测到旧账本，正在执行格式对齐..."
             
-            # 【黑科技逻辑】：
-            # 1. 把所有 / 换成 -
-            # 2. 补齐位宽（比如把 2026-4-3 变成 2026-04-03）
-            # 3. 截取前 10 位
+            # 处理逻辑：
+            # 1. 把 / 换成 -
+            # 2. 补齐位宽（4-3 变 04-03）
+            # 3. 物理去重并按日期排序
             cat "$LEDGER" /tmp/new_data.csv | \
             sed 's/\//-/g' | \
             awk -F',' 'NR>1 {
                 split($1, a, "-"); 
                 if(length(a[2])==1) a[2]="0"a[2]; 
                 if(length(a[3])==1) a[3]="0"a[3];
-                # 重新拼装日期并去重
-                printf "%s-%s-%s,%s,%s\n", substr(a[1],1,4), substr(a[2],1,2), substr(a[3],1,2), $2, $3
+                # 重新拼装标准日期
+                printf "%s-%s-%s,%s,%s\n", a[1], a[2], a[3], $2, $3
             }' | awk -F',' '!a[$1]++' | sort -r > /tmp/final_ledger.csv
             
             echo "date,clones,uniques" > "$LEDGER"
@@ -61,7 +61,7 @@ jobs:
           TOTAL_CLONES=$(awk -F',' 'NR>1 {sum+=$2} END {print sum}' "$LEDGER")
           echo "{\"total_clones\": $TOTAL_CLONES}" > bunker-stats.json
           
-          # 5. 生成 README
+          # 5. 生成极简 README
           echo "# 🛰️ 地堡运行报告 (Sovereign Report)" > README.md
           echo "### 📊 累计物理克隆总数: **$TOTAL_CLONES**" >> README.md
           echo "" >> README.md
