@@ -26,45 +26,51 @@ jobs:
 
       - name: Execute Sovereign Data Persistence & CSV Merger
         run: |
-          echo "🤖 Pod 042: 启动‘账本物理合并与防失忆协议’..."
+          echo "🤖 Pod 042: 启动‘全域数据扫描与物理融合协议’..."
           
-          # 1. 把刚跑出来的【新快照】存到临时目录
+          # 1. 使用雷达扫描定位新数据（不管它套娃多深）
           mkdir -p /tmp/new_snapshot
-          [ -d "ghrs-data" ] && cp -r ghrs-data /tmp/new_snapshot/
-          [ -d "latest-report" ] && cp -r latest-report/* /tmp/new_snapshot/
-          [ -d "plots" ] && cp -r plots /tmp/new_snapshot/
+          
+          # 定位并提取数据文件夹
+          NEW_DATA_DIR=$(find . -type d -name "ghrs-data" | head -n 1)
+          NEW_REPORT_DIR=$(find . -type d -name "latest-report" | head -n 1)
+          NEW_PLOT_DIR=$(find . -type d -name "plots" | head -n 1)
+
+          [ ! -z "$NEW_DATA_DIR" ] && cp -r $NEW_DATA_DIR /tmp/new_snapshot/ghrs-data
+          [ ! -z "$NEW_REPORT_DIR" ] && cp -r $NEW_REPORT_DIR/* /tmp/new_snapshot/
+          [ ! -z "$NEW_PLOT_DIR" ] && cp -r $NEW_PLOT_DIR /tmp/new_snapshot/plots
 
           # 2. 切换到数据分支
           git fetch origin github-repo-stats
           git checkout github-repo-stats
           
-          # 3. 💡核心：备份【旧账本】
+          # 3. 备份旧账本
           if [ -f "ghrs-data/views_clones_aggregate.csv" ]; then
-            echo "📡 发现旧账本，正在执行历史数据对账..."
+            echo "📡 提取历史账本中..."
             cp ghrs-data/views_clones_aggregate.csv /tmp/old_ledger.csv
           fi
 
-          # 4. 物理抹平当前分支（保留 .git）
+          # 4. 物理抹平当前分支
           sudo chown -R runner:docker .
           git rm -rf . 2>/dev/null || true
           sudo rm -rf *
 
-          # 5. 物理还原新文件
+          # 5. 还原新快照并修复 README
           cp -r /tmp/new_snapshot/* .
           [ -f "report.md" ] && mv report.md README.md
 
-          # 6. 💡核心：执行【新旧账本物理合并】
-          if [ -f "/tmp/old_ledger.csv" ]; then
+          # 6. 执行 CSV 物理对账（合并逻辑）
+          if [ -f "/tmp/old_ledger.csv" ] && [ -f "ghrs-data/views_clones_aggregate.csv" ]; then
             echo "🧬 执行数据序列物理融合..."
-            HEADER=$(head -n 1 /tmp/new_snapshot/ghrs-data/views_clones_aggregate.csv)
-            # 合并、按日期去重、排序、重新打上表头
-            (tail -n +2 /tmp/old_ledger.csv; tail -n +2 /tmp/new_snapshot/ghrs-data/views_clones_aggregate.csv) | sort -u -t',' -k1,1 > /tmp/merged_body.csv
+            HEADER=$(head -n 1 ghrs-data/views_clones_aggregate.csv)
+            # 合并旧账本和新抓到的数据，按日期去重并排序
+            (tail -n +2 /tmp/old_ledger.csv; tail -n +2 ghrs-data/views_clones_aggregate.csv) | sort -u -t',' -k1,1 > /tmp/merged_body.csv
             echo "$HEADER" > ghrs-data/views_clones_aggregate.csv
             cat /tmp/merged_body.csv >> ghrs-data/views_clones_aggregate.csv
-            echo "✅ 账本合并成功，已存入 ghrs-data"
+            echo "✅ 账本物理合并成功"
           fi
 
-          # 7. 🔥 战绩核算：从最新的 README 中提取 Cumulative 总数（保证勋章即时性）
+          # 7. 精准提取战绩数字用于勋章
           echo "🤖 Pod 042: 正在提取全量战绩数字..."
           TOTAL_CLONES=$(awk '/Total clones/{flag=1; next} flag && /Cumulative/{print $0; flag=0}' README.md | grep -oE "[0-9]+" | head -n 1 || echo "0")
           echo "{\"total_clones\": $TOTAL_CLONES}" > bunker-stats.json
@@ -73,5 +79,5 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add -A
-          git commit -m "chore: sovereign data fusion - total $TOTAL_CLONES at $(date)" || echo "no changes"
+          git commit -m "chore: sovereign data fusion v3 - total $TOTAL_CLONES" || echo "no changes"
           git push origin github-repo-stats --force
