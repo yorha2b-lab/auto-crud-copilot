@@ -24,63 +24,63 @@ jobs:
           ghtoken: ${{ secrets.STATS_TOKEN }}
           databranch: github-repo-stats
 
-      - name: Execute Black-Box Data Fusion
+      - name: Execute Dashboard Reconstruction & JSON Generation
         run: |
-          echo "🤖 Pod 042: 启动‘黑盒数据采集与物理焊接协议’..."
-          
-          # 1. 建立临时基站，存储刚抓到的【新快照】
-          mkdir -p /tmp/new_snapshot
-          NEW_CSV=$(find . -name "views_clones_aggregate.csv" | head -n 1)
-          NEW_MD=$(find . -name "report.md" | head -n 1)
-          NEW_PLOTS=$(find . -type d -name "plots" | head -n 1)
-          
-          [ ! -z "$NEW_CSV" ] && cp "$NEW_CSV" /tmp/new_snapshot/new_ledger.csv
-          [ ! -z "$NEW_MD" ] && cp "$NEW_MD" /tmp/new_snapshot/report.md
-          [ ! -z "$NEW_PLOTS" ] && cp -r "$NEW_PLOTS" /tmp/new_snapshot/
+          # 1. 提取组件
+          echo "🤖 Pod 042: 正在执行‘三维提取协议’..."
+          mkdir -p /tmp/bunker_assets
+          DATA_DIR=$(find . -type d -name "ghrs-data" | head -n 1)
+          REPORT_DIR=$(find . -type d -name "latest-report" | head -n 1)
+          PLOT_DIR=$(find . -type d -name "plots" | head -n 1)
+          if [ -d "$DATA_DIR" ]; then sudo cp -r $DATA_DIR /tmp/bunker_assets/; fi
+          if [ -d "$REPORT_DIR" ]; then sudo cp -r $REPORT_DIR /tmp/bunker_assets/; fi
+          if [ -d "$PLOT_DIR" ]; then sudo cp -r $PLOT_DIR /tmp/bunker_assets/; fi
 
-          # 2. ⚡【黑客入侵】：直接从 GitHub 物理地址抓取【旧账本】
-          echo "📡 正在绕过本地缓存，从云端镜像抓取历史数据..."
-          curl -sL "https://raw.githubusercontent.com/${{ github.repository }}/github-repo-stats/ghrs-data/views_clones_aggregate.csv" -o /tmp/old_ledger.csv || echo "no_old_data"
-          curl -sL "https://raw.githubusercontent.com/${{ github.repository }}/github-repo-stats/bunker-stats.json" -o /tmp/old_stats.json || echo "no_old_json"
-
-          # 3. 切换并彻底净化数据分支
+          # 2. 切换并净化分支
           git fetch origin github-repo-stats
           git checkout github-repo-stats
+          sudo chown -R runner:docker .
+          git rm -rf . 2>/dev/null || true
           sudo rm -rf *
-          mkdir -p ghrs-data
 
-          # 4. 🧬【物理焊接】：强制合并新旧账本
-          if [ -f "/tmp/old_ledger.csv" ] && [ "$(head -n 1 /tmp/old_ledger.csv)" != "no_old_data" ]; then
-            echo "🧬 执行新旧序列合并逻辑..."
-            HEADER=$(head -n 1 /tmp/new_snapshot/new_ledger.csv)
-            # 合并、按日期去重、排序
-            (tail -n +2 /tmp/old_ledger.csv; tail -n +2 /tmp/new_snapshot/new_ledger.csv) | sort -u -t',' -k1,1 > /tmp/final_body.csv
-            echo "$HEADER" > ghrs-data/views_clones_aggregate.csv
-            cat /tmp/final_body.csv >> ghrs-data/views_clones_aggregate.csv
-            echo "✅ 历史账本已成功物理焊接！"
+          # 3. 物理还原
+          if [ -d "/tmp/bunker_assets/ghrs-data" ]; then sudo cp -r /tmp/bunker_assets/ghrs-data . ; fi
+          if [ -d "/tmp/bunker_assets/latest-report" ]; then sudo cp -r /tmp/bunker_assets/latest-report/* . ; fi
+          if [ -d "/tmp/bunker_assets/plots" ]; then sudo cp -r /tmp/bunker_assets/plots . ; fi
+          if [ -f "report.md" ]; then sudo mv report.md README.md; fi
+
+          # 4. 🔥 核心逻辑优化：精准定位 README 中的 Total Clones 累计值
+          echo "🤖 Pod 042: 正在执行‘精准数据侦察协议’..."
+          
+          TARGET_FILE="README.md"
+          if [ ! -f "$TARGET_FILE" ]; then TARGET_FILE="report.md"; fi
+          
+          if [ -f "$TARGET_FILE" ]; then
+            # 💡 精准定位逻辑：
+            # 1. 寻找包含 "Total clones" 的行
+            # 2. 锁定该行之后的第一个 "Cumulative" 关键字
+            # 3. 提取其中的数字
+            TOTAL_CLONES=$(awk '/Total clones/{flag=1; next} flag && /Cumulative/{print $0; flag=0}' "$TARGET_FILE" | grep -oE "[0-9]+" | head -n 1 || echo "")
+            
+            if [ ! -z "$TOTAL_CLONES" ] && [ "$TOTAL_CLONES" -gt 0 ]; then
+              echo "{\"total_clones\": $TOTAL_CLONES}" > bunker-stats.json
+              echo "✅ 成功：已精准定位克隆总数：$TOTAL_CLONES"
+            else
+              echo "⚠️ 警告：精准提取失败，正在启动 CSV 账本回溯..."
+              # 最后的兜底：计算 CSV 的总和
+              CSV_FILE="ghrs-data/views_clones_aggregate.csv"
+              TOTAL_CLONES=$(awk -F',' 'NR>1 {sum+=$2} END {print sum}' "$CSV_FILE" || echo "0")
+              echo "{\"total_clones\": $TOTAL_CLONES}" > bunker-stats.json
+            fi
           else
-            cp /tmp/new_snapshot/new_ledger.csv ghrs-data/views_clones_aggregate.csv
-            echo "⚠️ 未发现历史账本，已初始化新序列。"
+            echo "❌ 严重错误：未发现任何报表文件。"
+            exit 1
           fi
-
-          # 5. 物理还原展示层
-          cp /tmp/new_snapshot/report.md README.md
-          [ -d "/tmp/new_snapshot/plots" ] && cp -r /tmp/new_snapshot/plots .
-
-          # 6. 🔥【战绩重算】：提取当前全量战绩数字
-          echo "🤖 Pod 042: 正在核算最终勋章数字..."
-          TOTAL_CLONES=$(awk '/Total clones/{flag=1; next} flag && /Cumulative/{print $0; flag=0}' README.md | grep -oE "[0-9]+" | head -n 1 || echo "0")
           
-          # 读取旧 JSON 的数字并对比（双保险）
-          OLD_TOTAL=$(grep -oE "[0-9]+" /tmp/old_stats.json | head -n 1 || echo "0")
-          if [ "$TOTAL_CLONES" -lt "$OLD_TOTAL" ]; then TOTAL_CLONES=$OLD_TOTAL; fi
-          
-          echo "{\"total_clones\": $TOTAL_CLONES}" > bunker-stats.json
-          echo "✅ 最终总克隆数封存：$TOTAL_CLONES"
-
-          # 7. 封存推送
+          # 5. 封存推送
+          sudo chown -R runner:docker .
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add -A
-          git commit -m "chore: sovereign ledger fusion - total $TOTAL_CLONES" || echo "no changes"
+          git commit -m "style: bunker update with json stats at $(date)" || echo "no changes"
           git push origin github-repo-stats --force
