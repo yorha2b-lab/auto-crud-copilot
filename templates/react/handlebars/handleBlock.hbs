@@ -47,6 +47,12 @@ const expandedRowRender = record => (<div>自定义渲染</div>)
 {{/if}}
 
 const modalSubmit = async values => {
-    const response = await request('/api')
-    refresh()
+    let response
+    if(modal.type==='add'){
+        response = await request('/api')
+    }
+    if({{{responseSuccess}}}){
+        setModal({ visible: false })
+        refresh()
+    }
 }
