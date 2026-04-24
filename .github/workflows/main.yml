@@ -5,44 +5,50 @@ on:
     - cron: '45 19 * * *' # 北京时间凌晨 03:45
   workflow_dispatch:
 
+# 💡 补丁 1：强制开启 Node.js 24，消灭那个烦人的黄色警告
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   update-ledger:
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
+      # 1. 检出数据分支
       - name: Checkout Data Branch
         uses: actions/checkout@v4
         with:
           ref: github-repo-stats
           token: ${{ secrets.STATS_TOKEN }}
+          fetch-depth: 0 # 获取完整历史，确保物理对账无误
 
+      # 2. 物理装配与合并
       - name: Fetch and Smart Merge
         run: |
-          echo "🤖 Pod 042: 启动‘全兼容数据装配协议’..."
+          echo "🤖 Pod 042: 启动‘全链路数据闭环协议’..."
           
-          # 1. 抓取 API 数据
-          curl -H "Authorization: token ${{ secrets.STATS_TOKEN }}" \
+          # A. 抓取数据（增加 -s 隐藏进度，-f 报错即停止）
+          curl -sf -H "Authorization: token ${{ secrets.STATS_TOKEN }}" \
                -H "Accept: application/vnd.github.v3+json" \
                https://api.github.com/repos/${{ github.repository }}/traffic/clones > raw.json
 
-          # 2. 解析新数据并格式化日期
+          # B. 格式化新数据
           mkdir -p ghrs-data
           echo "date,clones,uniques" > /tmp/new_data.csv
           jq -r '.clones[] | "\(.timestamp[0:10]),\(.count),\(.uniques)"' raw.json >> /tmp/new_data.csv
 
-          # 3. 🧬 执行物理对账与格式清洗
+          # C. 🧬 执行物理合并逻辑
           LEDGER="ghrs-data/clones_ledger.csv"
           if [ ! -f "$LEDGER" ]; then
             cp /tmp/new_data.csv "$LEDGER"
           else
-            echo "📡 发现旧账本，正在执行物理焊接..."
-            # 暴力清洗：斜杠转横杠 -> 补齐月份日期 0 -> 物理去重 -> 降序排列
-            cat "$LEDGER" /tmp/new_data.csv | \
+            echo "📡 正在将手动补全的数据与 API 信号进行物理焊接..."
+            (head -n 1 "$LEDGER"; tail -n +2 "$LEDGER"; tail -n +2 /tmp/new_data.csv) | \
             sed 's/\//-/g' | \
             awk -F',' 'NR>1 {
-                split($1, a, "-"); 
-                if(length(a[2])==1) a[2]="0"a[2]; 
+                split($1, a, "-");
+                if(length(a[2])==1) a[2]="0"a[2];
                 if(length(a[3])==1) a[3]="0"a[3];
                 printf "%s-%s-%s,%s,%s\n", a[1], a[2], a[3], $2, $3
             }' | awk -F',' '!a[$1]++' | sort -r > /tmp/final_ledger.csv
@@ -51,12 +57,13 @@ jobs:
             cat /tmp/final_ledger.csv >> "$LEDGER"
           fi
 
-          # 4. 🔥 核心战绩加和：产出 [bunker-stats.json]
-          # 这一步保证你的 Badge 链接 (query=total_clones) 依然有效！
+          # D. 🔥 核心：产出 [bunker-stats.json]
+          # 确保 awk 逻辑百分之百执行
           TOTAL_CLONES=$(awk -F',' 'NR>1 {sum+=$2} END {print sum}' "$LEDGER")
           echo "{\"total_clones\": $TOTAL_CLONES}" > bunker-stats.json
-          
-          # 5. 生成清爽 README 用于分支展示
+          echo "✅ 物理总数结算达成: $TOTAL_CLONES"
+
+          # E. 重构 README
           echo "# 🛰️ 地堡运行报告 (Sovereign Report)" > README.md
           echo "### 📊 累计物理克隆总数: **$TOTAL_CLONES**" >> README.md
           echo "数据已根据 AGPL-3.0 协议物理封存。愿人类荣光永存。" >> README.md
@@ -64,3 +71,13 @@ jobs:
           echo "| 记录日期 | 当日克隆数 | 独立指挥官 |" >> README.md
           echo "| :--- | :--- | :--- |" >> README.md
           head -n 11 "$LEDGER" | tail -n +2 | awk -F',' '{print "| "$1" | "$2" | "$3" |"}' >> README.md
+
+      # 3. 封存并强力同步
+      - name: Commit and Push
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add -A
+          TOTAL=$(grep -oE "[0-9]+" bunker-stats.json | head -n 1)
+          git commit -m "chore: ledger & badge update - total $TOTAL" || echo "no changes"
+          git push origin github-repo-stats --force
