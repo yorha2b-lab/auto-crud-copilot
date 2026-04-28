@@ -70,6 +70,59 @@ export const exportDataToExcel = async (url, options, columns, fileName, formatt
     } */
 }
 
+export const streamDownload = async ({ url, options, headers = {} }, fileName = '下载') => {
+
+    const response = await fetch(url, { ...options, headers })
+
+    if (!response.ok) {
+        console.error(response.statusText)
+        return
+    }
+
+    const blob = await response.blob()
+
+    if (!blob.size) {
+        console.error('文件为空')
+        return
+    }
+
+    const slice = blob.slice(0, 10)
+    const text = (await slice.text()).trim()
+
+    if (text.startsWith('{') || text.startsWith('[')) {
+        try {
+            const fullText = await blob.text()
+            const json = JSON.parse(fullText)
+            console.error(json?.msg ?? '系统异常')
+        } catch (error) {
+            console.error(error)
+        }
+        return
+    }
+
+    const disposition = response.headers.get('content-disposition')
+    let name = fileName
+
+    if (disposition) {
+        const match = disposition.match(/filename\*=UTF-8''([^;]+)|filename="?([^";]+)"?/)
+        if (match) {
+            name = decodeURIComponent(match[1] || match[2])
+        }
+    }
+
+    const link = document.createElement('a')
+    const urlObj = URL.createObjectURL(blob)
+
+    link.href = urlObj
+    link.download = name
+
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+
+    setTimeout(() => URL.revokeObjectURL(urlObj), 1000)
+}
+
 export const moneyRender = (value, { decimals = 2, currency = 'CNY', language = 'zh-CN', showSymbol = true } = {}) => {
     if (value === null || value === undefined || value === '') return '-'
     const number = Number(value)
