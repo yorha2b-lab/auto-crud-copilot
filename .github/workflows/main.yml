@@ -21,11 +21,16 @@ jobs:
           token: ${{ secrets.STATS_TOKEN }}
           fetch-depth: 0
 
+      # 1. 环境准备：安装绘图依赖
+      - name: Setup Plotting Environment
+        run: |
+          python -m pip install --upgrade pip
+          pip install matplotlib pandas
+
+      # 2. 情报采集与账本物理焊接
       - name: Intelligence Gathering & Sovereign Merge
         run: |
-          echo "🤖 Pod 042: 启动‘全频道情报采集协议 [坐标修正版]’..."
-          
-          # A. [情报收集]：修正 API 路径，加入 /popular/ 层级
+          echo "🤖 Pod 042: 启动‘全频道情报采集协议’..."
           curl -s -H "Authorization: token ${{ secrets.STATS_TOKEN }}" \
                -H "Accept: application/vnd.github.v3+json" \
                https://api.github.com/repos/${{ github.repository }}/traffic/clones > raw_clones.json
@@ -34,12 +39,10 @@ jobs:
                -H "Accept: application/vnd.github.v3+json" \
                https://api.github.com/repos/${{ github.repository }}/traffic/popular/referrers > raw_referrers.json
 
-          # B. [格式处理]
           mkdir -p ghrs-data
           echo "date,clones,uniques" > /tmp/new_data.csv
           jq -r '.clones[] | "\(.timestamp[0:10]),\(.count),\(.uniques)"' raw_clones.json >> /tmp/new_data.csv
 
-          # C. [物理焊接]
           LEDGER="ghrs-data/clones_ledger.csv"
           if [ ! -f "$LEDGER" ]; then
             cp /tmp/new_data.csv "$LEDGER"
@@ -53,24 +56,64 @@ jobs:
                 if(length(a[3])==1) a[3]="0"a[3];
                 printf "%s-%s-%s,%s,%s\n", a[1], a[2], a[3], $2, $3
             }' | awk -F',' '!a[$1]++' | sort -r > /tmp/final_ledger.csv
-            
             echo "date,clones,uniques" > "$LEDGER"
             cat /tmp/final_ledger.csv >> "$LEDGER"
           fi
 
-          # D. [战绩结算]
           TOTAL_CLONES=$(awk -F',' 'NR>1 {sum+=$2} END {print sum}' "$LEDGER")
           echo "{\"total_clones\": $TOTAL_CLONES}" > bunker-stats.json
 
-          # E. [报表装修]
+      # 3. 🧬 【核心新增】：构筑战绩可视化图像
+      - name: Construct Visual Radar
+        run: |
+          echo "🤖 Pod 042: 执行‘图像构筑协议’..."
+          python3 <<EOF
+          import pandas as pd
+          import matplotlib.pyplot as plt
+          import os
+
+          # 读取账本并反转顺序（变为正序绘图）
+          df = pd.read_csv('ghrs-data/clones_ledger.csv')
+          df['date'] = pd.to_datetime(df['date'])
+          df = df.sort_values('date')
+
+          # 样式设置：地堡深邃黑
+          plt.style.use('dark_background')
+          fig, ax = plt.subplots(figsize=(10, 5))
+          
+          # 绘制曲线（地堡绿）
+          ax.plot(df['date'], df['clones'], color='#33cc33', marker='o', markersize=4, linewidth=2, label='Daily Clones')
+          ax.fill_between(df['date'], df['clones'], color='#33cc33', alpha=0.2)
+          
+          ax.set_title('YoRHa Bunker - Physical Construction Trend', fontsize=14, pad=20, color='#33cc33')
+          ax.set_ylabel('Clone Count', color='#888')
+          ax.grid(color='#444', linestyle='--', linewidth=0.5)
+          
+          # 旋转日期防挤占
+          plt.xticks(rotation=45, color='#888')
+          plt.yticks(color='#888')
+          
+          # 自动保存
+          os.makedirs('plots', exist_ok=True)
+          plt.tight_layout()
+          plt.savefig('plots/clones_trend.png', dpi=100)
+          EOF
+
+      # 4. [报表装修]
+      - name: Assemble Report
+        run: |
           echo "# 🛰️ 地堡运行报告 (Sovereign Report)" > README.md
-          echo "### 📊 累计物理克隆总数: **$TOTAL_CLONES**" >> README.md
-          echo "数据已根据 AGPL-3.0 协议物理封存。愿人类荣光永存。" >> README.md
+          echo "### 📊 累计物理克隆总数: **$(grep -oE "[0-9]+" bunker-stats.json | head -n 1)**" >> README.md
           echo "" >> README.md
+          
+          # 💡 物理植入图片
+          echo "#### 📈 战绩增长雷达 (Growth Radar)" >> README.md
+          echo "![Clones Trend](./plots/clones_trend.png)" >> README.md
+          echo "" >> README.md
+          
           echo "#### 📡 流量来源实时追踪 (Top Referrers)" >> README.md
           echo "| 来源站点 | 总访问量 | 独立指挥官 |" >> README.md
           echo "| :--- | :--- | :--- |" >> README.md
-          # 增加判定，防止 referrers 为空时 jq 报错
           if [ -s raw_referrers.json ]; then
             jq -r '.[] | "| \(.referrer) | \(.count) | \(.uniques) |"' raw_referrers.json >> README.md
           else
@@ -79,11 +122,12 @@ jobs:
           echo "" >> README.md
           echo "> 📡 信号状态：全频道在线 | 数据物理封存点: $(date +'%Y-%m-%d %H:%M:%S') CST" >> README.md
 
+      # 5. 最终物理封存
       - name: Sync Ledger to Cloud
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add -A
           TOTAL=$(grep -oE "[0-9]+" bunker-stats.json | head -n 1)
-          git commit -m "chore: intelligence update - total $TOTAL" || echo "no changes"
+          git commit -m "chore: sovereign update v5.0 - total $TOTAL [$(date +'%Y-%m-%d')]" || echo "no changes"
           git push origin github-repo-stats --force
