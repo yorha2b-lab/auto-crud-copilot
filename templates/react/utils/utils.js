@@ -55,7 +55,7 @@ export const exportDataToExcel = async (url, options, columns, fileName, formatt
             if (col.exportRender) {
                 value = col.exportRender(value, item)
             }
-            if (col.render) {
+            if (col.render&&!col.exportRender) {
                 const rendered = col.render(value, item)
                 value = typeof rendered === 'object' ? (rendered?.props?.children || value) : rendered
             }
