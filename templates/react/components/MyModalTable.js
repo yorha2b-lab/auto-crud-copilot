@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { MyTable } from './MyTable'
 import { Modal, Space, Button } from 'antd'
 import { MySearchForm } from './MySearchForm'
@@ -5,6 +6,8 @@ import { useTableQuery } from '../hooks/useTableQuery'
 
 
 export const MyModalTable = ({ api, onOk, title, width, footer, visible, columns, setModal, formItems, rowSelection, formatResponse, functionButtons, extraParams = {} }) => {
+
+    const [pending, setPending] = useState(false)
 
     const { total, loading, dataSource, search, setSearch } = useTableQuery(api, formatResponse, extraParams)
 
@@ -14,13 +17,19 @@ export const MyModalTable = ({ api, onOk, title, width, footer, visible, columns
 
     const handleOk = () => {
         if (onOk) {
-            onOk()
+            try {
+                setPending(true)
+                onOk()
+                setPending(false)
+            } catch (error) {
+                console.log('操作失败:', error)
+            }
         }
         setModal({ visible: false })
     }
 
     return (
-        <Modal centered destroyOnClose title={title} width={width} open={visible} onOk={handleOk} footer={footer} onCancel={() => setModal({ visible: false })}>
+        <Modal centered destroyOnClose title={title} width={width} open={visible} onOk={handleOk} footer={footer} onCancel={() => setModal({ visible: false })} confirmLoading={pending}>
             {formItems?.length > 0 && <MySearchForm search={search} formItems={formItems} setSearch={handleSearch} syncUrlParams={false} />}
             {functionButtons?.length > 0 && <Space>{functionButtons.map(item => <Button key={item.name} type={item.type} onClick={item.onClick}>{item.name}</Button>)}</Space>}
             <MyTable

@@ -1,5 +1,5 @@
-import { useState } from 'react'
 import { initOSS } from '../utils/utils'
+import { useState, useEffect } from 'react'
 import { UploadOutlined } from '@ant-design/icons'
 import { Button, Tree, Radio, Input, Upload, Select, Cascader, Checkbox, DatePicker, InputNumber, TreeSelect, AutoComplete } from 'antd'
 
@@ -18,6 +18,12 @@ const AliyunOSSUpload = ({ value, onChange, ...restProps }) => {
         }
     }
 
+    useEffect(() => {
+        if (!OSSData) {
+            init()
+        }
+    }, [])
+
     const handleChange = ({ fileList }) => onChange?.([...fileList])
 
     const onRemove = file => {
@@ -35,10 +41,10 @@ const AliyunOSSUpload = ({ value, onChange, ...restProps }) => {
 
     const beforeUpload = async file => {
         const expire = Number(OSSData.expire) * 1000
-        if (expire < Date.now() || !OSSData) {
+        if (expire < Date.now()) {
             await init()
         }
-        file.url = `${OSSData.dir ?? path}/${file.uid}_${file.name}`.replace(/\/\//g, '/')
+        file.url = `${OSSData?.dir ?? path}/${file.uid}_${file.name}`.replace(/\/\//g, '/')
         return file
     }
 

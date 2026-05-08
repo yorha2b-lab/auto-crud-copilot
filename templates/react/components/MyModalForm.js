@@ -43,8 +43,6 @@ export const MyModalForm = ({ width, title, submit, record, visible, setModal, l
             }
         } catch (error) {
             console.log('表单校验失败:', error)
-        } finally {
-            setPending(false)
         }
     }
 
