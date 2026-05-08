@@ -3,6 +3,16 @@ import { request } from './request'
 
 //常用工具函数，使用前确保已安装对应模块
 
+export const parseExcel = async file => {
+    /* const arrayBuffer = await file.arrayBuffer()
+    const XLSX = require('xlsx')
+    const workbook = XLSX.read(arrayBuffer, { type: 'array' })
+    const firstSheetName = workbook.SheetNames?.[0]
+    const worksheet = workbook.Sheets[firstSheetName]
+    const excelData = XLSX.utils.sheet_to_json(worksheet, { header: 1 })
+    return excelData.filter(item => item.length > 0) */
+}
+
 export const initOSS = async (url, options) => {
     /* const OSS = require('ali-oss')
     const crypto = require('crypto-js')
@@ -16,7 +26,7 @@ export const initOSS = async (url, options) => {
         ],
     }))
     const signature = crypto.enc.Base64.stringify(crypto.HmacSHA1(policy, accessKeySecret))
-    return { client, policy, signature, ...response?.data } */
+    return { client, policy, signature,host: `https://${bucket}.${endpoint.split('//')[1]}`, ...response?.data } */
 }
 
 export const formatQuery = (params, formItems) => {

@@ -1,24 +1,22 @@
+import { useState } from 'react'
 import { initOSS } from '../utils/utils'
-import { useState, useEffect } from 'react'
 import { UploadOutlined } from '@ant-design/icons'
 import { Button, Tree, Radio, Input, Upload, Select, Cascader, Checkbox, DatePicker, InputNumber, TreeSelect, AutoComplete } from 'antd'
 
-const AliyunOSSUpload = ({ path, style, value, disabled, onChange }) => {
+const AliyunOSSUpload = ({ value, onChange, ...restProps }) => {
 
-    const [OSSData, setOSSData] = useState()
+    const { oss, url, path, options, ...originUploadProps } = restProps
+
+    const [OSSData, setOSSData] = useState(oss)
 
     const init = async () => {
         try {
-            const result = await initOSS()
+            const result = await initOSS(url, options)
             setOSSData(result)
         } catch (err) {
             console.log(err)
         }
     }
-
-    useEffect(() => {
-        init()
-    }, [])
 
     const handleChange = ({ fileList }) => onChange?.([...fileList])
 
@@ -36,11 +34,8 @@ const AliyunOSSUpload = ({ path, style, value, disabled, onChange }) => {
     })
 
     const beforeUpload = async file => {
-        if (!OSSData) {
-            return false
-        }
         const expire = Number(OSSData.expire) * 1000
-        if (expire < Date.now()) {
+        if (expire < Date.now() || !OSSData) {
             await init()
         }
         file.url = `${OSSData.dir ?? path}/${file.uid}_${file.name}`.replace(/\/\//g, '/')
@@ -55,10 +50,11 @@ const AliyunOSSUpload = ({ path, style, value, disabled, onChange }) => {
         data: getExtraData,
         action: OSSData?.host,
         onChange: handleChange,
+        ...originUploadProps
     }
 
     return (
-        <Upload {...uploadProps} disabled={disabled} style={style}>
+        <Upload {...uploadProps}>
             <Button icon={<UploadOutlined />}>选择文件</Button>
         </Upload>
     )
