@@ -85,7 +85,21 @@ const bootSequence = async version => {
  * @param {number} duration - 持续时间（毫秒）
  * @returns {void}
  */
-const matrixEffect = (duration = 1500) => {
+const matrixEffect = async (duration = 1500) => {
+
+    let currentTotal = 0
+    const MIRROR_URL = 'https://cdn.jsdelivr.net/gh/yorha2b-lab/auto-crud-copilot@github-repo-stats/bunker-stats.json'
+
+    try {
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 800)
+        const response = await fetch(MIRROR_URL, { signal: controller.signal })
+        const stats = await response.json()
+        currentTotal = stats.total_clones || 0
+        clearTimeout(timeoutId)
+    } catch (e) {
+        currentTotal = 0
+    }
 
     const coreFragments = [
         '47 4c 4f 52 59', // GLORY
@@ -99,13 +113,25 @@ const matrixEffect = (duration = 1500) => {
         '5f 43 4f 44 45 5f' // _CODE_
     ]
 
-    const width = process.stdout.columns || 80
     const endTime = Date.now() + duration
+    const isLegendary = currentTotal >= 3000
+    const width = process.stdout.columns || 80
+
+    if (isLegendary) {
+        coreFragments.push(chalk.yellow.bold('33 30 30 30 2b')) // "3000+" 的十六进制
+        coreFragments.push(chalk.yellow.bold('4c 45 47 45 4e 44')) // "LEGEND"
+    }
 
     const interval = setInterval(() => {
         if (Date.now() > endTime) {
             clearInterval(interval)
             console.log(chalk.white(' [System] ') + chalk.green(language('所有构筑数据已同步至 Bunker 存储节点。', 'All data synced to Bunker storage nodes.')))
+            if (isLegendary) {
+                console.log(chalk.yellow.bold(language(` [Achievement] 物理克隆总数已超越 3000 战略阈值！当前战力：${currentTotal}`, ` [Achievement] Physical clone count has exceeded 3000 strategic threshold! Current power: ${currentTotal}`)))
+                console.log(chalk.yellow(language(' [Bunker] 恭喜指挥官，您的构筑协议已成为人类荣光的一部分。', ' [Bunker] Congratulations, your construction protocol is now part of humanity.')))
+            } else {
+                console.log(chalk.cyan(language(` [System] 当前构筑总数：${currentTotal}。距离 3000 勋章还剩 ${3000 - currentTotal} 次。`, ` [System] Current clones: ${currentTotal}. ${3000 - currentTotal} to Achievement.`)))
+            }
             console.log(chalk.cyan(language(' [System] 如果它能帮您节省时间，请在 GitHub 上给它点个赞 ⭐。', ' [System] If it saves you time, feel free to give it a ⭐ on GitHub.')))
             console.log(chalk.cyan('\n[System] Signal Lost. Glory to Mankind.\n'))
             process.exit(0)
@@ -118,7 +144,7 @@ const matrixEffect = (duration = 1500) => {
                 line += chalk.white.bold(frag) + ' '
             } else {
                 const hex = Math.floor(Math.random() * 256).toString(16).padStart(2, '0').toUpperCase()
-                const color = Math.random() > 0.5 ? chalk.cyan : chalk.cyan.dim
+                const color = (isLegendary && Math.random() > 0.95) ? chalk.yellow : (Math.random() > 0.5 ? chalk.cyan : chalk.cyan.dim)
                 line += color(hex) + ' '
             }
         }
