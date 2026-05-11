@@ -114,7 +114,7 @@ const matrixEffect = async (duration = 1500) => {
     ]
 
     const endTime = Date.now() + duration
-    const isLegendary = currentTotal >= 3000
+    const isLegendary = currentTotal >= 2000
     const width = process.stdout.columns || 80
 
     if (isLegendary) {
@@ -126,11 +126,13 @@ const matrixEffect = async (duration = 1500) => {
         if (Date.now() > endTime) {
             clearInterval(interval)
             console.log(chalk.white(' [System] ') + chalk.green(language('所有构筑数据已同步至 Bunker 存储节点。', 'All data synced to Bunker storage nodes.')))
-            if (isLegendary) {
-                console.log(chalk.yellow.bold(language(` [Achievement] 物理克隆总数已超越 3000 战略阈值！当前战力：${currentTotal}`, ` [Achievement] Physical clone count has exceeded 3000 strategic threshold! Current power: ${currentTotal}`)))
-                console.log(chalk.yellow(language(' [Bunker] 恭喜指挥官，您的构筑协议已成为人类荣光的一部分。', ' [Bunker] Congratulations, your construction protocol is now part of humanity.')))
-            } else {
-                console.log(chalk.cyan(language(` [System] 当前构筑总数：${currentTotal}。距离 3000 勋章还剩 ${3000 - currentTotal} 次。`, ` [System] Current clones: ${currentTotal}. ${3000 - currentTotal} to Achievement.`)))
+            if (currentTotal !== 0) {
+                if (isLegendary) {
+                    console.log(chalk.yellow.bold(language(` [Achievement] 物理克隆总数已超越 3000 战略阈值！当前战力：${currentTotal}`, ` [Achievement] Physical clone count has exceeded 3000 strategic threshold! Current power: ${currentTotal}`)))
+                    console.log(chalk.yellow(language(' [Bunker] 恭喜指挥官，您的构筑协议已成为人类荣光的一部分。', ' [Bunker] Congratulations, your construction protocol is now part of humanity.')))
+                } else {
+                    console.log(chalk.cyan(language(` [System] 当前构筑总数：${currentTotal}。距离 3000 勋章还剩 ${3000 - currentTotal} 次。`, ` [System] Current clones: ${currentTotal}. ${3000 - currentTotal} to Achievement.`)))
+                }
             }
             console.log(chalk.cyan(language(' [System] 如果它能帮您节省时间，请在 GitHub 上给它点个赞 ⭐。', ' [System] If it saves you time, feel free to give it a ⭐ on GitHub.')))
             console.log(chalk.cyan('\n[System] Signal Lost. Glory to Mankind.\n'))
