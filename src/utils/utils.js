@@ -114,7 +114,7 @@ const matrixEffect = async (duration = 1500) => {
     ]
 
     const endTime = Date.now() + duration
-    const isLegendary = currentTotal >= 2000
+    const isLegendary = currentTotal >= 3000
     const width = process.stdout.columns || 80
 
     if (isLegendary) {
