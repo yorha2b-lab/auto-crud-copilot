@@ -11,11 +11,35 @@ const components = {
 
 export const MyTable = ({ size, query, onSave, autoScroll, onChange, pagination, rowClassName, columns = [], rowSelection, rowKey = 'id', loading = false, dataSource = [], scroll = { x: 'max-content' }, ...restProps }) => {
 
+    const { total, search, customSave, setDataSource } = restProps
 
     const tableRef = useRef(null)
     const hasScrolledRef = useRef(false)
 
     const isEditable = useMemo(() => columns.some(col => col.editType), [columns])
+
+    const handleSave = row => {
+        const newData = [...dataSource]
+        const index = newData.findIndex(item => row[rowKey] === item[rowKey])
+        const item = newData[index]
+        newData.splice(index, 1, { ...item, ...row })
+        setDataSource(newData)
+        customSave?.({ ...item, ...row })
+    }
+
+    const paginationConfig = useMemo(() => {
+
+        if (!pagination) return false
+
+        return {
+            total,
+            showSizeChanger: true,
+            current: search?.pageNo,
+            pageSize: search?.pageSize,
+            showTotal: (total) => `共 ${total} 条`,
+            ...pagination
+        }
+    }, [total, search, pagination])
 
     const mergedColumns = useMemo(() => {
         return columns.map(col => {
@@ -26,17 +50,18 @@ export const MyTable = ({ size, query, onSave, autoScroll, onChange, pagination,
                 ...col,
                 onCell: (record) => ({
                     record,
+                    handleSave,
                     title: col.title,
                     rules: col.rules,
-                    handleSave: onSave,
                     options: col.options,
                     editType: col.editType,
                     editable: !!col.editType,
                     dataIndex: col.dataIndex,
+                    placeholder: col.placeholder
                 }),
             }
         })
-    }, [columns, onSave])
+    }, [columns])
 
     useEffect(() => {
         if (!autoScroll || !dataSource?.length || query?.rowIndex === undefined) return
@@ -65,9 +90,9 @@ export const MyTable = ({ size, query, onSave, autoScroll, onChange, pagination,
                 onChange={onChange}
                 columns={mergedColumns}
                 dataSource={dataSource}
-                pagination={pagination}
                 size={size ?? 'middle'}
                 rowSelection={rowSelection}
+                pagination={paginationConfig}
                 components={isEditable ? components : undefined}
                 rowClassName={(record, index) => {
                     const externalClass = typeof rowClassName === 'function' ? rowClassName(record, index) : rowClassName

@@ -14,7 +14,7 @@ export const EditableRow = ({ index, ...props }) => {
     )
 }
 
-export const EditableCell = ({ title, record, editable, children, dataIndex, handleSave, rules = [], options = [], editType = 'text', ...restProps }) => {
+export const EditableCell = ({ title, record, editable, children, dataIndex, placeholder, handleSave, rules = [], options = [], editType = 'text', ...restProps }) => {
 
     const inputRef = useRef(null)
     const form = useContext(EditableContext)
@@ -48,10 +48,10 @@ export const EditableCell = ({ title, record, editable, children, dataIndex, han
 
     switch (editType) {
         case 'number':
-            inputNode = <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} />
+            inputNode = <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} placeholder={placeholder ?? title} />
             break
         case 'select':
-            inputNode = <Select ref={inputRef} options={options} onBlur={save} />
+            inputNode = <Select ref={inputRef} options={options} onBlur={save} placeholder={placeholder ?? title} />
             break;
         case 'checkbox':
             inputNode = (
@@ -66,7 +66,7 @@ export const EditableCell = ({ title, record, editable, children, dataIndex, han
             )
             break;
         default:
-            inputNode = <Input ref={inputRef} onPressEnter={save} onBlur={save} />
+            inputNode = <Input ref={inputRef} onPressEnter={save} onBlur={save} placeholder={placeholder ?? title} />
     }
 
     return (
