@@ -37,5 +37,5 @@ export const useTableQuery = (api, formatResponse, initialParams = {}) => {
         fetchData()
     }, [fetchData])
 
-    return { total, loading, dataSource, search, setSearch, refresh: fetchData }
+    return { total, loading, dataSource, search, setSearch, setDataSource, refresh: fetchData }
 }

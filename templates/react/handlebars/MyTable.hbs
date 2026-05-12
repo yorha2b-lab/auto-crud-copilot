@@ -1,9 +1,12 @@
 <MyTable
     rowKey='id'
     query={query}
+    total={total}
+    search={search}
     loading={loading}
     dataSource={dataSource}
     columns={ {{columnsValue}} }
+    setDataSource={setDataSource}
     {{#if hasExpandable}}
     {{{{raw}}}}
     expandable={{ onExpand, expandedRowKeys, expandedRowRender, columnWidth: 24 }}
