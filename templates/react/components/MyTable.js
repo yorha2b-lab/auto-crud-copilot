@@ -9,9 +9,7 @@ const components = {
     }
 }
 
-export const MyTable = ({ size, query, onSave, autoScroll, onChange, pagination, rowClassName, columns = [], rowSelection, rowKey = 'id', loading = false, dataSource = [], scroll = { x: 'max-content' }, ...restProps }) => {
-
-    const { total, search, customSave, setDataSource } = restProps
+export const MyTable = ({ size, query, total, search, autoScroll, onChange, pagination, rowClassName, customSave, setDataSource, columns = [], rowSelection, rowKey = 'id', loading = false, dataSource = [], scroll = { x: 'max-content' }, ...restProps }) => {
 
     const tableRef = useRef(null)
     const hasScrolledRef = useRef(false)
