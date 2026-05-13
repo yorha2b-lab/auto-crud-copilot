@@ -35,7 +35,7 @@ export const MyTable = ({ size, query, total, search, autoScroll, onChange, pagi
             current: search?.pageNo,
             pageSize: search?.pageSize,
             showTotal: (total) => `共 ${total} 条`,
-            ...pagination
+            ...(typeof pagination === 'object' ? pagination : {})
         }
     }, [total, search, pagination])
 
