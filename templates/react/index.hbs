@@ -21,7 +21,7 @@ export default props => {
 
     return (
         <Card {{#if hasTabs}}tabList={tabs} activeTabKey={activeKey} onTabChange={onTabChange}{{/if}}>
-            {modal.visible && <MyModalForm {...modal} formItems={modalItems} submit={modalSubmit} setModal={setModal} />}
+            {modal.visible && <MyModalForm {...modal} submit={modalSubmit} setModal={setModal} />}
             {{#each pageStruct as |partialName|}}
             {{> (partialName) @root }}
             {{/each}}

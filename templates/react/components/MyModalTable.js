@@ -5,11 +5,11 @@ import { MySearchForm } from './MySearchForm'
 import { useTableQuery } from '../hooks/useTableQuery'
 
 
-export const MyModalTable = ({ api, onOk, title, width, footer, visible, columns, setModal, formItems, rowSelection, formatResponse, functionButtons, extraParams = {} }) => {
+export const MyModalTable = ({ api, onOk, title, width, footer, visible, columns, operate, setModal, formItems, setModalForm, rowSelection, formatResponse, functionButtons, extraParams = {} }) => {
 
     const [pending, setPending] = useState(false)
 
-    const { total, loading, dataSource, search, setSearch } = useTableQuery(api, formatResponse, extraParams)
+    const { total, loading, dataSource, search, refresh, setSearch, setDataSource } = useTableQuery(api, formatResponse, extraParams)
 
     const handleSearch = values => setSearch({ ...search, ...values, pageNo: 1 })
 
@@ -33,13 +33,15 @@ export const MyModalTable = ({ api, onOk, title, width, footer, visible, columns
             {formItems?.length > 0 && <MySearchForm search={search} formItems={formItems} setSearch={handleSearch} syncUrlParams={false} />}
             {functionButtons?.length > 0 && <Space>{functionButtons.map(item => <Button key={item.name} type={item.type} onClick={item.onClick}>{item.name}</Button>)}</Space>}
             <MyTable
+                pagination={true}
                 loading={loading}
-                columns={columns}
                 scroll={{ y: 400 }}
                 dataSource={dataSource}
                 rowSelection={rowSelection}
                 onChange={handleTableChange}
-                pagination={{ total: total, showSizeChanger: true, current: search.pageNo, pageSize: search.pageSize }} />
+                setDataSource={setDataSource}
+                columns={operate ? columns.concat(operate({ refresh, setModalForm })) : columns}
+            />
         </Modal>
     )
 }

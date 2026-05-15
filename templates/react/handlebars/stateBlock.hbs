@@ -1,5 +1,5 @@
 const [form] = Form.useForm()
-const [modal, setModal] = useState({})
+const [modal, setModal] = useState({ visible:false, title:'', formItems:[] })
 {{#if hasRowSelection}}
 const [selectedRows, setSelectedRows] = useState([])
 {{/if}}
