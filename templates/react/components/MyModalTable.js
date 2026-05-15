@@ -5,7 +5,7 @@ import { MySearchForm } from './MySearchForm'
 import { useTableQuery } from '../hooks/useTableQuery'
 
 
-export const MyModalTable = ({ api, onOk, title, width, footer, visible, columns, operate, setModal, formItems, setModalForm, rowSelection, formatResponse, functionButtons, extraParams = {} }) => {
+export const MyModalTable = ({ api, onOk, title, width, footer, visible, columns, operate, setModal, formItems, setModalForm, rowSelection, formatResponse, functionButtons, extraParams = {}, modalPagination = true }) => {
 
     const [pending, setPending] = useState(false)
 
@@ -33,11 +33,13 @@ export const MyModalTable = ({ api, onOk, title, width, footer, visible, columns
             {formItems?.length > 0 && <MySearchForm search={search} formItems={formItems} setSearch={handleSearch} syncUrlParams={false} />}
             {functionButtons?.length > 0 && <Space>{functionButtons.map(item => <Button key={item.name} type={item.type} onClick={item.onClick}>{item.name}</Button>)}</Space>}
             <MyTable
-                pagination={true}
+                total={total}
+                search={search}
                 loading={loading}
                 scroll={{ y: 400 }}
                 dataSource={dataSource}
                 rowSelection={rowSelection}
+                pagination={modalPagination}
                 onChange={handleTableChange}
                 setDataSource={setDataSource}
                 columns={operate ? columns.concat(operate({ refresh, setModalForm })) : columns}
