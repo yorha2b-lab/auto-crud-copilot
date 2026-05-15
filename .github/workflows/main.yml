@@ -77,55 +77,70 @@ jobs:
           
           echo "{\"total_clones\": $TOTAL_CLONES, \"saved_hours\": $SAVED_HOURS, \"stars\": $STARS, \"forks\": $FORKS}" > bunker-stats.json
 
-      # 3. 🧬 【地堡 7.0 视觉核心】：全频道作战看板
+      # 3. 🧬 【地堡 7.1 修复版】：带脏数据过滤的看板构筑
       - name: Construct Sovereign Dashboard
         run: |
-          echo "🤖 Pod 042: 执行‘全频道看板构筑协议’..."
+          echo "🤖 Pod 042: 执行‘全频道看板构筑协议 [逻辑除垢版]’..."
           python3 <<EOF
           import pandas as pd
           import matplotlib.pyplot as plt
           import seaborn as sns
           import os
 
-          # 读取并合并数据
-          df_c = pd.read_csv('ghrs-data/clones_ledger.csv').rename(columns={'clones': 'Clones'})
-          df_v = pd.read_csv('ghrs-data/views_ledger.csv').rename(columns={'views': 'Views'})
-          df = pd.merge(df_c, df_v, on='date', how='outer').fillna(0)
-          df['date'] = pd.to_datetime(df['date'])
-          df = df.sort_values('date')
-          df['cumulative'] = df['Clones'].cumsum()
+          # 💡 偷师点：定义一个强悍的数据读取函数，专门对付重复的表头
+          def load_clean_csv(path, col_name):
+              df = pd.read_csv(path)
+              # 1. 强制转换日期，无法转换的（比如单词 "date"）会变成 NaT (Not a Time)
+              df['date'] = pd.to_datetime(df['date'], errors='coerce')
+              # 2. 物理超度所有 NaT 的行（踢走脏数据）
+              df = df.dropna(subset=['date'])
+              return df.rename(columns={col_name.lower(): col_name})
 
-          plt.style.use('dark_background')
-          fig = plt.figure(figsize=(12, 10))
-          gs = fig.add_gridspec(3, 1)
+          try:
+              df_c = load_clean_csv('ghrs-data/clones_ledger.csv', 'Clones')
+              df_v = load_clean_csv('ghrs-data/views_ledger.csv', 'Views')
+              
+              # 物理对齐与合并
+              df = pd.merge(df_c, df_v, on='date', how='outer').fillna(0)
+              df = df.sort_values('date')
+              df['cumulative'] = df['Clones'].cumsum()
 
-          # 子图 1：Views vs Clones (这就是您想要的“幽灵对比图”)
-          ax1 = fig.add_subplot(gs[0])
-          ax1.plot(df['date'].tail(30), df['Views'].tail(30), color='#ffffff', label='Views (Web)', alpha=0.5, linestyle='--')
-          ax1.plot(df['date'].tail(30), df['Clones'].tail(30), color='#33cc33', label='Clones (Terminal)', linewidth=2)
-          ax1.fill_between(df['date'].tail(30), df['Clones'].tail(30), color='#33cc33', alpha=0.1)
-          ax1.set_title('Neural Activity: Web Visitors vs Terminal Commandos', color='#33cc33')
-          ax1.legend()
+              plt.style.use('dark_background')
+              fig = plt.figure(figsize=(12, 10))
+              gs = fig.add_gridspec(3, 1)
 
-          # 子图 2：累计荣光抛物线
-          ax2 = fig.add_subplot(gs[1])
-          ax2.fill_between(df['date'], df['cumulative'], color='#0066ff', alpha=0.2)
-          ax2.plot(df['date'], df['cumulative'], color='#0066ff', linewidth=3)
-          ax2.set_title('Legacy Accumulation: Total System Throughput', color='#0066ff')
+              # 子图 1：Views vs Clones
+              ax1 = fig.add_subplot(gs[0])
+              plot_df = df.tail(30)
+              ax1.plot(plot_df['date'], plot_df['Views'], color='#ffffff', label='Views (Web)', alpha=0.5, linestyle='--')
+              ax1.plot(plot_df['date'], plot_df['Clones'], color='#33cc33', label='Clones (Terminal)', linewidth=2)
+              ax1.fill_between(plot_df['date'], plot_df['Clones'], color='#33cc33', alpha=0.1)
+              ax1.set_title('Neural Activity: Web Visitors vs Terminal Commandos', color='#33cc33')
+              ax1.legend()
 
-          # 子图 3：作战热力图
-          ax3 = fig.add_subplot(gs[2])
-          df['week'] = df['date'].dt.isocalendar().week
-          df['day'] = df['date'].dt.day_name()
-          pivot = df.pivot_table(index='day', columns='week', values='Clones', aggfunc='sum').fillna(0)
-          days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-          pivot = pivot.reindex(days_order)
-          sns.heatmap(pivot, cmap='Greens', ax=ax3, cbar=False, annot=False, linewidths=2, linecolor='#1a1a1a')
-          ax3.set_title('Global Deployment Heatmap', color='#33cc33')
+              # 子图 2：累计荣光抛物线
+              ax2 = fig.add_subplot(gs[1])
+              ax2.fill_between(df['date'], df['cumulative'], color='#0066ff', alpha=0.2)
+              ax2.plot(df['date'], df['cumulative'], color='#0066ff', linewidth=3)
+              ax2.set_title('Legacy Accumulation: Total System Throughput', color='#0066ff')
 
-          os.makedirs('plots', exist_ok=True)
-          plt.tight_layout()
-          plt.savefig('plots/bunker_dashboard.png', dpi=120)
+              # 子图 3：作战热力图
+              ax3 = fig.add_subplot(gs[2])
+              df['week'] = df['date'].dt.isocalendar().week
+              df['day'] = df['date'].dt.day_name()
+              pivot = df.pivot_table(index='day', columns='week', values='Clones', aggfunc='sum').fillna(0)
+              days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+              pivot = pivot.reindex(days_order)
+              sns.heatmap(pivot, cmap='Greens', ax=ax3, cbar=False, annot=False, linewidths=2, linecolor='#1a1a1a')
+              ax3.set_title('Global Deployment Heatmap', color='#33cc33')
+
+              os.makedirs('plots', exist_ok=True)
+              plt.tight_layout()
+              plt.savefig('plots/bunker_dashboard.png', dpi=120)
+              print("✅ 地堡 7.1 视觉矩阵重构完成！")
+          except Exception as e:
+              print(f"❌ 构筑失败：检测到逻辑病毒: {e}")
+              exit(1)
           EOF
 
       # 4. [报表装修]
