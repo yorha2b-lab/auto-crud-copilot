@@ -77,34 +77,45 @@ jobs:
           
           echo "{\"total_clones\": $TOTAL_CLONES, \"saved_hours\": $SAVED_HOURS, \"stars\": $STARS, \"forks\": $FORKS}" > bunker-stats.json
 
-      # 3. 🧬 【地堡 7.1 修复版】：带脏数据过滤的看板构筑
+      # 3. 🧬 【地堡 7.2 终极修复版】：带强力类型转换的看板构筑
       - name: Construct Sovereign Dashboard
         run: |
-          echo "🤖 Pod 042: 执行‘全频道看板构筑协议 [逻辑除垢版]’..."
+          echo "🤖 Pod 042: 执行‘全频道看板构筑协议 [类型强转版]’..."
           python3 <<EOF
           import pandas as pd
           import matplotlib.pyplot as plt
           import seaborn as sns
           import os
 
-          # 💡 偷师点：定义一个强悍的数据读取函数，专门对付重复的表头
-          def load_clean_csv(path, col_name):
+          # 💡 偷师点：定义一个“暴力清洗”函数，确保数据类型绝对纯净
+          def load_hard_clean_csv(path, col_name):
               df = pd.read_csv(path)
-              # 1. 强制转换日期，无法转换的（比如单词 "date"）会变成 NaT (Not a Time)
-              df['date'] = pd.to_datetime(df['date'], errors='coerce')
-              # 2. 物理超度所有 NaT 的行（踢走脏数据）
+              # 1. 强制转换日期，指定格式并踢走非日期行
+              df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d', errors='coerce')
               df = df.dropna(subset=['date'])
-              return df.rename(columns={col_name.lower(): col_name})
+              
+              # 2. 🔥 核心修正：强制将数据列转换为数字，脏数据变 NaN 然后填 0
+              target_col = col_name.lower()
+              if target_col in df.columns:
+                  df[col_name] = pd.to_numeric(df[target_col], errors='coerce').fillna(0)
+              
+              return df[['date', col_name]]
 
           try:
-              df_c = load_clean_csv('ghrs-data/clones_ledger.csv', 'Clones')
-              df_v = load_clean_csv('ghrs-data/views_ledger.csv', 'Views')
+              # 分别读取并清洗两个账本
+              df_c = load_hard_clean_csv('ghrs-data/clones_ledger.csv', 'Clones')
+              df_v = load_hard_clean_csv('ghrs-data/views_ledger.csv', 'Views')
               
-              # 物理对齐与合并
+              # 物理对齐与合并（按日期合并）
               df = pd.merge(df_c, df_v, on='date', how='outer').fillna(0)
               df = df.sort_values('date')
+              
+              # 确保合并后的数据也是 float 类型，防止绘图器罢工
+              df['Clones'] = df['Clones'].astype(float)
+              df['Views'] = df['Views'].astype(float)
               df['cumulative'] = df['Clones'].cumsum()
 
+              # --- 开始绘图 ---
               plt.style.use('dark_background')
               fig = plt.figure(figsize=(12, 10))
               gs = fig.add_gridspec(3, 1)
@@ -115,14 +126,16 @@ jobs:
               ax1.plot(plot_df['date'], plot_df['Views'], color='#ffffff', label='Views (Web)', alpha=0.5, linestyle='--')
               ax1.plot(plot_df['date'], plot_df['Clones'], color='#33cc33', label='Clones (Terminal)', linewidth=2)
               ax1.fill_between(plot_df['date'], plot_df['Clones'], color='#33cc33', alpha=0.1)
-              ax1.set_title('Neural Activity: Web Visitors vs Terminal Commandos', color='#33cc33')
+              ax1.set_title('Strategic Recon: Web Visitors vs Terminal Commandos (Last 30 Days)', color='#33cc33', pad=15)
               ax1.legend()
+              ax1.grid(color='#444', linestyle='--', alpha=0.3)
 
               # 子图 2：累计荣光抛物线
               ax2 = fig.add_subplot(gs[1])
               ax2.fill_between(df['date'], df['cumulative'], color='#0066ff', alpha=0.2)
               ax2.plot(df['date'], df['cumulative'], color='#0066ff', linewidth=3)
-              ax2.set_title('Legacy Accumulation: Total System Throughput', color='#0066ff')
+              ax2.set_title('Bunker Glory: Total Cumulative Clones', color='#0066ff', pad=15)
+              ax2.grid(color='#444', linestyle=':', alpha=0.3)
 
               # 子图 3：作战热力图
               ax3 = fig.add_subplot(gs[2])
@@ -132,14 +145,18 @@ jobs:
               days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
               pivot = pivot.reindex(days_order)
               sns.heatmap(pivot, cmap='Greens', ax=ax3, cbar=False, annot=False, linewidths=2, linecolor='#1a1a1a')
-              ax3.set_title('Global Deployment Heatmap', color='#33cc33')
+              ax3.set_title('Deployment Matrix: All-Time Activity', color='#33cc33', pad=15)
+              ax3.set_xlabel('Weeks of the Year')
+              ax3.set_ylabel('')
 
               os.makedirs('plots', exist_ok=True)
               plt.tight_layout()
               plt.savefig('plots/bunker_dashboard.png', dpi=120)
-              print("✅ 地堡 7.1 视觉矩阵重构完成！")
+              print(f"✅ 视觉矩阵重构成功！当前全量战绩：{df['cumulative'].max()}")
           except Exception as e:
-              print(f"❌ 构筑失败：检测到逻辑病毒: {e}")
+              print(f"❌ 构筑失败：检测到物理层逻辑冲突: {e}")
+              import traceback
+              traceback.print_exc()
               exit(1)
           EOF
 
