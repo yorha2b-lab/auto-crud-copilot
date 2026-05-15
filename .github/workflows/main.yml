@@ -26,21 +26,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install matplotlib pandas seaborn
 
-      # 2. 全频道数据搜刮协议
+      # 2. 全频道数据搜刮协议 [逻辑升级：强制去垢]
       - name: Full Spectrum Data Mining
         run: |
           echo "🤖 Pod 042: 启动‘全领域信号搜刮协议’..."
           AUTH="-H 'Authorization: token ${{ secrets.STATS_TOKEN }}' -H 'Accept: application/vnd.github.v3+json'"
           API="https://api.github.com/repos/${{ github.repository }}"
           
-          # A. 抓取：Clones, Referrers, Views, General Stats
           eval curl -s $AUTH $API/traffic/clones > raw_clones.json
           eval curl -s $AUTH $API/traffic/popular/referrers > raw_referrers.json
           eval curl -s $AUTH $API/traffic/views > raw_views.json
           eval curl -s $AUTH $API > raw_repo.json
 
-          # B. 解析并物理焊接【访客账本】(Views)
           mkdir -p ghrs-data
+
+          # --- 物理焊接：Views 账本 ---
           echo "date,views,uniques" > /tmp/new_views.csv
           jq -r '.views[] | "\(.timestamp[0:10]),\(.count),\(.uniques)"' raw_views.json >> /tmp/new_views.csv
           
@@ -48,13 +48,14 @@ jobs:
           if [ ! -f "$V_LEDGER" ]; then
             cp /tmp/new_views.csv "$V_LEDGER"
           else
-            (head -n 1 "$V_LEDGER"; tail -n +2 "$V_LEDGER"; tail -n +2 /tmp/new_views.csv) | \
-            awk -F',' '!a[$1]++' | sort -r > /tmp/final_v_ledger.csv
+            # 💡 核心修正：(cat + grep -v) 物理清除所有重复的 "date" 字符串
+            (tail -n +2 "$V_LEDGER"; tail -n +2 /tmp/new_views.csv) | grep -v "date" | \
+            sed 's/\//-/g' | awk -F',' '!a[$1]++' | sort -r > /tmp/final_v_data.csv
             echo "date,views,uniques" > "$V_LEDGER"
-            cat /tmp/final_v_ledger.csv >> "$V_LEDGER"
+            cat /tmp/final_v_data.csv >> "$V_LEDGER"
           fi
 
-          # C. 解析并物理焊接【克隆账本】(Clones)
+          # --- 物理焊接：Clones 账本 ---
           echo "date,clones,uniques" > /tmp/new_clones.csv
           jq -r '.clones[] | "\(.timestamp[0:10]),\(.count),\(.uniques)"' raw_clones.json >> /tmp/new_clones.csv
           
@@ -62,20 +63,20 @@ jobs:
           if [ ! -f "$C_LEDGER" ]; then
             cp /tmp/new_clones.csv "$C_LEDGER"
           else
-            (head -n 1 "$C_LEDGER"; tail -n +2 "$C_LEDGER"; tail -n +2 /tmp/new_clones.csv) | \
-            awk -F',' '!a[$1]++' | sort -r > /tmp/final_c_ledger.csv
+            # 💡 核心修正：物理清除 "date" 噪音
+            (tail -n +2 "$C_LEDGER"; tail -n +2 /tmp/new_clones.csv) | grep -v "date" | \
+            sed 's/\//-/g' | awk -F',' '!a[$1]++' | sort -r > /tmp/final_c_data.csv
             echo "date,clones,uniques" > "$C_LEDGER"
-            cat /tmp/final_c_ledger.csv >> "$C_LEDGER"
+            cat /tmp/final_c_data.csv >> "$C_LEDGER"
           fi
 
-          # D. 核算：提取 Star, Fork 并生成统计 JSON
-          TOTAL_CLONES=$(awk -F',' 'NR>1 {sum+=$2} END {print sum}' "$C_LEDGER")
+          # --- 战绩核算 (排除脏数据计算) ---
+          TOTAL_CLONES=$(grep -v "date" "$C_LEDGER" | awk -F',' '{sum+=$2} END {print sum}')
           STARS=$(jq '.stargazers_count' raw_repo.json)
           FORKS=$(jq '.forks_count' raw_repo.json)
-          # 💡 低调折算：2小时/Page
           SAVED_HOURS=$((TOTAL_CLONES * 2)) 
           
-          echo "{\"total_clones\": $TOTAL_CLONES, \"saved_hours\": $SAVED_HOURS, \"stars\": $STARS, \"forks\": $FORKS}" > bunker-stats.json
+          echo "{\"total_clones\": $TOTAL_CLONES, \"saved_hours\": $HOURS, \"stars\": $STARS, \"forks\": $FORKS}" > bunker-stats.json
 
       # 3. 🧬 【地堡 7.2 终极修复版】：带强力类型转换的看板构筑
       - name: Construct Sovereign Dashboard
