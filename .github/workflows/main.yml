@@ -26,7 +26,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install matplotlib pandas seaborn
 
-      # 2. 全频道数据搜刮协议 [逻辑升级：强制去垢]
+      # 2. 全频道数据搜刮协议 [逻辑升级：专业 JSON 构筑]
       - name: Full Spectrum Data Mining
         run: |
           echo "🤖 Pod 042: 启动‘全领域信号搜刮协议’..."
@@ -48,7 +48,6 @@ jobs:
           if [ ! -f "$V_LEDGER" ]; then
             cp /tmp/new_views.csv "$V_LEDGER"
           else
-            # 💡 核心修正：(cat + grep -v) 物理清除所有重复的 "date" 字符串
             (tail -n +2 "$V_LEDGER"; tail -n +2 /tmp/new_views.csv) | grep -v "date" | \
             sed 's/\//-/g' | awk -F',' '!a[$1]++' | sort -r > /tmp/final_v_data.csv
             echo "date,views,uniques" > "$V_LEDGER"
@@ -63,20 +62,28 @@ jobs:
           if [ ! -f "$C_LEDGER" ]; then
             cp /tmp/new_clones.csv "$C_LEDGER"
           else
-            # 💡 核心修正：物理清除 "date" 噪音
             (tail -n +2 "$C_LEDGER"; tail -n +2 /tmp/new_clones.csv) | grep -v "date" | \
             sed 's/\//-/g' | awk -F',' '!a[$1]++' | sort -r > /tmp/final_c_data.csv
             echo "date,clones,uniques" > "$C_LEDGER"
             cat /tmp/final_c_data.csv >> "$C_LEDGER"
           fi
 
-          # --- 战绩核算 (排除脏数据计算) ---
+          # --- 战绩核算 (使用高级变量防护) ---
           TOTAL_CLONES=$(grep -v "date" "$C_LEDGER" | awk -F',' '{sum+=$2} END {print sum}')
-          STARS=$(jq '.stargazers_count' raw_repo.json)
-          FORKS=$(jq '.forks_count' raw_repo.json)
+          TOTAL_CLONES=${TOTAL_CLONES:-0}
+          STARS=$(jq '.stargazers_count // 0' raw_repo.json)
+          FORKS=$(jq '.forks_count // 0' raw_repo.json)
           SAVED_HOURS=$((TOTAL_CLONES * 2)) 
           
-          echo "{\"total_clones\": $TOTAL_CLONES, \"saved_hours\": $HOURS, \"stars\": $STARS, \"forks\": $FORKS}" > bunker-stats.json
+          # 💡 偷师点：用 jq 物理合成 JSON，彻底杜绝语法错误
+          jq -n \
+            --arg tc "$TOTAL_CLONES" \
+            --arg sh "$SAVED_HOURS" \
+            --arg st "$STARS" \
+            --arg fk "$FORKS" \
+            '{total_clones: ($tc|tonumber), saved_hours: ($sh|tonumber), stars: ($st|tonumber), forks: ($fk|tonumber)}' > bunker-stats.json
+          
+          echo "✅ 地堡 7.4 核心战绩封存达成：$TOTAL_CLONES"
 
       # 3. 🧬 【地堡 7.2 终极修复版】：带强力类型转换的看板构筑
       - name: Construct Sovereign Dashboard
