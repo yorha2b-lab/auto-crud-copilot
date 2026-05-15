@@ -73,15 +73,13 @@ jobs:
           TOTAL_CLONES=${TOTAL_CLONES:-0}
           STARS=$(jq '.stargazers_count // 0' raw_repo.json)
           FORKS=$(jq '.forks_count // 0' raw_repo.json)
-          SAVED_HOURS=$((TOTAL_CLONES * 2)) 
           
           # 💡 偷师点：用 jq 物理合成 JSON，彻底杜绝语法错误
           jq -n \
             --arg tc "$TOTAL_CLONES" \
-            --arg sh "$SAVED_HOURS" \
             --arg st "$STARS" \
             --arg fk "$FORKS" \
-            '{total_clones: ($tc|tonumber), saved_hours: ($sh|tonumber), stars: ($st|tonumber), forks: ($fk|tonumber)}' > bunker-stats.json
+            '{total_clones: ($tc|tonumber), stars: ($st|tonumber), forks: ($fk|tonumber)}' > bunker-stats.json
           
           echo "✅ 地堡 7.4 核心战绩封存达成：$TOTAL_CLONES"
 
@@ -173,14 +171,12 @@ jobs:
         run: |
           STATS="bunker-stats.json"
           TOTAL=$(jq '.total_clones' $STATS)
-          HOURS=$(jq '.saved_hours' $STATS)
           STARS=$(jq '.stars' $STATS)
           FORKS=$(jq '.forks' $STATS)
           
           echo "# 🛰️ 地堡终极运行报告 (Sovereign Dashboard)" > README.md
           echo "## 📊 核心战力指标" >> README.md
           echo "- **物理克隆总计**: \`$TOTAL\` 次" >> README.md
-          echo "- **物理抢救工时**: \`$HOURS\` 小时 (低调算法: 2h/Page)" >> README.md
           echo "- **当前社群声望**: ⭐ \`$STARS\` / 🍴 \`$FORKS\`" >> README.md
           echo "- **地堡协议防护**: AGPL-3.0 生效中" >> README.md
           echo "" >> README.md
