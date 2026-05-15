@@ -15,17 +15,18 @@ export const MyModalTable = ({ api, onOk, title, width, footer, visible, columns
 
     const handleTableChange = (pagination, filters, sorter) => setSearch({ ...search, pageNo: pagination.current, pageSize: pagination.pageSize, orderBy: sorter.column ? sorter.field : undefined })
 
-    const handleOk = () => {
+    const handleOk = async () => {
         if (onOk) {
             try {
                 setPending(true)
-                onOk()
+                await onOk()
                 setPending(false)
             } catch (error) {
                 console.log('操作失败:', error)
+            } finally {
+                setPending(false)
             }
         }
-        setModal({ visible: false })
     }
 
     return (
