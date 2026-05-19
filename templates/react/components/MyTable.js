@@ -1,43 +1,31 @@
 import { Table } from 'antd'
-import { useRef, useMemo, useEffect } from 'react'
 import { EditableRow, EditableCell } from './EditableCell'
+import { useRef, useMemo, useEffect, useCallback } from 'react'
 
-const components = {
-    body: {
-        row: EditableRow,
-        cell: EditableCell,
-    }
-}
-
-export const MyTable = ({ size, query, total, search, autoScroll, onChange, pagination, rowClassName, customSave, setDataSource, columns = [], rowSelection, rowKey = 'id', loading = false, dataSource = [], scroll = { x: 'max-content' }, ...restProps }) => {
+export const MyTable = ({ size, query, total, search, autoScroll, onChange, pagination, rowClassName, customSave, setDataSource, lineFormChange, columns = [], rowSelection, rowKey = 'id', loading = false, dataSource = [], scroll = { x: 'max-content' }, ...restProps }) => {
 
     const tableRef = useRef(null)
     const hasScrolledRef = useRef(false)
 
     const isEditable = useMemo(() => columns.some(col => col.editType), [columns])
 
-    const handleSave = row => {
-        const newData = [...dataSource]
-        const index = newData.findIndex(item => row[rowKey] === item[rowKey])
-        const item = newData[index]
-        newData.splice(index, 1, { ...item, ...row })
-        setDataSource(newData)
-        customSave?.({ ...item, ...row })
-    }
+    const handleSave = useCallback((row) => {
+        setDataSource(prev => {
+            const newData = [...prev]
+            const index = newData.findIndex(item => row[rowKey] === item[rowKey])
+            const item = newData[index]
+            newData.splice(index, 1, { ...item, ...row })
+            customSave?.({ ...item, ...row }, newData)
+            return newData
+        })
+    }, [rowKey, customSave, setDataSource])
 
-    const paginationConfig = useMemo(() => {
-
-        if (!pagination) return false
-
-        return {
-            total,
-            showSizeChanger: true,
-            current: search?.pageNo,
-            pageSize: search?.pageSize,
-            showTotal: (total) => `共 ${total} 条`,
-            ...(typeof pagination === 'object' ? pagination : {})
+    const components = useMemo(() => ({
+        body: {
+            row: EditableRow,
+            cell: EditableCell,
         }
-    }, [total, search, pagination])
+    }), [])
 
     const mergedColumns = useMemo(() => {
         return columns.map(col => {
@@ -53,13 +41,29 @@ export const MyTable = ({ size, query, total, search, autoScroll, onChange, pagi
                     rules: col.rules,
                     options: col.options,
                     editType: col.editType,
-                    editable: !!col.editType,
                     dataIndex: col.dataIndex,
-                    placeholder: col.placeholder
+                    placeholder: col.placeholder,
+                    defaultEdit: col.defaultEdit,
+                    disabled: col.specialDisabled ? record.disabled : col.disabled,
+                    editable: col.specialEditType ? record.needEdit && !!col.editType : !!col.editType,
                 }),
             }
         })
-    }, [columns])
+    }, [columns, handleSave])
+
+    const paginationConfig = useMemo(() => {
+
+        if (!pagination) return false
+
+        return {
+            total,
+            showSizeChanger: true,
+            current: search?.pageNo,
+            pageSize: search?.pageSize,
+            showTotal: (total) => `共 ${total} 条`,
+            ...(typeof pagination === 'object' ? pagination : {})
+        }
+    }, [total, search, pagination])
 
     useEffect(() => {
         if (!autoScroll || !dataSource?.length || query?.rowIndex === undefined) return
@@ -92,6 +96,7 @@ export const MyTable = ({ size, query, total, search, autoScroll, onChange, pagi
                 rowSelection={rowSelection}
                 pagination={paginationConfig}
                 components={isEditable ? components : undefined}
+                onRow={(record, index) => ({ record, index, onValuesChange: lineFormChange })}
                 rowClassName={(record, index) => {
                     const externalClass = typeof rowClassName === 'function' ? rowClassName(record, index) : rowClassName
                     const classes = [externalClass]

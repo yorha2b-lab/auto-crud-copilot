@@ -71,7 +71,7 @@ export const formNode = ({ item }) => {
     const commonProps = {
         disabled: item.readOnly,
         style: { width: item.width ?? '100%' },
-        placeholder: item.placeholder ?? `请${['select', 'cascader', 'date', 'daterange'].includes(item.type) ? '选择' : '输入'}`,
+        placeholder: item.placeholder ?? `请${['select', 'cascader', 'date'].includes(item.type) ? '选择' : '输入'}`,
         ...item.props
     }
 
@@ -82,8 +82,6 @@ export const formNode = ({ item }) => {
             return <InputNumber  {...commonProps} />
         case 'ossUpload':
             return <AliyunOSSUpload {...commonProps} />
-        case 'daterange':
-            return <DatePicker.RangePicker {...commonProps} />
         case 'radio':
             return <Radio.Group options={item.options} {...commonProps} />
         case 'treeSelect':
@@ -96,6 +94,8 @@ export const formNode = ({ item }) => {
             return <Tree checkable treeData={item.options} {...commonProps} />
         case 'textarea':
             return <Input.TextArea autoSize={{ minRows: 4 }} {...commonProps} />
+        case 'daterange':
+            return <DatePicker.RangePicker {...commonProps} placeholder={undefined} />
         case 'cascader':
             return <Cascader showSearch allowClear options={item.options} {...commonProps} />
         case 'upload':

@@ -1,11 +1,12 @@
 import { useRef, useState, useEffect, useCallback } from 'react'
 
-export const useTableQuery = (api, formatResponse, initialParams = {}) => {
+export const useTableQuery = ({ api, cols = [], initialParams = {}, formatResponse }) => {
 
     const [total, setTotal] = useState(0)
+    const [columns, setColumns] = useState(cols)
     const [loading, setLoading] = useState(false)
     const [dataSource, setDataSource] = useState([])
-    const [search, setSearch] = useState({ pageNo: 1, pageSize: 10, ...initialParams })
+    const [search, setSearch] = useState(initialParams)
 
     const apiRef = useRef(api)
     const fetchIdRef = useRef(0)
@@ -14,6 +15,8 @@ export const useTableQuery = (api, formatResponse, initialParams = {}) => {
         apiRef.current = api
     }, [api])
 
+    const getColumnSchema = cols => cols.map(col => ({ title: col.title, dataIndex: col.dataIndex })).join('|')
+
     const fetchData = useCallback(async () => {
         if (!apiRef.current) return
         setLoading(true)
@@ -21,7 +24,10 @@ export const useTableQuery = (api, formatResponse, initialParams = {}) => {
         try {
             const response = await apiRef.current(search)
             if (currentFetchId !== fetchIdRef.current) return
-            const { data, total } = formatResponse(response ?? {})
+            const { data, total, columns: newCols } = formatResponse(response ?? {})
+            if (newCols && getColumnSchema(newCols) !== getColumnSchema(columns)) {
+                setColumns(newCols)
+            }
             setDataSource(data)
             setTotal(total ?? 0)
         } catch (error) {
@@ -37,5 +43,5 @@ export const useTableQuery = (api, formatResponse, initialParams = {}) => {
         fetchData()
     }, [fetchData])
 
-    return { total, loading, dataSource, search, setSearch, setDataSource, refresh: fetchData }
+    return { total, columns, loading, dataSource, search, setSearch, setDataSource, refresh: fetchData }
 }

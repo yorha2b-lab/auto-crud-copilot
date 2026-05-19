@@ -1,7 +1,7 @@
 <MyTable
-    rowKey='id'
     query={query}
     total={total}
+    rowKey={rowKey}
     search={search}
     loading={loading}
     dataSource={dataSource}
@@ -20,7 +20,7 @@
     {{#if hasRowSelection}}
     {{{{raw}}}}
     rowSelection={{
-        selectedRowKeys: selectedRows.map(item => item.id),
+        selectedRowKeys: selectedRows.map(item => item[rowKey]),
         onChange: (keys, rows) => setSelectedRows(rows)
     }}
     {{{{/raw}}}}

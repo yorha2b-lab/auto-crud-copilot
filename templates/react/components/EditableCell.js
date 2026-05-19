@@ -3,10 +3,18 @@ import React, { useRef, useState, useEffect, useContext } from 'react'
 
 const EditableContext = React.createContext(null)
 
-export const EditableRow = ({ index, ...props }) => {
+export const EditableRow = ({ index, record, ...props }) => {
+
     const [form] = Form.useForm()
+
+    useEffect(() => {
+        if (record) {
+            form.setFieldsValue(record)
+        }
+    }, [record])
+
     return (
-        <Form form={form} component={false}>
+        <Form form={form} component={false} onValuesChange={(changedValue, allValue) => props?.onValuesChange?.({ changedValue, allValue, form })}>
             <EditableContext.Provider value={form}>
                 <tr {...props} />
             </EditableContext.Provider>
@@ -14,7 +22,7 @@ export const EditableRow = ({ index, ...props }) => {
     )
 }
 
-export const EditableCell = ({ title, record, editable, children, dataIndex, placeholder, handleSave, rules = [], options = [], editType = 'text', ...restProps }) => {
+export const EditableCell = ({ title, record, editable, disabled, children, dataIndex, placeholder, handleSave, defaultEdit, rules = [], options = [], editType = 'text', ...restProps }) => {
 
     const inputRef = useRef(null)
     const form = useContext(EditableContext)
@@ -37,7 +45,9 @@ export const EditableCell = ({ title, record, editable, children, dataIndex, pla
     const save = async () => {
         try {
             const values = await form.validateFields()
-            toggleEdit()
+            if (!defaultEdit) {
+                toggleEdit()
+            }
             handleSave({ ...record, ...values })
         } catch (errInfo) {
             console.log('保存失败:', errInfo)
@@ -46,13 +56,25 @@ export const EditableCell = ({ title, record, editable, children, dataIndex, pla
 
     let inputNode
 
+    const formProps = {
+        rules,
+        name: dataIndex,
+        style: { margin: 0 },
+    }
+
+    const commonProps = {
+        onBlur: save,
+        disabled: disabled,
+        placeholder: placeholder ?? title,
+    }
+
     switch (editType) {
-        case 'number':
-            inputNode = <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} placeholder={placeholder ?? title} />
-            break
         case 'select':
-            inputNode = <Select ref={inputRef} options={options} onBlur={save} placeholder={placeholder ?? title} />
+            inputNode = <Select ref={inputRef} options={options} {...commonProps} />
             break;
+        case 'number':
+            inputNode = <InputNumber ref={inputRef} onPressEnter={save} {...commonProps} />
+            break
         case 'checkbox':
             inputNode = (
                 <div tabIndex={-1} onBlur={e => {
@@ -61,19 +83,21 @@ export const EditableCell = ({ title, record, editable, children, dataIndex, pla
                         save()
                     }
                 }}>
-                    <Checkbox.Group ref={inputRef} options={options} />
+                    <Form.Item {...formProps}>
+                        <Checkbox.Group ref={inputRef} options={options} disabled={disabled} {...(options.length === 1 ? { onChange: save } : {})} />
+                    </Form.Item>
                 </div>
             )
             break;
         default:
-            inputNode = <Input ref={inputRef} onPressEnter={save} onBlur={save} placeholder={placeholder ?? title} />
+            inputNode = <Input ref={inputRef} onPressEnter={save} {...commonProps} />
     }
 
     return (
         <td {...restProps}>
             {editable ? (
-                editing ? (
-                    <Form.Item rules={rules} name={dataIndex} style={{ margin: 0 }}>
+                editing || defaultEdit ? (
+                    <Form.Item {...(['checkbox'].includes(editType) ? { style: formProps.style } : formProps)}>
                         {inputNode}
                     </Form.Item>
                 ) : (
