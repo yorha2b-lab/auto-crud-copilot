@@ -21,7 +21,7 @@
             window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`)
             setSearch(newSearch)
         } else {
-            setSearch({ ...search, orderBy: undefined })
+            setSearch({ ...search,pageNo: pagination.current, pageSize: pagination.pageSize, orderBy: undefined })
         }
     }}
     {{{{/raw}}}}
