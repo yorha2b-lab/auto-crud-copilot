@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, useCallback } from 'react'
 
-export const useTableQuery = ({ api, cols = [], initialParams = {}, formatResponse }) => {
+export const useTableQuery = ({ api, cols, initialParams = {}, formatResponse }) => {
 
     const [total, setTotal] = useState(0)
     const [columns, setColumns] = useState(cols)
