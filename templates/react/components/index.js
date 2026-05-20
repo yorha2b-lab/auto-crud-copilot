@@ -101,7 +101,7 @@ export const formNode = ({ item }) => {
         case 'upload':
             return <Upload {...item.uploadProps} {...commonProps}>{item.content ?? '上传文件'}</Upload>
         case 'select':
-            return <Select allowClear showSearch mode={item.mode} options={item.options} {...commonProps} />
+            return <Select allowClear showSearch mode={item.mode} options={item.options} optionFilterProp='label' {...commonProps} />
         default:
             return <Input allowClear {...commonProps} />
     }
