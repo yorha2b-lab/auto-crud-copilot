@@ -15,7 +15,7 @@ export const useTableQuery = ({ api, cols = [], initialParams = {}, formatRespon
         apiRef.current = api
     }, [api])
 
-    const getColumnSchema = cols => cols.map(col => ({ title: col.title, dataIndex: col.dataIndex })).join('|')
+    const getColumnSchema = cols => cols.map(col => `${col.title}-${col.dataIndex}-${col.sortOrder}`).join('|')
 
     const fetchData = useCallback(async () => {
         if (!apiRef.current) return
@@ -43,5 +43,5 @@ export const useTableQuery = ({ api, cols = [], initialParams = {}, formatRespon
         fetchData()
     }, [fetchData])
 
-    return { total, columns, loading, dataSource, search, setSearch, setDataSource, refresh: fetchData }
+    return { total, columns, loading, dataSource, search, setSearch, setLoading, setDataSource, refresh: fetchData }
 }
