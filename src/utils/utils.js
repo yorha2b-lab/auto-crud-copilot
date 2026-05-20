@@ -189,7 +189,7 @@ const generateSmartImports = (codeStr, hasTabs) => {
         usedReact.length && `import { ${usedReact.join(', ')} } from 'react'`,
         `import { request } from '../../utils/request'`,
         `import { formatQuery } from '../../utils/utils'`,
-        `import { ${hasTabs ? 'tabs, ' : ''}columns, formItems, modalItems } from './resource'`,
+        `import { ${hasTabs ? 'tabs, ' : ''}formItems, modalItems, tableColumns} from './resource'`,
         ...usedHooks.map(hook => `import { ${hook} } from '../../hooks/${hook}'`),
         ...usedComps.map(comp => `import { ${comp} } from '../../components/${comp}'`),
         usedAntd.length && `import { Form, ${usedAntd.join(', ')} } from 'antd'`

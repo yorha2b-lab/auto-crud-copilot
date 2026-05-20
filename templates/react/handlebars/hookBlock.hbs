@@ -5,12 +5,12 @@ const query = formatQuery(Object.fromEntries(new URLSearchParams(location.search
 const { total, columns, loading, dataSource, search, setSearch, setDataSource, refresh } = useTableQuery({
         api: async params => await request('/api/{{fileName}}', { method: 'POST', body: params }),
         initialParams: { pageNo: 1, pageSize: 10, ...query },
-        cols:[],//前端指定列数组
+        cols:tableColumns,//前端指定列数组
         formatResponse: response => {
             return {
                 data: response?.data ?? [],
                 total: response?.data?.total ?? 0,
-                columns: [],//可选,解析接口动态列;优先级高于cols
+                columns: undefined,//可选,解析接口动态列;优先级高于cols
             }
         },
     })
