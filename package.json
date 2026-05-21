@@ -1,6 +1,6 @@
 {
   "name": "@yorha2b-lab/autodev",
-  "version": "2.1.21",
+  "version": "2.1.22",
   "description": "基于视觉大模型的前端(react+Antd)全自动 CRUD 代码生成器",
   "bin": {
     "autodev": "bin/autodev.js"
