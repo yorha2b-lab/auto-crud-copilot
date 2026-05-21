@@ -5,11 +5,11 @@ import { MySearchForm } from './MySearchForm'
 import { useTableQuery } from '../hooks/useTableQuery'
 
 
-export const MyModalTable = ({ api, onOk, title, width, footer, visible, columns, operate, setModal, formItems, setModalForm, rowSelection, formatResponse, functionButtons, extraParams = {}, modalPagination = true }) => {
+export const MyModalTable = ({ api, onOk, title, width, footer, visible, operate, setModal, formItems, setModalForm, rowSelection, formatResponse, functionButtons, columns: modalColumns, initialParams = {}, modalPagination = true }) => {
 
     const [pending, setPending] = useState(false)
 
-    const { total, loading, dataSource, search, refresh, setSearch, setDataSource } = useTableQuery(api, formatResponse, extraParams)
+    const { total, loading, columns, dataSource, search, refresh, setLoading, setSearch, setDataSource } = useTableQuery({ api, cols: modalColumns, initialParams, formatResponse })
 
     const handleSearch = values => setSearch({ ...search, ...values, pageNo: 1 })
 
@@ -20,7 +20,6 @@ export const MyModalTable = ({ api, onOk, title, width, footer, visible, columns
             try {
                 setPending(true)
                 await onOk()
-                setPending(false)
             } catch (error) {
                 console.log('操作失败:', error)
             } finally {
@@ -32,7 +31,7 @@ export const MyModalTable = ({ api, onOk, title, width, footer, visible, columns
     return (
         <Modal centered destroyOnClose title={title} width={width} open={visible} onOk={handleOk} footer={footer} onCancel={() => setModal({ visible: false })} confirmLoading={pending}>
             {formItems?.length > 0 && <MySearchForm search={search} formItems={formItems} setSearch={handleSearch} syncUrlParams={false} />}
-            {functionButtons?.length > 0 && <Space>{functionButtons.map(item => <Button key={item.name} type={item.type} onClick={item.onClick}>{item.name}</Button>)}</Space>}
+            {functionButtons?.length > 0 && <Space>{functionButtons.map(item => <Button key={item.name} type={item.type} onClick={() => item.onClick({ refresh, setLoading, setSearch, setDataSource })}>{item.name}</Button>)}</Space>}
             <MyTable
                 total={total}
                 search={search}
