@@ -1,5 +1,5 @@
-import { useState } from 'react'
 import { MyTable } from './MyTable'
+import { useMemo, useState } from 'react'
 import { Modal, Space, Button } from 'antd'
 import { MySearchForm } from './MySearchForm'
 import { useTableQuery } from '../hooks/useTableQuery'
@@ -28,6 +28,10 @@ export const MyModalTable = ({ api, onOk, title, width, footer, visible, operate
         }
     }
 
+    const finalColumns = useMemo(() => {
+        return operate ? columns.concat(operate({ refresh, setModalForm })) : columns
+    }, [columns, operate])
+
     return (
         <Modal centered destroyOnClose title={title} width={width} open={visible} onOk={handleOk} footer={footer} onCancel={() => setModal({ visible: false })} confirmLoading={pending}>
             {formItems?.length > 0 && <MySearchForm search={search} formItems={formItems} setSearch={handleSearch} syncUrlParams={false} />}
@@ -37,12 +41,12 @@ export const MyModalTable = ({ api, onOk, title, width, footer, visible, operate
                 search={search}
                 loading={loading}
                 scroll={{ y: 400 }}
+                columns={finalColumns}
                 dataSource={dataSource}
                 rowSelection={rowSelection}
                 pagination={modalPagination}
                 onChange={handleTableChange}
                 setDataSource={setDataSource}
-                columns={operate ? columns.concat(operate({ refresh, setModalForm })) : columns}
             />
         </Modal>
     )
