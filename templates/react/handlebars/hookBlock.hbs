@@ -4,7 +4,7 @@ const query = formatQuery(Object.fromEntries(new URLSearchParams(location.search
 
 const { total, columns, loading, dataSource, search, setSearch, setDataSource, refresh } = useTableQuery({
         api: async params => await request('/api/{{fileName}}', { method: 'POST', body: params }),
-        initialParams: { pageNo: 1, pageSize: 10, ...query },
+        initialParams: { pageNo: 1, pageSize: 10, ...initParams, ...query },
         cols:tableColumns,//前端指定列数组
         formatResponse: response => {
             return {
