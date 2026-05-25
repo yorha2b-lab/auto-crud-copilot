@@ -1,7 +1,3 @@
-{{!--
-   📡 [地堡战术响应模组]
-   负责物理封存所有交互事件：包含行级操作、全局按钮、页签切换及弹窗构筑提交。
---}}
 {{#each operations}}
 const {{this.action}} = async record => {
     const response = await request('/api')
