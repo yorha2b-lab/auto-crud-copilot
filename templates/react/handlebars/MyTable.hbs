@@ -1,4 +1,7 @@
 <MyTable
+    {{#if hasPagination}}
+    pagination
+    {{/if}}
     query={query}
     total={total}
     rowKey={rowKey}
