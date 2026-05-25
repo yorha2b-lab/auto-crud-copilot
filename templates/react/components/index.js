@@ -40,6 +40,7 @@ const AliyunOSSUpload = ({ value, onChange, ...restProps }) => {
         try {
             const result = await initOSS(url, options)
             setOSSData(result)
+            return result
         } catch (err) {
             console.log(err)
         }
@@ -79,12 +80,13 @@ const AliyunOSSUpload = ({ value, onChange, ...restProps }) => {
      * 若令牌已失效（过期），则强行拦截并执行同步刷新协议，同时执行物理路径归一化。
      */
     const beforeUpload = async file => {
+        let currentOSS = OSSData
         const expire = Number(OSSData.expire) * 1000
         if (expire < Date.now()) {
-            await init()
+            currentOSS = await init()
         }
         // 💡 物理路径重组：通过正则清除多余的路径分隔符，确保存储节点坐标唯一
-        file.url = `${OSSData?.dir ?? path}/${file.uid}_${file.name}`.replace(/\/\//g, '/')
+        file.url = `${currentOSS?.dir ?? path}/${file.uid}_${file.name}`.replace(/\/\//g, '/')
         return file
     }
 
