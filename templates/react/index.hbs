@@ -1,16 +1,12 @@
 export default props => {
 
-    {{!-- 💡 初始化状态模组：物理封存 Modal, SelectedRows, Tabs 等信号 --}}
     {{> stateBlock }}
 
-    {{!-- 💡 逻辑驱动引擎：加载 useTableQuery 抗干扰 Hook --}}
     {{> hookBlock }}
 
-    {{!-- 💡 战术响应模组：物理封存点击事件、搜索触发及弹窗调度逻辑 --}}
     {{> handleBlock }}
 
     {{#if hasOperate}}
-    {{!-- 💡 近战处决协议：当检测到表格操作列信号时，动态注入行级操作逻辑 --}}
     {{> tableOperate }}
     {{/if}}
 
@@ -24,10 +20,8 @@ export default props => {
     {{/if}}
 
     return (
-        {{!-- 💡 物理外壳：根据是否有页签动态切换 Card 涂装 --}}
         <Card {{#if hasTabs}}tabList={tabs} activeTabKey={activeKey} onTabChange={onTabChange}{{/if}}>
             {modal.visible && <MyModalForm {...modal} submit={modalSubmit} setModal={setModal} />}
-            {{!-- 💡 动态装配流水线：按照图片扫描出的顺序进行物理排列 --}}
             {{#each pageStruct as |partialName|}}
             {{> (partialName) @root }}
             {{/each}}

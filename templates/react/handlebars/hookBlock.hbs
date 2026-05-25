@@ -6,23 +6,16 @@
 
 const initParams = {{#if hasTabs}}{ type: tabs[0].key }{{else}}{}{{/if}}
 
-// 💡 信号自愈协议：将 URL 里的字符串参数解压，并根据零部件定义执行“物理脱水（格式化）”
 const query = formatQuery(Object.fromEntries(new URLSearchParams(location.search).entries()),  {{formItems}})
 
-// 💡 物理启动反应堆：统领全局数据流，具备防竞态与指纹识别功能
 const { total, columns, loading, dataSource, search, setSearch, setDataSource, refresh } = useTableQuery({
-        // 执行“远程侦察任务”：通过 POST 协议向地堡后端请求物资
         api: async params => await request('/api/{{fileName}}', { method: 'POST', body: params }),
-        // 物理参数对齐：优先级 = [默认值] < [页签预设] < [URL 历史信号]
         initialParams: { pageNo: 1, pageSize: 10, ...initParams, ...query },
-        // 基础装配包：加载由 Pod 042 视觉扫描产出的静态列定义
         cols:tableColumns,
-        // 信号解码协议：将后端吐出的加密数据包转化为 UI 可读的物理单元
         formatResponse: response => {
             return {
                 data: response?.data ?? [],
                 total: response?.data?.total ?? 0,
-                // 💡 [高阶自愈] 若后端下发了最新的列结构，地堡将自动执行“全频道物理覆盖”
                 columns: undefined,//可选,解析接口动态列;优先级高于cols
             }
         },
