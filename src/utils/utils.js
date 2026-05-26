@@ -57,6 +57,30 @@ const cleanCode = str => {
 }
 
 /**
+ * @function unwrapSignal
+ * @description [地堡数据脱水机] 物理扫描 JSON 结构，剥离业务外壳（code/msg/total 等）。
+ * 目标：精准定位到核心的 Array。
+ */
+const unwrapSignal = (json) => {
+    if (Array.isArray(json)) return json
+
+    // 💡 扫描常见的数据仓库 Key
+    const dataKeys = ['data', 'list', 'items', 'datas', 'rows', 'result', 'payload', 'results', 'dataList']
+    for (const key of dataKeys) {
+        if (json[key] && Array.isArray(json[key])) return json[key]
+    }
+
+    // 💡 递归侦察：处理 data: { list: [...] } 这种二级套娃
+    for (const key in json) {
+        if (json[key] && typeof json[key] === 'object') {
+            const nested = unwrapSignal(json[key])
+            if (Array.isArray(nested)) return nested
+        }
+    }
+    return null
+}
+
+/**
  * 引导序列
  * 模拟系统引导过程中的动画效果
  * @returns {void}
@@ -174,25 +198,25 @@ const getExistingMenus = (dir = 'src/pages') => {
  * @param {boolean} hasTabs - 是否包含标签页
  * @returns {string} 拼接后的 import 语句
  */
-const generateSmartImports = (codeStr, hasTabs) => {
+const generateSmartImports = ({ bodyCode, hasTabs, hasFormItems }) => {
     const hooksLib = ['useTableQuery']
     const reactLib = ['useState', 'useEffect', 'useRef', 'useMemo']
     const componentsLib = ['MyTable', 'MyModalForm', 'MySearchForm']
     const antdLib = ['Card', 'Space', 'Modal', 'Button', 'Alert', 'Table', 'Input', 'Select']
 
-    const usedAntd = antdLib.filter(name => new RegExp(`\\b${name}\\b`).test(codeStr))
-    const usedHooks = hooksLib.filter(name => new RegExp(`\\b${name}\\b`).test(codeStr))
-    const usedReact = reactLib.filter(name => new RegExp(`\\b${name}\\b`).test(codeStr))
-    const usedComps = componentsLib.filter(name => new RegExp(`\\b${name}\\b`).test(codeStr))
+    const usedAntd = antdLib.filter(name => new RegExp(`\\b${name}\\b`).test(bodyCode))
+    const usedHooks = hooksLib.filter(name => new RegExp(`\\b${name}\\b`).test(bodyCode))
+    const usedReact = reactLib.filter(name => new RegExp(`\\b${name}\\b`).test(bodyCode))
+    const usedComps = componentsLib.filter(name => new RegExp(`\\b${name}\\b`).test(bodyCode))
 
     const imports = [
         usedReact.length && `import { ${usedReact.join(', ')} } from 'react'`,
         `import { request } from '../../utils/request'`,
         `import { formatQuery } from '../../utils/utils'`,
-        `import { ${hasTabs ? 'tabs, ' : ''}formItems, modalItems, tableColumns} from './resource'`,
+        usedAntd.length && `import { Form, ${usedAntd.join(', ')} } from 'antd'`,
         ...usedHooks.map(hook => `import { ${hook} } from '../../hooks/${hook}'`),
         ...usedComps.map(comp => `import { ${comp} } from '../../components/${comp}'`),
-        usedAntd.length && `import { Form, ${usedAntd.join(', ')} } from 'antd'`
+        `import { ${hasTabs ? 'tabs, ' : ''}${hasFormItems ? 'formItems, ' : ''}modalItems, tableColumns} from './resource'`,
     ].sort((a, b) => a.length - b.length)
 
     return imports.filter(Boolean).join('\n')
@@ -218,4 +242,4 @@ const copyTemplateDir = (options, templateSubDir, targetSubDir) => {
     })
 }
 
-module.exports = { language, getConfig, cleanCode, matrixEffect, bootSequence, getExistingMenus, copyTemplateDir, generateSmartImports }
+module.exports = { language, getConfig, cleanCode, unwrapSignal, matrixEffect, bootSequence, getExistingMenus, copyTemplateDir, generateSmartImports }

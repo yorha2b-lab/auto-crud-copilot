@@ -1,11 +1,13 @@
 const fs = require('fs')
 const ora = require('ora')
+const path = require('path')
 const chalk = require('chalk')
 const stringify = require('json-stringify-pretty-compact')
 
-module.exports = async (filePath, context) => {
+module.exports = async filePath => {
 
-    const { language, partPrompt, recognizePage } = context
+    const { get } = require(path.join(__dirname, '../../core/context'))
+    const { language, partPrompt, recognizePage } = get()
 
     const startTime = Date.now()
 

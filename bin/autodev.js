@@ -4,6 +4,7 @@ const path = require('path')
 const chalk = require('chalk')
 const { program } = require('commander')
 const pkg = require(path.join(__dirname, '../package.json'))
+const bunker = require(path.join(__dirname, '../src/core/context.js'))
 const { language, matrixEffect, bootSequence } = require(path.join(__dirname, '../src/utils/utils.js'))
 
 program
@@ -52,8 +53,11 @@ program
     .description(language('开启全频道联动监控：支持 Page/Part/API 协同构筑', 'Start full-channel linked monitoring: Coordinated Page/Part/API construction'))
     .action(() => {
         bootSequence(pkg.version)
-        const watch = require('../src/commands/watch')
-        watch(program.opts())
+        bunker.init(program.opts())
+        require(path.join(__dirname, '../src/commands/watch'))()
+        if (bunker.get().config.proxyTarget) {
+            require(path.join(__dirname, '../src/services/proxy-tower'))()
+        }
         process.on('SIGINT', () => {
             console.log('\n')
             console.log(chalk.gray('--------------------------------------------------'))

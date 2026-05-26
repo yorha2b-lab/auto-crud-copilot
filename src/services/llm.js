@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const chalk = require('chalk')
-const { language, getConfig } = require('../utils/utils.js')
+const { language, getConfig } = require(path.join(__dirname, '../utils/utils.js'))
 
 let client = null
 

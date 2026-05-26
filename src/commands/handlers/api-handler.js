@@ -3,12 +3,13 @@ const ora = require('ora')
 const path = require('path')
 const chalk = require('chalk')
 
-module.exports = async (filePath, context) => {
+module.exports = async (filePath, liveResponse = null) => {
 
-    const { config, options, language, alignResponseFields } = context
+    const { get } = require(path.join(__dirname, '../../core/context'))
+    const { config, options, language, unwrapSignal, alignResponseFields } = get()
 
     const startTime = Date.now()
-    const fileName = path.basename(filePath, path.extname(filePath))
+    const fileName = liveResponse?.fileName ?? path.basename(filePath, path.extname(filePath))
     const resourcePath = path.join(process.cwd(), config.pagesDir, fileName, 'resource.js')
 
     const spinner = ora({
@@ -27,28 +28,26 @@ module.exports = async (filePath, context) => {
             ))
         }
 
-        const responseRaw = fs.readFileSync(filePath, 'utf8')
-        let responseStr = responseRaw
+        let rawJson = liveResponse ? liveResponse.data : JSON.parse(fs.readFileSync(filePath, 'utf8'))
         let resourceStr = fs.readFileSync(resourcePath, 'utf8')
 
-        try {
-            const parsed = JSON.parse(responseRaw)
-            const normalizedData = Array.isArray(parsed) ? parsed : [parsed]
-            responseStr = JSON.stringify(normalizedData.slice(0, 1))
-        } catch (e) {
+        const coreArray = unwrapSignal(rawJson)
+
+        if (!coreArray || coreArray.length === 0) {
             console.log(chalk.gray(language(
                 ` [System] 数据格式非标准 JSON，将尝试原始字符对齐。`,
                 ` [System] Data format is not standard JSON, will try to align by character.`)
             ))
         }
 
+        const sampleData = coreArray && coreArray.length > 0 ? [coreArray[0]] : rawJson
+
         spinner.text = chalk.yellow(language(
             `🧑‍💻 9S: 正在扫描前后端字段差异... 执行语义桥接任务。`,
             `🧑‍💻 9S: Scanning field differences... Bridging semantic gaps.`
         ))
 
-        const result = await alignResponseFields(options, responseStr, resourceStr)
-
+        const result = await alignResponseFields(options, JSON.stringify(sampleData), resourceStr)
         let changeCount = 0
         const resultMapping = {}
         Object.entries(result).forEach(([oldField, newField]) => {
@@ -63,9 +62,26 @@ module.exports = async (filePath, context) => {
         const endTime = Date.now()
 
         spinner.succeed(chalk.green(language(
-            `🤖 Pod 153: [肯定] 结果映射完成${JSON.stringify(resultMapping)}。已更正 ${changeCount} 处语义偏差。耗时: ${(endTime - startTime) / 1000}s`,
-            `🤖 Pod 153: [Affirmative] Result mapping completed${JSON.stringify(resultMapping)}. Corrected ${changeCount} semantic deviations. Elapsed: ${(endTime - startTime) / 1000}s`
+            `🤖 Pod 153: [肯定] 语义桥接协议执行完毕。已物理修正 ${changeCount} 处字段偏差。耗时: ${(endTime - startTime) / 1000}s`,
+            `🤖 Pod 153: [Affirmative] Semantic bridge protocol complete. Corrected ${changeCount} field deviations. Elapsed: ${(endTime - startTime) / 1000}s`
         )))
+
+        if (changeCount > 0) {
+            console.log(chalk.gray(`\n┌────────────────── [ 9S 语义映射表 ] ──────────────────┐`))
+            Object.entries(resultMapping).forEach(([oldField, newField]) => {
+                // 💡 物理校准：计算空格数量，让箭头对齐在第 15 个字符位
+                // 中文字符长度 * 2 是为了抵消它在终端占的双倍宽度
+                const padding = " ".repeat(Math.max(1, 15 - oldField.length * 2))
+                console.log(
+                    chalk.gray(` │  `) +
+                    chalk.yellow(oldField) +
+                    padding +
+                    chalk.cyan(` ->  `) +
+                    chalk.white(newField)
+                )
+            })
+            console.log(chalk.gray(`└───────────────────────────────────────────────────────┘\n`))
+        }
 
         if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath)

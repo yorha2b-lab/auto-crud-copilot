@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const Handlebars = require('handlebars')
 const stringify = require('json-stringify-pretty-compact')
-const { cleanCode, generateSmartImports } = require('../utils/utils.js')
+const { cleanCode, generateSmartImports } = require(path.join(__dirname, '../utils/utils.js'))
 
 Handlebars.registerHelper('raw', options => options.fn())
 Handlebars.registerHelper('stringify', (context, maxLength = 200) => context ? new Handlebars.SafeString(stringify.default(context, { indent: 4, maxLength })) : '[]')
@@ -68,7 +68,7 @@ const index = ({ config, fileName, indexTpl, pageConfig }) => {
         hasPagination: pageConfig.table.pagination,
         operations: pageConfig.table.operation || [],
         hasRowSelection: pageConfig.table.rowSelection,
-        formItems: hasTabs ? 'formItems[activeKey]' : 'formItems',
+        formItems: hasFormItems ? (hasTabs ? 'formItems[activeKey]' : 'formItems') : '[]',
         pageStruct: hasFunctionButtons ? pageConfig.pageStruct : pageConfig.pageStruct?.filter(item => item !== 'FunctionButtonsBlock'),
     }
 
@@ -94,7 +94,7 @@ const index = ({ config, fileName, indexTpl, pageConfig }) => {
     Handlebars.registerPartial('handleBlock', `${fs.readFileSync(path.join(__dirname, '../../templates/react/handlebars/handleBlock.hbs'), 'utf-8')}\n`)
 
     const bodyCode = indexTpl(viewData)
-    const importsStr = generateSmartImports(bodyCode, hasTabs)
+    const importsStr = generateSmartImports({ bodyCode, hasTabs, hasFormItems })
     return cleanCode(`${importsStr}\n\n${bodyCode}`)
 }
 

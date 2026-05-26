@@ -17,5 +17,6 @@ module.exports = {
     componentsDir: 'src/components',
 
     responseSuccess: `response?.code === 200`,
+    proxyTarget: 'http://id:port',// 代理目标，例如 http://localhost:3000
 
 }

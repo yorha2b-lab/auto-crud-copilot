@@ -4,13 +4,15 @@ const path = require('path')
 const chalk = require('chalk')
 const stringify = require('json-stringify-pretty-compact')
 
-module.exports = async (filePath, context) => {
+module.exports = async filePath => {
+
+    const { get } = require(path.join(__dirname, '../../core/context'))
 
     const {
         config, language, menus,
         pagePrompt, resourceTpl, indexTpl,
         recognizePage, generateMock, resource, index
-    } = context
+    } = get()
 
     const startTime = Date.now()
     const fileName = path.basename(filePath, path.extname(filePath))

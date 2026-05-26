@@ -1,6 +1,8 @@
 
 const rowKey = 'id'
+{{#if hasFormItems}}
 const [form] = Form.useForm()
+{{/if}}
 const [modal, setModal] = useState({ visible:false, title:'', formItems:modalItems })
 {{#if hasRowSelection}}
 const [selectedRows, setSelectedRows] = useState([])
