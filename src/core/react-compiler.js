@@ -43,6 +43,8 @@ const resource = ({ pageConfig, resourceTpl }) => {
  */
 const index = ({ config, fileName, indexTpl, pageConfig }) => {
 
+    console.log(stringify.default(pageConfig, { indent: 4, maxLength: 200 }))
+
     const hasTabs = pageConfig.tabs?.length > 0
     const hasFormItems = pageConfig.formItems?.length > 0
     const hasOperate = pageConfig.table.operation?.length > 0

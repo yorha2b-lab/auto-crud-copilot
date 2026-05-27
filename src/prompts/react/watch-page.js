@@ -31,7 +31,7 @@ module.exports = `
 
 ### 表格主体 (Table)
 - **标准项**: {title:'列名', dataIndex:'列名英文名词',type:''}。
-- **配置项**: [pagination, expandable, rowSelection] 均为布尔值。
+- **配置项**: [pagination, expandable, rowSelection] 均为布尔值false,只有页面明确有对应功能时才为true。
 - **标准定义 (Columns)**:
     - ⚠️ **操作锁定**: 严禁在 columns 数组中包含“操作”列。
     - date: 时间/日期列
