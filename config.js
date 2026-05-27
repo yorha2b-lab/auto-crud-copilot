@@ -11,7 +11,7 @@ module.exports = {
     enableAutoAlignment: false,
 
     textModel: 'qwen-turbo',
-    visionModel: 'qwen3.5-plus',
+    visionModel: 'qwen3.6-plus',
 
     hooksDir: 'src/hooks',
     pagesDir: 'src/pages',

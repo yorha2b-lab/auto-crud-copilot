@@ -46,6 +46,7 @@ const index = ({ config, fileName, indexTpl, pageConfig }) => {
     const hasTabs = pageConfig.tabs?.length > 0
     const hasFormItems = pageConfig.formItems?.length > 0
     const hasOperate = pageConfig.table.operation?.length > 0
+    const pageStruct = pageConfig.pageStruct?.filter(item => item.toLowerCase() !== 'tabs') || []
     const functionButtons = pageConfig.functionButton?.filter(item => !['查询', '重置'].includes(item.btn)) || []
     const hasFunctionButtons = functionButtons.length > 0
 
@@ -69,7 +70,7 @@ const index = ({ config, fileName, indexTpl, pageConfig }) => {
         operations: pageConfig.table.operation || [],
         hasRowSelection: pageConfig.table.rowSelection,
         formItems: hasFormItems ? (hasTabs ? 'formItems[activeKey]' : 'formItems') : '[]',
-        pageStruct: hasFunctionButtons ? pageConfig.pageStruct : pageConfig.pageStruct?.filter(item => item !== 'FunctionButtonsBlock'),
+        pageStruct: hasFunctionButtons ? pageStruct : pageStruct.filter(item => item !== 'FunctionButtonsBlock'),
     }
 
     if (viewData.hasOperate) {
