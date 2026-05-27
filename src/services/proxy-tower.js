@@ -1,9 +1,8 @@
 const http = require('http')
-const path = require('path')
 const zlib = require('zlib')
 const chalk = require('chalk')
 const httpProxy = require('http-proxy')
-const { get } = require(path.join(__dirname, '../core/context'))
+const { get } = require('../core/context')
 
 /**
  * @function startProxyTower
@@ -12,7 +11,7 @@ const { get } = require(path.join(__dirname, '../core/context'))
  */
 module.exports = () => {
 
-    const { config, language, apiHandler, unwrapSignal } = get()
+    const { config, language, apiHandler, unwrapSignal, isQuerySignal } = get()
 
     const TOWER_PORT = 42153
     const hackedRegistry = new Map()
@@ -44,6 +43,14 @@ module.exports = () => {
                 try {
                     const rawBody = encoding === 'gzip' ? zlib.gunzipSync(buffer) : buffer
                     const json = JSON.parse(rawBody.toString())
+
+                    const coreData = unwrapSignal(json) // 先脱水
+
+                    // 💡 这一步就是地堡的“火控系统”
+                    if (!isQuerySignal(req, json, coreData)) {
+                        return // 增删改信号，直接丢弃，保持静默
+                    }
+
                     const referer = req.headers.referer || ''
                     const fileName = referer.split('?')[0].split('/').filter(Boolean).at(-1)
 

@@ -6,7 +6,7 @@ const stringify = require('json-stringify-pretty-compact')
 
 module.exports = async filePath => {
 
-    const { get } = require(path.join(__dirname, '../../core/context'))
+    const { get } = require('../../core/context')
 
     const {
         config, language, menus,
@@ -46,11 +46,11 @@ module.exports = async filePath => {
                 `\n🤖 Pod 042: [报告] 拦截到实弹请求。正在空投标准模拟包: example.json\n`,
                 `\n🤖 Pod 042: [Report] Real-fire request intercepted. Dropping simulation package: example.json\n`
             )))
-            pageConfig = require(path.join(__dirname, '../../../example/example.json'))
+            pageConfig = require('../../../example/example.json')
         } else {
             spinner.text = chalk.cyan(language(
-                `🤖 Pod 042: 正在上传视觉元数据至司令部进行语义分析...`,
-                `🤖 Pod 042: Uploading visual metadata to Command for semantic analysis...`
+                `🤖 Pod 042: 正在上传视觉元数据至司令部进行语义分析...\n`,
+                `🤖 Pod 042: Uploading visual metadata to Command for semantic analysis...\n`
             ))
             pageConfig = await recognizePage(pagePrompt, filePath)
         }

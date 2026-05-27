@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const Handlebars = require('handlebars')
 const stringify = require('json-stringify-pretty-compact')
-const { cleanCode, generateSmartImports } = require(path.join(__dirname, '../utils/utils.js'))
+const { cleanCode, generateSmartImports, formatFormItemAndColumns } = require('../utils/utils.js')
 
 Handlebars.registerHelper('raw', options => options.fn())
 Handlebars.registerHelper('stringify', (context, maxLength = 200) => context ? new Handlebars.SafeString(stringify.default(context, { indent: 4, maxLength })) : '[]')
@@ -18,15 +18,15 @@ const resource = ({ pageConfig, resourceTpl }) => {
 
     const hasTabs = pageConfig.tabs?.length > 0
 
+    const { formItems, processedColumns, dictBlocks } = formatFormItemAndColumns({ pageConfig })
+
     const viewData = {
         hasTabs,
+        formItems,
         tabs: pageConfig.tabs,
-        formItems: pageConfig.formItems,
-        formItemsData: hasTabs ? Object.fromEntries(pageConfig.tabs.map(tab => [tab.key, pageConfig.formItems])) : pageConfig.formItems,
-        columnsData: hasTabs ? Object.fromEntries(pageConfig.tabs.map(tab => [tab.key, pageConfig.table.columns])) : pageConfig.table.columns,
-        dictBlocks: pageConfig.formItems
-            ?.filter(item => item.type === 'select')
-            ?.map(item => ({ name: item.options.replaceAll('_CODE_', ''), data: pageConfig.optionDict[item.options] ?? [] }))
+        dictBlocks: dictBlocks.map(item => ({ name: item, data: pageConfig.optionDict[item] ?? [] })),
+        formItemsData: hasTabs ? Object.fromEntries(pageConfig.tabs.map(tab => [tab.key, formItems])) : formItems,
+        columnsData: hasTabs ? Object.fromEntries(pageConfig.tabs.map(tab => [tab.key, processedColumns])) : processedColumns,
     }
 
     const rawCode = resourceTpl(viewData)

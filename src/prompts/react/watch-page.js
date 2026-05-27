@@ -1,45 +1,60 @@
 module.exports = `
-识别图片内容（搜索项，表格列，是否有勾选框，查询下拉选项，统计条等页面组件，并按照从上到下的结构把识别出来的组件按顺序组织成型）
-⚠️⚠️⚠️注意:
-1.变量使用驼峰命名法
-    【严禁中文】绝对不允许使用中文作为变量名或函数名
-    【严禁js关键字】绝对不允许使用js关键字作为变量名或函数名(export/delete/const...)
-2.标签页:
-    tabs: [{tab:'tab1',key:'tab1'}]
-    表格上方的Button请务必归类为functionButton,只有当一组水平排列的项下方有明显的长横线(Ink Bar),或者呈现明显的'卡片包裹感'(Card style)时才识别为tabs
-3.搜索项：
-    formItems: [{ label: '文本', name: '对应的英文名词' }],
-    ⚠️⚠️⚠️注意：
-    如果是下拉框,请加入type:'select',options:_CODE_对应的英文名词Options_CODE_
-    如果是时间范围查询,请加入type:'daterange',name:'对应的英文名词start,对应的英文名词end'
-4.统计条:
-    staticInfo:{has:true/false,text:'具体统计内容'},
-5.表格:
-    {
-        pagination: true/false,
-        expandable: true/false,
-        rowSelection: true/false,
-        operation: [{label:'操作',action:'操作动词+ByRecord'}],
-        columns: [{ title: '普通列', dataIndex:'对应的英文名词' }],
-    }
-    ⚠️⚠️⚠️注意：
-    请不要在columns里加上操作列
-    如果列需要排序请加上sorter:true
-    如果是时间列,请加入render:_CODE_text=>timeRender({time:text})_CODE_
-    如果是序号列直接渲染为{ title: '序号',render: _CODE_(_, record, index) => index + 1_CODE_ }
-    如果是下拉框列(所对应的查询项明确是下拉框),请加入render:_CODE_text=>对应的options.find(item=>item.value===text)?.label_CODE_
-    如果列需要过滤请加上filters:[],onFilter: _CODE_(value, record) => record[对应的英文名词].includes(value)_CODE_
-6.功能按钮
-    functionButton:[{btn:'btn',action:'操作动词+模块英文名词'}]
-    如果和表格行操作重复请在action加上BySelected前缀
-    如果是导出功能,对应的动词为export+对应的英文名词,没有名词则为exportData
-7.下拉选项字典
-    optionDict:{_CODE_对应的英文名词Options_CODE_:[]]}
-    ⚠️⚠️⚠️注意：数组值为对应列展示的内容组成的类似{label:'',value:''}的数组
-8.pageStruct
-    从上至下的页面结构组成
-    ⚠️⚠️⚠️注意:这里只能从AlertInfo,MySearchForm,FunctionButtonsBlock,MyTable中选择,并且只有真的存在才加入，绝对禁止加入其他组件
-    ⚠️⚠️⚠️另外这里不要加入tabs组件
-最后输出一个JSON对象,不要包含任何Markdown标签,格式如下
-    { tabs: [], table: {}, formItems: [],staticInfo:{}, optionDict: {}, functionButton: [],pageStruct:[]}
-`
+# Task: Full-Page UI Analysis & Structural Assembly
+执行全页面视觉特征提取，并按照物理布局顺序输出标准的构筑协议。
+
+## 1. 核心命名协议 (Naming Convention)
+- **驼峰命名**: 所有变量及函数名必须遵循 camelCase。
+- **⚠️ 严禁中文**: 绝对禁止在变量名、键名中使用中文字符。
+- **物理屏蔽关键字**: 禁止使用 JS 保留字 (export, delete, const, let, class, default 等)。
+
+## 2. 零部件构筑规范 (Component Specifications)
+
+### 标签页 (Tabs)
+- **识别条件**: 仅当下部有显著长横线 (Ink Bar) 或呈现包裹感 (Card style) 时判定。
+- **排除项**: 表格上方的独立按钮必须归类为 [functionButton]。
+
+### 搜索项 (FormItems)
+- **基础格式**: [{ label: '文本', name: 'englishName',type:'' }]
+- ⚠️ 属性精简规则:
+    - 默认输入框: 仅保留 [label, name] 属性。**严禁出现 type 属性**。
+    - 非默认组件: 仅当类型为 [auto, date, radio, select, upload, checkbox, textarea, daterange] 时才允许添加 type 属性。
+**标准定义 (Columns)**:
+    - date: 单日期
+    - daterange: 日期范围
+    - enum: 枚举类型
+    - text: 普通文本（默认）
+- 命名规范:
+    - daterange: name 必须设为 '字段英文名start,字段英文名end'。
+
+### 统计条 (StaticInfo)
+- **独立存在**: 位于表格外周的汇总信息。输出格式: { has: true, text: '具体内容' }。
+
+### 表格主体 (Table)
+- **标准项**: {title:'列名', dataIndex:'列名英文名词',type:''}。
+- **配置项**: [pagination, expandable, rowSelection] 均为布尔值。
+- **标准定义 (Columns)**:
+    - ⚠️ **操作锁定**: 严禁在 columns 数组中包含“操作”列。
+    - date: 时间/日期列
+    - money: 金额列
+    - index: 序号列
+    - enum: 枚举列
+    - text: 普通文本（默认）
+    - **行操作 (Operation)**: [{label:'操作名', action:'动词ByRecord'}]。
+
+### 全局功能按钮 (FunctionButton)
+- **格式**: [{btn:'显示文本', action:'动作名'}]。
+- **联动命名**: 若与行操作重复，action 必须加上 'BySelected' 前缀。
+- **导出协议**: action 设为 'exportData' 或 'export+模块名'。
+
+## 3. 布局逻辑编排 (Page Structure)
+- **字段**: [pageStruct] 定义从上至下的物理堆叠顺序。
+- **白名单**: 只能从 [AlertInfo, MySearchForm, FunctionButtonsBlock, MyTable] 中选择。
+- **⚠️ 约束**: 严禁在 pageStruct 中包含 Tabs 或其他未定义组件；并且只有真实存在的组件才能被包含。
+
+## 4. 输出约束 (Output Format)
+- **格式**: 纯 JSON 对象，严禁 Markdown 标签包围。
+- **字典映射 (OptionDict)**: 必须包含所有 select 类型所需的 Options 数组，键名格式为 字段英文名+Options ，元素格式为 {label:'', value:''}。
+
+**JSON 骨架要求**:
+{ "tabs": [], "table": {}, "formItems": [], "staticInfo": {}, "optionDict": {}, "functionButton": [], "pageStruct": [] }
+`.trim();

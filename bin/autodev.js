@@ -2,10 +2,10 @@
 const fs = require('fs')
 const path = require('path')
 const chalk = require('chalk')
+const pkg = require('../package.json')
 const { program } = require('commander')
-const pkg = require(path.join(__dirname, '../package.json'))
-const bunker = require(path.join(__dirname, '../src/core/context.js'))
-const { language, matrixEffect, bootSequence } = require(path.join(__dirname, '../src/utils/utils.js'))
+const bunker = require('../src/core/context')
+const { language, matrixEffect, bootSequence } = require('../src/utils/utils.js')
 
 program
     .version(pkg.version)
@@ -54,9 +54,10 @@ program
     .action(() => {
         bootSequence(pkg.version)
         bunker.init(program.opts())
-        require(path.join(__dirname, '../src/commands/watch'))()
-        if (bunker.get().config.proxyTarget) {
-            require(path.join(__dirname, '../src/services/proxy-tower'))()
+        require('../src/commands/watch.js')()
+        const { config } = bunker.get()
+        if (config.proxyTarget && !config.needMock && config.enableAutoAlignment) {
+            require('../src/services/proxy-tower.js')()
         }
         process.on('SIGINT', () => {
             console.log('\n')

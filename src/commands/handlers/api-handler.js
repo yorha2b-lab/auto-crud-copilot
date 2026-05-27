@@ -5,7 +5,7 @@ const chalk = require('chalk')
 
 module.exports = async (filePath, liveResponse = null) => {
 
-    const { get } = require(path.join(__dirname, '../../core/context'))
+    const { get } = require('../../core/context')
     const { config, options, language, unwrapSignal, alignResponseFields } = get()
 
     const startTime = Date.now()
@@ -14,8 +14,8 @@ module.exports = async (filePath, liveResponse = null) => {
 
     const spinner = ora({
         text: chalk.yellow(language(
-            `🤖 Pod 153: [侦察] 发现加密数据源 [${fileName}]。正在尝试执行语义对齐协议...`,
-            `🤖 Pod 153: [Recon] Encrypted data source [${fileName}] detected. Initiating semantic alignment...`
+            `🤖 Pod 153: [侦察] 发现加密数据源 [${fileName}]。正在尝试执行语义对齐协议...\n`,
+            `🤖 Pod 153: [Recon] Encrypted data source [${fileName}] detected. Initiating semantic alignment...\n`
         )),
         color: 'yellow'
     }).start()
@@ -47,7 +47,17 @@ module.exports = async (filePath, liveResponse = null) => {
             `🧑‍💻 9S: Scanning field differences... Bridging semantic gaps.`
         ))
 
-        const result = await alignResponseFields(options, JSON.stringify(sampleData), resourceStr)
+        const extractKeys = str => {
+            const keys = []
+            const regex = /(dataIndex|name)\s*:\s*['"]([^'"]+)['"]/g
+            let match
+            while ((match = regex.exec(str)) !== null) {
+                keys.push(match[2])
+            }
+            return Array.from(new Set(keys))
+        }
+
+        const result = await alignResponseFields(options, JSON.stringify(sampleData), extractKeys(resourceStr).join(','))
         let changeCount = 0
         const resultMapping = {}
         Object.entries(result).forEach(([oldField, newField]) => {
@@ -67,7 +77,7 @@ module.exports = async (filePath, liveResponse = null) => {
         )))
 
         if (changeCount > 0) {
-            console.log(chalk.gray(`\n┌────────────────── [ 9S 语义映射表 ] ──────────────────┐`))
+            console.log(chalk.magenta(`\n┌────── [ YoRHa Autonomous Backend Alignment ] ──────┐`))
             Object.entries(resultMapping).forEach(([oldField, newField]) => {
                 // 💡 物理校准：计算空格数量，让箭头对齐在第 15 个字符位
                 // 中文字符长度 * 2 是为了抵消它在终端占的双倍宽度
@@ -80,7 +90,7 @@ module.exports = async (filePath, liveResponse = null) => {
                     chalk.white(newField)
                 )
             })
-            console.log(chalk.gray(`└───────────────────────────────────────────────────────┘\n`))
+            console.log(chalk.magenta(`└───────────────────────────────────────────────────────┘\n`))
         }
 
         if (fs.existsSync(filePath)) {

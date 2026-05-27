@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const chalk = require('chalk')
-const { language, getConfig } = require(path.join(__dirname, '../utils/utils.js'))
+const { language, getConfig } = require('../utils/utils.js')
 
 let client = null
 
@@ -19,6 +19,7 @@ const getOpenAI = () => {
 }
 
 const askAI = async (model, messages, retryCount = 0) => {
+
     if (retryCount > 3) {
         throw new Error(language(
             'YoRHa 司令部连接中断：请检查网络状态或黑盒共鸣情况。',
@@ -31,6 +32,8 @@ const askAI = async (model, messages, retryCount = 0) => {
         const response = await openai.chat.completions.create({
             model,
             messages,
+            top_p: 0.1,
+            temperature: 0.01,
             response_format: { type: 'json_object' }
         })
         let raw = response.choices[0].message.content.trim()
@@ -38,7 +41,6 @@ const askAI = async (model, messages, retryCount = 0) => {
         const match = raw.match(/[\{\[][\s\S]*[\}\]]/)
         const JSON5 = require('json5')
         return JSON5.parse(match ? match[0] : raw)
-
     } catch (err) {
         const statusCode = err.status || err.response?.status
         const isAuthError = err.message.includes('401') || err.message.includes('402') || [401, 402].includes(statusCode)

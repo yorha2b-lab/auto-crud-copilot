@@ -7,6 +7,8 @@ module.exports = {
 
     useDemo: true,
     needMock: false,
+    // 是否开启自动联调对齐协议 (42153 拦截塔)
+    enableAutoAlignment: false,
 
     textModel: 'qwen-turbo',
     visionModel: 'qwen3.5-plus',

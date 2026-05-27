@@ -3,7 +3,6 @@ const rowKey = 'id'
 {{#if hasFormItems}}
 const [form] = Form.useForm()
 {{/if}}
-const [modal, setModal] = useState({ visible:false, title:'', formItems:modalItems })
 {{#if hasRowSelection}}
 const [selectedRows, setSelectedRows] = useState([])
 {{/if}}
@@ -13,3 +12,4 @@ const [activeKey, setActiveKey] = useState(tabs[0].key)
 {{#if hasExpandable}}
 const [expandedRowKeys, setExpandedRowKeys] = useState([])
 {{/if}}
+const [modal, setModal] = useState({ visible:false, title:'', formItems:modalItems })

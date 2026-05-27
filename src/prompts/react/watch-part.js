@@ -8,31 +8,39 @@ module.exports = `
 3. 必须严格遵守以下字段规范。
 
 ## 1. 表格 (Table)
-- 结构: { columns: [{ title: '', dataIndex: '' }] }
+- 结构: { columns: [{ title: '列名', dataIndex: '列名英文名词', type: '' }] }
 - ⚠️ 字段白名单: [title, dataIndex, sorter, render, filters, onFilter]
 - 禁止输出:
     - 严禁在 columns 中包含“操作”列。
     - ***⚠️⚠️⚠️严禁输出formItems,只允许输出coloumns⚠️⚠️⚠️***
-- 特殊逻辑:
-    - 时间列: render 必须为 _CODE_text=>timeRender({time:text})_CODE_
-    - 序号列: render 必须为 _CODE_(_, record, index) => index + 1_CODE_
-    - 下拉映射列: render 必须为 _CODE_text=>字段英文名Options.find(item=>item.value===text)?.label_CODE_
+- **标准定义 (Columns)**:
+    - ⚠️ **操作锁定**: 严禁在 columns 数组中包含“操作”列。
+    - date: 时间/日期列
+    - money: 金额列
+    - index: 序号列
+    - enum: 枚举列
+    - text: 普通文本（默认）
+    - **行操作 (Operation)**: [{label:'操作名', action:'动词ByRecord'}]
 
 ## 2. 表单 (Form)
-- 结构: formItems: [{label:'',name:'',type:'',options:[]}]
+- **基础格式**: [{ label: '文本', name: 'englishName',type:'' }]
 - 禁止输出:
     - ***⚠️⚠️⚠️严禁输出columns,只允许输出formItems⚠️⚠️⚠️***
 - ⚠️ 属性精简规则:
     - 默认输入框: 仅保留 [label, name] 属性。**严禁出现 type 属性**。
     - 非默认组件: 仅当类型为 [auto, date, radio, select, upload, checkbox, textarea, daterange] 时才允许添加 type 属性。
+**标准定义 (Columns)**:
+    - date: 单日期
+    - daterange: 日期范围
+    - enum: 枚举类型
+    - text: 普通文本（默认）
 - 命名规范:
     - daterange: name 必须设为 '字段英文名start,字段英文名end'。
-    - 选择类 (radio/select/checkbox): options 必须设为 _CODE_字段英文名Options_CODE_。
 - 增强属性:
     - 必填校验: 若图片中 label 前有红色星号，必须加入 rules:[{required:true,message:'xxx不能为空'}]。
     - 文字单位: 若项末尾有单位（如 元/kg），必须存入 unit 属性。
 
 ## 3. 下拉选项字典 (OptionDict)
-- 结构: optionDict: { _CODE_字段英文名Options_CODE_: [] }
+- 结构: optionDict: { 字段英文名Options: [] }
 - 内容: 数组元素必须为 {label: '', value: ''} 格式。
 `

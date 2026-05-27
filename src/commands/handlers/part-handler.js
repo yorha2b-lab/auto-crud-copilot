@@ -1,12 +1,12 @@
 const fs = require('fs')
 const ora = require('ora')
-const path = require('path')
 const chalk = require('chalk')
 const stringify = require('json-stringify-pretty-compact')
+const { cleanCode, formatFormItemAndColumns } = require('../../utils/utils')
 
 module.exports = async filePath => {
 
-    const { get } = require(path.join(__dirname, '../../core/context'))
+    const { get } = require('../../core/context')
     const { language, partPrompt, recognizePage } = get()
 
     const startTime = Date.now()
@@ -21,27 +21,23 @@ module.exports = async filePath => {
 
     try {
         spinner.text = chalk.cyan(language(
-            `🤖 Pod 042: 正在从神经云网络提取 UI 元数据...`,
-            `🤖 Pod 042: Extracting UI metadata from neural cloud network...`
+            `🤖 Pod 042: 正在从神经云网络提取 UI 元数据...\n`,
+            `🤖 Pod 042: Extracting UI metadata from neural cloud network...\n`
         ))
 
         const pageConfig = await recognizePage(partPrompt, filePath)
 
-        const optionDict = pageConfig.optionDict || {}
-        delete pageConfig.optionDict
+        const { formItems, dictBlocks, processedColumns } = formatFormItemAndColumns({ pageConfig })
 
-        let mainConfigStr = stringify.default(pageConfig, { indent: 4, maxLength: 200 })
-            .replace(/"(\w+)":/g, '$1:') // 去掉 key 的双引号
-            .replace(/"/g, "'")           // 全量替换为单引号
-            .replace(/['"]_CODE_([\s\S]*?)_CODE_['"]/g, '$1') // 还原代码片段
-            .replace(/_CODE_/g, '')
+        const result = Object.fromEntries(Object.entries({ formItems, processedColumns }).filter(([key, value]) => value?.length > 0))
+
+        let mainConfigStr = cleanCode(stringify.default(result, { indent: 4, maxLength: 200 }))
 
         let optionsCodeStr = ''
-        Object.keys(optionDict).forEach(key => {
-            const varName = key.replaceAll('_CODE_', '')
-            const optionsArray = optionDict[key]
+        dictBlocks.forEach(key => {
+            const optionsArray = pageConfig.optionDict?.[key] ?? []
             const arrayItemsStr = optionsArray.map(opt => `    { label: '${opt.label}', value: '${opt.value}' }`).join(',\n')
-            optionsCodeStr += `\nexport const ${varName} = [\n${arrayItemsStr}\n]\n`
+            optionsCodeStr += `\nexport const ${key} = [\n${arrayItemsStr}\n]\n`
         })
 
         const finalResult = `${mainConfigStr}\n${optionsCodeStr}`
@@ -63,7 +59,7 @@ module.exports = async filePath => {
             `│ 命令：请手动将上述代码块物理装配至您的目标文件中。`,
             `│ Command: Please manually assemble the above code block into your target file.`
         )))
-        console.log(chalk.magenta(`└────────────────────────────────────────────────────────────────────┘\n`))
+        console.log(chalk.magenta(`└───────────────────────────────────────────────────────────────────┘\n`))
 
         if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath)

@@ -1,27 +1,60 @@
 {
     "tabs": [
         {
-            "tab": "鬼剑士",
+            "label": "鬼剑士",
             "key": "ghostSwordsman"
         },
         {
-            "tab": "格斗家",
+            "label": "格斗家",
             "key": "fighter"
         },
         {
-            "tab": "神枪手",
+            "label": "神枪手",
             "key": "gunner"
         },
         {
-            "tab": "魔法师",
+            "label": "魔法师",
             "key": "mage"
         }
     ],
-    "staticInfo": {
-        "has": false,
-        "text": ""
-    },
     "table": {
+        "columns": [
+            {
+                "title": "职业",
+                "dataIndex": "jobName",
+                "type": "text"
+            },
+            {
+                "title": "一觉",
+                "dataIndex": "firstAwakening",
+                "type": "text"
+            },
+            {
+                "title": "二觉",
+                "dataIndex": "secondAwakening",
+                "type": "text"
+            },
+            {
+                "title": "三觉",
+                "dataIndex": "thirdAwakening",
+                "type": "text"
+            },
+            {
+                "title": "武器类型",
+                "dataIndex": "weaponType",
+                "type": "enum"
+            },
+            {
+                "title": "职业类型",
+                "dataIndex": "jobType",
+                "type": "enum"
+            },
+            {
+                "title": "登场时间",
+                "dataIndex": "launchDate",
+                "type": "date"
+            }
+        ],
         "pagination": true,
         "expandable": true,
         "rowSelection": true,
@@ -38,73 +71,50 @@
                 "label": "删除",
                 "action": "deleteByRecord"
             }
-        ],
-        "columns": [
-            {
-                "title": "职业",
-                "dataIndex": "job"
-            },
-            {
-                "title": "一觉",
-                "dataIndex": "firstAwakening"
-            },
-            {
-                "title": "二觉",
-                "dataIndex": "secondAwakening"
-            },
-            {
-                "title": "三觉",
-                "dataIndex": "thirdAwakening"
-            },
-            {
-                "title": "武器类型",
-                "dataIndex": "weaponType",
-                "render": "_CODE_text=>weaponTypeOptions.find(item=>item.value===text)?.label_CODE_"
-            },
-            {
-                "title": "职业类型",
-                "dataIndex": "jobType",
-                "render": "_CODE_text=>jobTypeOptions.find(item=>item.value===text)?.label_CODE_"
-            },
-            {
-                "title": "登场时间",
-                "dataIndex": "releaseDate",
-                "render": "_CODE_text=>timeRender({time:text})_CODE_"
-            }
         ]
     },
     "formItems": [
         {
             "label": "转职职业",
             "name": "transferJob",
-            "type": "select",
-            "options": "_CODE_transferJobOptions_CODE_"
+            "type": "select"
         },
         {
             "label": "武器类型",
             "name": "weaponType",
-            "type": "select",
-            "options": "_CODE_weaponTypeOptions_CODE_"
+            "type": "select"
         },
         {
             "label": "职业类型",
             "name": "jobType",
-            "type": "select",
-            "options": "_CODE_jobTypeOptions_CODE_"
+            "type": "select"
         },
         {
             "label": "觉醒名称关键词",
-            "name": "awakeningKeyword"
+            "name": "awakeningNameKeyword"
         },
         {
             "label": "登场时间",
-            "name": "releaseDateStart,releaseDateEnd",
+            "name": "launchDateStart,launchDateEnd",
             "type": "daterange"
         }
     ],
+    "staticInfo": {
+        "has": false,
+        "text": ""
+    },
     "optionDict": {
-        "_CODE_transferJobOptions_CODE_": [],
-        "_CODE_weaponTypeOptions_CODE_": [
+        "transferJobOptions": [
+            {
+                "label": "剑魂",
+                "value": "soulBender"
+            },
+            {
+                "label": "狂战士",
+                "value": "berserker"
+            }
+        ],
+        "weaponTypeOptions": [
             {
                 "label": "光剑",
                 "value": "lightSword"
@@ -118,33 +128,25 @@
                 "value": "greatSword"
             }
         ],
-        "_CODE_jobTypeOptions_CODE_": [
+        "jobTypeOptions": [
             {
                 "label": "物理",
                 "value": "physical"
             },
             {
                 "label": "魔法",
-                "value": "magical"
+                "value": "magic"
             }
         ]
     },
     "functionButton": [
         {
             "btn": "批量删除",
-            "action": "batchDeleteBySelected"
+            "action": "deleteBySelected"
         },
         {
             "btn": "批量导出",
-            "action": "exportData"
-        },
-        {
-            "btn": "查询",
-            "action": "search"
-        },
-        {
-            "btn": "重置",
-            "action": "reset"
+            "action": "exportJobData"
         }
     ],
     "pageStruct": [

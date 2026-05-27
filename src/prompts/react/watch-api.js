@@ -1,12 +1,32 @@
 module.exports = (responseStr, resourceStr) => `
-responseStr: ${responseStr}
-resourceStr: ${resourceStr}
-resourceStr是前端目前猜测的字段名(请从resourceStr中提取dataIndex和name)，
-responseStr是后端的真实响应。
-请比对两者，找出现有前端字段名应该被替换为哪个真实的后端字段名。
-匹配规则: 1.完全相同 2.下划线/驼峰转换 3.语义相似。
-请只输出一个JSON对象, Key为前端猜测的字段名dataIndex, Value为Response里的真实字段名。
-例如：{"key_1": "key1"}
-如果没有找到对应的，请不要包含在结果中。
-注意：⚠️⚠️如果有语义相近的两个字段优先取中文字段，比如"createByName"和"createBy"，则取"createByName"
-。`.trim()
+目标：执行【前端虚拟字段】与【后端真实响应】的物理重组与对账。
+
+## 1. 核心输入 (Signal Capture)
+- **前端现状 (Source Keys)**:
+${resourceStr}
+
+- **后端样本 (Target Data)**:
+${responseStr}
+
+## 2. 匹配算法优先级 (Alignment Protocol)
+请严格按以下优先级执行逻辑映射，直到找到唯一目标：
+1. **L1 - 物理全等**: 字符完全一致 (例: userId == userId)。
+2. **L2 - 格式重组**: 下划线与驼峰转换 (例: user_id == userId)。
+3. **L3 - 语义穿透**: 业务含义高度一致 (例: amount == price, phone == mobile)。
+
+## 3. ⚠️ 强制冲突修正 (Conflict Resolution)
+若存在多个潜在目标，执行以下强制判定：
+- **中文字义优先**: 优先匹配能解释前端视觉标签含义的字段。
+- **长度优先**: 若 "createByName" 与 "createBy" 同时存在，强制选择 "createByName"。
+
+## 4. 输出约束 (Output Restrictions)
+- **严禁输出解释性文字、严禁 Markdown 标签**。
+- **仅输出合法的 JSON 对象**。
+- **过滤机制**: 若某字段在后端响应中完全找不到对应映射，物理拦截（不输出）。
+
+## 5. 示例参考 (Example)
+Input:
+  Source: { dataIndex: 'userName' }, Response: { name: '2B' }
+Output:
+  {"userName": "name"}
+`.trim()
