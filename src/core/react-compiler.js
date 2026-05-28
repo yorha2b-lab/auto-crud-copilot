@@ -1,11 +1,4 @@
-const fs = require('fs')
-const path = require('path')
-const Handlebars = require('handlebars')
-const stringify = require('json-stringify-pretty-compact')
 const { cleanCode, generateSmartImports, formatFormItemAndColumns } = require('../utils/utils.js')
-
-Handlebars.registerHelper('raw', options => options.fn())
-Handlebars.registerHelper('stringify', (context, maxLength = 200) => context ? new Handlebars.SafeString(stringify.default(context, { indent: 4, maxLength })) : '[]')
 
 /**
  * 生成 resource.js 文件（表格列配置、表单配置、字典等）
@@ -64,35 +57,14 @@ const index = ({ config, fileName, indexTpl, pageConfig }) => {
         functionButtons,
         tabs: pageConfig.tabs,
         responseSuccess: config.responseSuccess,
-        hasStaticInfo: pageConfig.staticInfo?.has,
         hasExpandable: pageConfig.table.expandable,
         hasPagination: pageConfig.table.pagination,
+        staticInfoText: pageConfig.staticInfo?.text,
         operations: pageConfig.table.operation || [],
         hasRowSelection: pageConfig.table.rowSelection,
         formItems: hasFormItems ? (hasTabs ? 'formItems[activeKey]' : 'formItems') : '[]',
         pageStruct: hasFunctionButtons ? pageStruct : pageStruct.filter(item => item !== 'FunctionButtonsBlock'),
     }
-
-    if (viewData.hasOperate) {
-        Handlebars.registerPartial('tableOperate', `${fs.readFileSync(path.join(__dirname, '../../templates/react/handlebars/tableOperate.hbs'), 'utf-8')}\n`)
-    }
-
-    if (viewData.hasFormItems) {
-        Handlebars.registerPartial('MySearchForm', `${fs.readFileSync(path.join(__dirname, '../../templates/react/handlebars/MySearchForm.hbs'), 'utf-8')}\n`)
-    }
-
-    if (hasFunctionButtons) {
-        Handlebars.registerPartial('FunctionButtonsBlock', `${fs.readFileSync(path.join(__dirname, '../../templates/react/handlebars/functionButtonsBlock.hbs'), 'utf-8')}\n`)
-    }
-
-    if (viewData.hasStaticInfo) {
-        Handlebars.registerPartial('AlertInfo', `{{{{raw}}}}<Alert showIcon title='${pageConfig.staticInfo?.text}' type='info' style={{ marginBottom: 16 }} />\n{{{{/raw}}}}`)
-    }
-
-    Handlebars.registerPartial('MyTable', `${fs.readFileSync(path.join(__dirname, '../../templates/react/handlebars/MyTable.hbs'), 'utf-8')}\n`)
-    Handlebars.registerPartial('hookBlock', `${fs.readFileSync(path.join(__dirname, '../../templates/react/handlebars/hookBlock.hbs'), 'utf-8')}\n`)
-    Handlebars.registerPartial('stateBlock', `${fs.readFileSync(path.join(__dirname, '../../templates/react/handlebars/stateBlock.hbs'), 'utf-8')}\n`)
-    Handlebars.registerPartial('handleBlock', `${fs.readFileSync(path.join(__dirname, '../../templates/react/handlebars/handleBlock.hbs'), 'utf-8')}\n`)
 
     const bodyCode = indexTpl(viewData)
     const importsStr = generateSmartImports({ bodyCode, hasTabs, hasFormItems })

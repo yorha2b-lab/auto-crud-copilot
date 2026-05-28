@@ -2,12 +2,12 @@ const fs = require('fs')
 const ora = require('ora')
 const chalk = require('chalk')
 const stringify = require('json-stringify-pretty-compact')
-const { cleanCode, formatFormItemAndColumns } = require('../../utils/utils')
 
 module.exports = async filePath => {
 
     const { get } = require('../../core/context')
     const { language, partPrompt, recognizePage } = get()
+    const { cleanCode, formatFormItemAndColumns } = require('../../utils/utils')
 
     const startTime = Date.now()
 

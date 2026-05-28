@@ -4,11 +4,11 @@ const chalk = require('chalk')
 const chokidar = require('chokidar')
 const stringify = require('json-stringify-pretty-compact')
 
-const { get } = require('../core/context')
-const { copyTemplateDir } = require('../utils/utils.js')
-const { createTaskQueue } = require('../core/task-queue.js')
-
 const watch = () => {
+
+    const { get } = require('../core/context')
+    const { copyTemplateDir } = require('../utils/utils.js')
+    const { createTaskQueue } = require('../core/task-queue.js')
 
     const { menus, config, options, template, language, apiHandler, pageHandler, partHandler } = get()
 

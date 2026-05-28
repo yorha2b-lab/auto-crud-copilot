@@ -2,7 +2,6 @@ const http = require('http')
 const zlib = require('zlib')
 const chalk = require('chalk')
 const httpProxy = require('http-proxy')
-const { get } = require('../core/context')
 
 /**
  * @function startProxyTower
@@ -11,6 +10,7 @@ const { get } = require('../core/context')
  */
 module.exports = () => {
 
+    const { get } = require('../core/context')
     const { config, language, apiHandler, unwrapSignal, isQuerySignal } = get()
 
     const TOWER_PORT = 42153
