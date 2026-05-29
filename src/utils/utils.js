@@ -244,7 +244,9 @@ const formatFormItemAndColumns = ({ pageConfig }) => {
         money: 'text => moneyRender(text)',
         date: 'text => timeRender({time: text})',
         index: '(_, record, index) => index + 1',
-        enum: dataIndex => `text => ${dataIndex}Options.find(item => item.value === text)?.label??text`
+        tag: `text => <Tag color='magenta'>{text}</Tag>`,
+        badge: `text => <Badge status='success' text={text} />`,
+        enum: dataIndex => `text => ${dataIndex}Options.find(item => item.value === text)?.label??text`,
     }
 
     const columns = pageConfig.table?.columns ?? pageConfig?.columns ?? []
@@ -259,16 +261,17 @@ const formatFormItemAndColumns = ({ pageConfig }) => {
     }))
 
     const processedColumns = columns?.map(col => {
+        if (['image'].includes(col.type)) {
+            return { ...col, renderAction: true }
+        }
         if (col.type && codePresets[col.type]) {
             // 💡 物理注入：根据标签，强行塞入标准化的 JS 代码字符串
             const renderCode = typeof codePresets[col.type] === 'function' ? codePresets[col.type](col.dataIndex) : codePresets[col.type]
-            delete col.type
             return {
                 ...col,
                 render: `_CODE_${renderCode}_CODE_` // 重新打标，交给 cleanCode 处理
             }
         }
-        delete col.type
         return col
     })
 
@@ -302,25 +305,32 @@ const copyTemplateDir = (options, templateSubDir, targetSubDir) => {
  * @param {boolean} hasTabs - 是否包含标签页
  * @returns {string} 拼接后的 import 语句
  */
-const generateSmartImports = ({ bodyCode, hasTabs, hasFormItems }) => {
+const generateSmartImports = ({ module, hasTabs, bodyCode, hasFormItems, hasDateColumn }) => {
+
     const hooksLib = ['useTableQuery']
+    const utilsLib = ['timeRender', 'moneyRender']
     const reactLib = ['useState', 'useEffect', 'useRef', 'useMemo']
-    const componentsLib = ['MyTable', 'MyModalForm', 'MySearchForm']
-    const antdLib = ['Card', 'Space', 'Modal', 'Button', 'Alert', 'Table', 'Input', 'Select']
+    const componentsLib = ['MyTable', 'MyImage', 'MyModalForm', 'MySearchForm']
+    const antdLib = ['Tag', 'Card', 'Badge', 'Space', 'Modal', 'Alert', 'Image', 'Table', 'Input', 'Select', 'Button']
 
     const usedAntd = antdLib.filter(name => new RegExp(`\\b${name}\\b`).test(bodyCode))
+    const usedUtils = utilsLib.filter(name => new RegExp(`\\b${name}\\b`).test(bodyCode))
     const usedHooks = hooksLib.filter(name => new RegExp(`\\b${name}\\b`).test(bodyCode))
     const usedReact = reactLib.filter(name => new RegExp(`\\b${name}\\b`).test(bodyCode))
     const usedComps = componentsLib.filter(name => new RegExp(`\\b${name}\\b`).test(bodyCode))
 
     const imports = [
         usedReact.length && `import { ${usedReact.join(', ')} } from 'react'`,
-        `import { request } from '../../utils/request'`,
-        `import { formatQuery } from '../../utils/utils'`,
+        usedAntd.length && `import { ${hasFormItems && module === 'index' ? 'Form, ' : ''}${usedAntd.join(', ')} } from 'antd'`,
         ...usedHooks.map(hook => `import { ${hook} } from '../../hooks/${hook}'`),
         ...usedComps.map(comp => `import { ${comp} } from '../../components/${comp}'`),
-        usedAntd.length && `import { ${hasFormItems ? 'Form, ' : ''}${usedAntd.join(', ')} } from 'antd'`,
-        `import { ${hasTabs ? 'tabs, ' : ''}${hasFormItems ? 'formItems, ' : ''}modalItems, tableColumns} from './resource'`,
+        ...(module === 'index' ? [
+            `import { request } from '../../utils/request'`,
+            `import { formatQuery } from '../../utils/utils'`,
+            `import { ${hasTabs ? 'tabs, ' : ''}${hasFormItems ? 'formItems, ' : ''}modalItems, tableColumns} from './resource'`
+        ] : [
+            usedUtils.length && `import { ${usedUtils.join(', ')} } from '../../utils/utils'`
+        ]),
     ].sort((a, b) => a.length - b.length)
 
     return imports.filter(Boolean).join('\n')

@@ -21,7 +21,7 @@
         "columns": [
             {
                 "title": "职业",
-                "dataIndex": "jobName",
+                "dataIndex": "job",
                 "type": "text"
             },
             {
@@ -30,9 +30,19 @@
                 "type": "text"
             },
             {
+                "title": "一觉立绘",
+                "dataIndex": "firstAwakeningImage",
+                "type": "image"
+            },
+            {
                 "title": "二觉",
                 "dataIndex": "secondAwakening",
                 "type": "text"
+            },
+            {
+                "title": "二觉立绘",
+                "dataIndex": "secondAwakeningImage",
+                "type": "image"
             },
             {
                 "title": "三觉",
@@ -40,24 +50,29 @@
                 "type": "text"
             },
             {
+                "title": "三觉立绘",
+                "dataIndex": "thirdAwakeningImage",
+                "type": "image"
+            },
+            {
                 "title": "武器类型",
                 "dataIndex": "weaponType",
-                "type": "enum"
+                "type": "tag"
             },
             {
                 "title": "职业类型",
                 "dataIndex": "jobType",
-                "type": "enum"
+                "type": "tag"
             },
             {
                 "title": "登场时间",
-                "dataIndex": "launchDate",
+                "dataIndex": "releaseDate",
                 "type": "date"
             }
         ],
-        "pagination": true,
-        "expandable": true,
         "rowSelection": true,
+        "expandable": true,
+        "pagination": true,
         "operation": [
             {
                 "label": "查看",
@@ -76,7 +91,7 @@
     "formItems": [
         {
             "label": "转职职业",
-            "name": "transferJob",
+            "name": "jobTransfer",
             "type": "select"
         },
         {
@@ -91,62 +106,42 @@
         },
         {
             "label": "觉醒名称关键词",
-            "name": "awakeningNameKeyword"
+            "name": "awakeningKeyword",
+            "type": "text"
         },
         {
             "label": "登场时间",
-            "name": "launchDateStart,launchDateEnd",
+            "name": "releaseDateStart,releaseDateEnd",
             "type": "daterange"
         }
     ],
-    "staticInfo": {
-        "has": false,
-        "text": ""
-    },
+    "staticInfo": {},
     "optionDict": {
-        "transferJobOptions": [
+        "jobTransferOptions": [
             {
-                "label": "剑魂",
-                "value": "soulBender"
-            },
-            {
-                "label": "狂战士",
-                "value": "berserker"
+                "label": "选择转职",
+                "value": "selectJob"
             }
         ],
-        "weaponTypeOptions": [
-            {
-                "label": "光剑",
-                "value": "lightSword"
-            },
-            {
-                "label": "太刀",
-                "value": "katana"
-            },
-            {
-                "label": "巨剑",
-                "value": "greatSword"
-            }
-        ],
-        "jobTypeOptions": [
-            {
-                "label": "物理",
-                "value": "physical"
-            },
-            {
-                "label": "魔法",
-                "value": "magic"
-            }
-        ]
+        "weaponTypeOptions": [],
+        "jobTypeOptions": []
     },
     "functionButton": [
         {
+            "btn": "查询",
+            "action": "search"
+        },
+        {
+            "btn": "重置",
+            "action": "reset"
+        },
+        {
             "btn": "批量删除",
-            "action": "deleteBySelected"
+            "action": "batchDeleteBySelected"
         },
         {
             "btn": "批量导出",
-            "action": "exportJobData"
+            "action": "exportData"
         }
     ],
     "pageStruct": [

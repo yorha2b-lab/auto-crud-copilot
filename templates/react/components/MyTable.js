@@ -35,7 +35,7 @@ import { useRef, useMemo, useEffect, useCallback } from 'react'
  *   customSave={(row) => saveApi(row)}
  * />
  */
-export const MyTable = ({ size, query, total, search, autoScroll, onChange, pagination, rowClassName, customSave, setDataSource, lineFormChange, columns = [], rowSelection, rowKey = 'id', loading = false, dataSource = [], scroll = { x: 'max-content' }, ...restProps }) => {
+export const MyTable = ({ size, query, total, search, autoScroll, onChange, pagination, renderAction, rowClassName, customSave, setDataSource, lineFormChange, columns = [], rowSelection, rowKey = 'id', loading = false, dataSource = [], scroll = { x: 'max-content' }, ...restProps }) => {
 
     const tableRef = useRef(null)
     const hasScrolledRef = useRef(false)
@@ -82,6 +82,9 @@ export const MyTable = ({ size, query, total, search, autoScroll, onChange, pagi
     const mergedColumns = useMemo(() => {
         return columns.map(col => {
             if (!col.editType) {
+                if (col.renderAction && renderAction[col.dataIndex]) {
+                    return { ...col, render: renderAction[col.dataIndex] }
+                }
                 return col
             }
             return {
@@ -102,7 +105,7 @@ export const MyTable = ({ size, query, total, search, autoScroll, onChange, pagi
                 }),
             }
         })
-    }, [columns, handleSave])
+    }, [columns, handleSave, renderAction])
 
     /**
      * @constant paginationConfig

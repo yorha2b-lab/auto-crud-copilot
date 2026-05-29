@@ -46,6 +46,20 @@ const expandedRowRender = record => (<div>自定义渲染</div>)
 
 {{/if}}
 
+
+{{#if hasImageColumn}}
+const showImg = (record, dataIndex) => {
+    const list = record[dataIndex]?.split(',') ?? []
+    const isUrl=list.some(item=>item.startsWith('http'))
+    if(isUrl){
+        setImg({ list, visible: true })
+    }else{
+        //自行解决图片路径问题
+    }
+}
+
+{{/if}}
+
 const modalSubmit = async values => {
     let response
     if(modal.type==='add'){

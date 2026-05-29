@@ -2,9 +2,9 @@ export default props => {
 
     {{> stateBlock }}
 
-    {{> hookBlock }}
-
     {{> handleBlock }}
+
+    {{> hookBlock }}
 
     {{#if hasOperate}}
     {{> tableOperate }}
@@ -22,6 +22,7 @@ export default props => {
     return (
         <Card {{#if hasTabs}}tabList={tabs} activeTabKey={activeKey} onTabChange={onTabChange}{{/if}}>
             {modal.visible && <MyModalForm {...modal} submit={modalSubmit} setModal={setModal} />}
+            {{#if hasImageColumn}}{img.visible && <MyImage img={img} setImg={setImg}/>}{{/if}}
             {{#each pageStruct as |partialName|}}
             {{> (partialName) @root }}
             {{/each}}

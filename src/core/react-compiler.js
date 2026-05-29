@@ -1,3 +1,4 @@
+const stringify = require('json-stringify-pretty-compact')
 const { cleanCode, generateSmartImports, formatFormItemAndColumns } = require('../utils/utils.js')
 
 /**
@@ -9,21 +10,29 @@ const { cleanCode, generateSmartImports, formatFormItemAndColumns } = require('.
  */
 const resource = ({ pageConfig, resourceTpl }) => {
 
-    const hasTabs = pageConfig.tabs?.length > 0
-
     const { formItems, processedColumns, dictBlocks } = formatFormItemAndColumns({ pageConfig })
+
+    const hasTabs = pageConfig.tabs?.length > 0
+    const hasFormItems = pageConfig.formItems?.length > 0
+    const hasDateColumn = processedColumns.some(item => item.type === 'date')
+
+    const columnsData = processedColumns.map(item => {
+        delete item.type
+        return item
+    })
 
     const viewData = {
         hasTabs,
-        formItems,
+        hasFormItems,
         tabs: pageConfig.tabs,
         dictBlocks: dictBlocks.map(item => ({ name: item, data: pageConfig.optionDict[item] ?? [] })),
         formItemsData: hasTabs ? Object.fromEntries(pageConfig.tabs.map(tab => [tab.key, formItems])) : formItems,
-        columnsData: hasTabs ? Object.fromEntries(pageConfig.tabs.map(tab => [tab.key, processedColumns])) : processedColumns,
+        columnsData: hasTabs ? Object.fromEntries(pageConfig.tabs.map(tab => [tab.key, columnsData])) : columnsData,
     }
 
-    const rawCode = resourceTpl(viewData)
-    return cleanCode(rawCode)
+    const bodyCode = resourceTpl(viewData)
+    const importsStr = generateSmartImports({ module: 'resource', hasTabs, bodyCode, hasFormItems, hasDateColumn })
+    return cleanCode(`${importsStr}\n\n${bodyCode}`)
 }
 
 /**
@@ -38,15 +47,20 @@ const index = ({ config, fileName, indexTpl, pageConfig }) => {
 
     const hasTabs = pageConfig.tabs?.length > 0
     const hasFormItems = pageConfig.formItems?.length > 0
-    const hasOperate = pageConfig.table.operation?.length > 0
+    const hasOperate = pageConfig.table?.operation?.length > 0
+    const hasImageColumn = pageConfig.table?.columns?.some(item => item.type === 'image')
     const pageStruct = pageConfig.pageStruct?.filter(item => item.toLowerCase() !== 'tabs') || []
     const functionButtons = pageConfig.functionButton?.filter(item => !['查询', '重置'].includes(item.btn)) || []
     const hasFunctionButtons = functionButtons.length > 0
+    const needRenderAction = hasImageColumn
 
     let columnsValue = hasTabs ? 'columns[activeKey]' : 'columns'
     if (hasOperate) {
         columnsValue = `${columnsValue}.concat(operate)`
     }
+
+    const imgAction = Object.fromEntries(pageConfig.table?.columns?.filter(item => item.type === 'image')?.map(item => [item.dataIndex, `_CODE_(_, record) => <a onClick={() => showImg(record, '${item.dataIndex}')}>查看图片</a>_CODE_`]))
+    const renderAction = `{${stringify.default({ ...imgAction }, { indent: 4, maxLength: 120 })}}`.replace(/\n/g, '\n    ')
 
     const viewData = {
         hasTabs,
@@ -54,7 +68,10 @@ const index = ({ config, fileName, indexTpl, pageConfig }) => {
         hasOperate,
         columnsValue,
         hasFormItems,
+        renderAction,
+        hasImageColumn,
         functionButtons,
+        needRenderAction,
         tabs: pageConfig.tabs,
         responseSuccess: config.responseSuccess,
         hasExpandable: pageConfig.table.expandable,
@@ -67,7 +84,7 @@ const index = ({ config, fileName, indexTpl, pageConfig }) => {
     }
 
     const bodyCode = indexTpl(viewData)
-    const importsStr = generateSmartImports({ bodyCode, hasTabs, hasFormItems })
+    const importsStr = generateSmartImports({ module: 'index', hasTabs, bodyCode, hasFormItems })
     return cleanCode(`${importsStr}\n\n${bodyCode}`)
 }
 

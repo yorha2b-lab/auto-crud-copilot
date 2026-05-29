@@ -8,12 +8,15 @@
     search={search}
     loading={loading}
     dataSource={dataSource}
-    columns={ {{columnsValue}} }
     setDataSource={setDataSource}
+    columns={ {{columnsValue}} }
     {{#if hasExpandable}}
     {{{{raw}}}}
     expandable={{ onExpand, expandedRowKeys, expandedRowRender, columnWidth: 24 }}
     {{{{/raw}}}}
+    {{/if}}
+    {{#if needRenderAction}}
+    renderAction={{{renderAction}}}
     {{/if}}
     {{#if hasPagination}}
     {{{{raw}}}}

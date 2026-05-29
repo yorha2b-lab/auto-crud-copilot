@@ -34,11 +34,14 @@ module.exports = `
 - **配置项**: [pagination, expandable, rowSelection] 均为布尔值false,只有页面明确有对应功能时才为true。
 - **标准定义 (Columns)**:
     - ⚠️ **操作锁定**: 严禁在 columns 数组中包含“操作”列。
-    - date: 时间/日期列
+    - enum: 枚举列
     - money: 金额列
     - index: 序号列
-    - enum: 枚举列
+    - image: 图片列
+    - date: 时间/日期列
     - text: 普通文本（默认）
+    - tag: 标签列(有背景色的标签)
+    - badge: 徽标列(文本前有颜色小圆点)
     - **行操作 (Operation)**: [{label:'操作名', action:'动词ByRecord'}]。
 
 ### 全局功能按钮 (FunctionButton)
@@ -49,7 +52,7 @@ module.exports = `
 ## 3. 布局逻辑编排 (Page Structure)
 - **字段**: [pageStruct] 定义从上至下的物理堆叠顺序。
 - **白名单**: 只能从 [AlertInfo, MySearchForm, FunctionButtonsBlock, MyTable] 中选择。
-- **⚠️ 约束**: 严禁在 pageStruct 中包含 Tabs 或其他未定义组件；并且只有真实存在的组件才能被包含。
+- **⚠️ 约束**: 严禁在 pageStruct 中包含 其他未定义组件；并且只有真实存在的组件才能被包含。
 
 ## 4. 输出约束 (Output Format)
 - **格式**: 纯 JSON 对象，严禁 Markdown 标签包围。

@@ -3,6 +3,9 @@ const rowKey = 'id'
 {{#if hasFormItems}}
 const [form] = Form.useForm()
 {{/if}}
+{{#if hasImageColumn}}
+const [img, setImg] = useState({})
+{{/if}}
 {{#if hasRowSelection}}
 const [selectedRows, setSelectedRows] = useState([])
 {{/if}}

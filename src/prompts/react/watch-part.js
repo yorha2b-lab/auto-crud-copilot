@@ -15,11 +15,14 @@ module.exports = `
     - ***⚠️⚠️⚠️严禁输出formItems,只允许输出coloumns⚠️⚠️⚠️***
 - **标准定义 (Columns)**:
     - ⚠️ **操作锁定**: 严禁在 columns 数组中包含“操作”列。
-    - date: 时间/日期列
+    - enum: 枚举列
     - money: 金额列
     - index: 序号列
-    - enum: 枚举列
+    - image: 图片列
+    - date: 时间/日期列
     - text: 普通文本（默认）
+    - tag: 标签列(有背景色的标签)
+    - badge: 徽标列(文本前有颜色小圆点)
     - **行操作 (Operation)**: [{label:'操作名', action:'动词ByRecord'}]
 
 ## 2. 表单 (Form)
