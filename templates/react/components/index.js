@@ -9,11 +9,11 @@ import { Button, Tree, Radio, Input, Upload, Select, Cascader, Checkbox, DatePic
  * 集成了“物理路径自动重组”、“STS 令牌自动续期”以及“ Antd 属性无损透传”三大核心协议。
  *
  * @param {Object} props - 构筑参数
+ * @param {string} [props.path] - 默认存储扇区：定义文件在云端的物理根路径
+ * @param {string} [props.url] - 司令部通信地址：用于申请最新的物理传输令牌 (STS)
  * @param {Array} props.value - 传感器当前封存的文件列表 (符合 Antd fileList 规范)
  * @param {Function} props.onChange - 状态反馈协议：当物理文件状态变更时同步至地堡中枢
  * @param {Object} [props.oss] - 外部空投的初始凭证包。若缺失，组件将启动自主初始化流程。
- * @param {string} [props.url] - 司令部通信地址：用于申请最新的物理传输令牌 (STS)
- * @param {string} [props.path] - 默认存储扇区：定义文件在云端的物理根路径
  * @param {Object} [props.options] - 通信加密/配置参数：在申请令牌时透传给 request 的额外负载
  * @param {Object} [props.originUploadProps] - [重要] 无损透传：支持 Antd Upload 的所有原生属性（如 multiple, accept 等）
  *
@@ -81,7 +81,7 @@ const AliyunOSSUpload = ({ value, onChange, ...restProps }) => {
      */
     const beforeUpload = async file => {
         let currentOSS = OSSData
-        const expire = Number(OSSData.expire) * 1000
+        const expire = Number(OSSData?.expire ?? 0) * 1000
         if (expire < Date.now()) {
             currentOSS = await init()
         }
@@ -119,12 +119,12 @@ const AliyunOSSUpload = ({ value, onChange, ...restProps }) => {
  *
  * @param {Object} params - 装配参数
  * @param {Object} params.item - 零部件配置对象
- * @param {string} params.item.type - 构筑类型（date/number/ossUpload/select/daterange 等）
- * @param {boolean} [params.item.readOnly] - 物理锁定开关
  * @param {string|number} [params.item.width] - 宽度校准
+ * @param {boolean} [params.item.readOnly] - 物理锁定开关
  * @param {string} [params.item.placeholder] - 视觉占位提示
- * @param {Array} [params.item.options] - 数据字典（用于 select/radio/tree 等）
  * @param {Object} [params.item.props] - 透传给底层组件的原始控制参数
+ * @param {Array} [params.item.options] - 数据字典（用于 select/radio/tree 等）
+ * @param {string} params.item.type - 构筑类型（date/number/ossUpload/select/daterange 等）
  *
  * @returns {React.ReactNode} 物理装配完成的 UI 单元
  */

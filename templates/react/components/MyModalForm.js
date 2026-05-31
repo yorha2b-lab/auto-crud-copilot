@@ -1,7 +1,99 @@
 import dayjs from 'dayjs'
 import { MyBaseForm } from './MyBaseForm'
-import { useState, useEffect } from 'react'
-import { Row, Col, Form, Modal, } from 'antd'
+import { MyModalTable } from './MyModalTable'
+import { useMemo, useState, useEffect } from 'react'
+import { Row, Col, Form, Modal, Button, Collapse } from 'antd'
+
+const LAYOUT_PROCESSORS = {
+    // 分节布局
+    section: ({ item, children }) => (
+        <Col span={item.span ?? 24}>
+            <div className={item.className}>{item.title}</div>
+            <Row gutter={[24, 0]}>{children}</Row>
+        </Col>
+    ),
+    // 手风琴布局
+    collapse: ({ item, renderCore }) => (
+        <Col span={item.span ?? 24}>
+            <Collapse ghost accordion defaultActiveKey={[0]}>
+                {item.childItems?.map((child, ind) => (
+                    <Collapse.Panel key={child.name || ind} header={<span style={{ fontWeight: 'bold' }}>{child.title}</span>}>
+                        <Row gutter={[24, 0]}>
+                            {renderCore(child.childItems || [child])}
+                        </Row>
+                    </Collapse.Panel>
+                ))}
+            </Collapse>
+        </Col>
+    ),
+    default: ({ children }) => <>{children}</>
+}
+
+// 定义“零部件增强协议”处理器,以后加任何新功能，只需要在这个对象里加一个 Key，不需要动主逻辑！
+const ACTION_PROCESSORS = {
+    // 处理尾操作按钮
+    addonAfter: (item, { tableConfig, setModalTable, setSelectedTableRows }) => ({
+        props: {
+            addonAfter: (
+                <Button onClick={() => {
+                    setSelectedTableRows([])
+                    setModalTable({ visible: true, title: `选择${item.label}`, ...tableConfig[item.name] })
+                }}>
+                    {item.addonAfter}
+                </Button>
+            )
+        }
+    }),
+    // 以后想加个“前缀图标”？直接加在这里：
+    // prefix: (item) => ({ props: { prefix: <Icon type={item.prefix} /> } }),
+}
+
+const FormRenderer = ({ form, formItems, tableConfig, setModalTable, setSelectedTableRows }) => {
+
+    // 定义核心渲染逻辑，供递归使用
+    const renderCore = items => (
+        <FormRenderer
+            form={form}
+            formItems={items}
+            tableConfig={tableConfig}
+            setModalTable={setModalTable}
+            setSelectedTableRows={setSelectedTableRows}
+        />
+    )
+
+    // 定义单项动作注入逻辑
+    const getRenderItemProps = item => {
+        if (!item.renderAction) return {}
+        const props = {}
+        Object.keys(ACTION_PROCESSORS).forEach(key => {
+            if (item[key]) {
+                Object.assign(props, ACTION_PROCESSORS[key](item, { tableConfig, setModalTable, setSelectedTableRows }))
+            }
+        })
+        return props
+    }
+
+    return formItems.map((item, index) => {
+        // 情况 A：发现容器型零件 (含有 layoutType)
+        if (item.layoutType && LAYOUT_PROCESSORS[item.layoutType]) {
+            const Layout = LAYOUT_PROCESSORS[item.layoutType] ?? LAYOUT_PROCESSORS.default
+            return (
+                <Layout
+                    item={item}
+                    key={item.name || index}
+                    renderCore={renderCore} // 注入渲染能力，让 Layout 自己去 Map
+                />
+            )
+        }
+
+        // 情况 B：标准作战零件
+        return (
+            <Col span={item.span ?? 24} key={item.name || index}>
+                <MyBaseForm item={{ ...item, ...getRenderItemProps(item) }} form={form} />
+            </Col>
+        )
+    })
+}
 
 /**
  * @component MyModalForm
@@ -9,29 +101,42 @@ import { Row, Col, Form, Modal, } from 'antd'
  * 集成了“语义回显自愈”、“自动时间戳转换”及“原子级提交锁定”三大核心协议。
  *
  * @param {Object} props - 构筑参数
- * @param {string|number} [props.width] - 舱体物理宽度
  * @param {string} [props.title] - 舱体视觉标题
- * @param {Function} props.submit - 数据发射协议：提交表单后的核心回调函数
- * @param {Object} [props.record] - 初始物资包：用于编辑模式的数据回显
- * @param {boolean} props.visible - 激活信号：控制弹窗的物理显示状态
- * @param {Function} props.setModal - 指令中心：用于更新弹窗状态（开启/关闭）
- * @param {Array} props.formItems - 零部件清单：定义表单内部的输入单元
  * @param {Object} [props.labelCol] - 标签布局校准
  * @param {Object} [props.wrapperCol] - 控件布局校准
+ * @param {string|number} [props.width] - 舱体物理宽度
+ * @param {boolean} props.visible - 激活信号：控制弹窗的物理显示状态
+ * @param {Array} props.formItems - 零部件清单：定义表单内部的输入单元
+ * @param {Object} [props.record] - 初始物资包：用于编辑模式的数据回显
+ * @param {Function} props.submit - 数据发射协议：提交表单后的核心回调函数
+ * @param {Function} props.setModal - 指令中心：用于更新弹窗状态（开启/关闭）
  * @param {Function} [props.onValuesChange] - 联动传感：捕获表单内部的信号波动
  *
  * @example
  * <MyModalForm
  *   title="构筑新模块"
  *   visible={visible}
- *   formItems={[{ label: '截止日期', name: 'deadline', type: 'date' }]}
  *   submit={async (vals) => await save(vals)}
+ *   formItems={[{ label: '截止日期', name: 'deadline', type: 'date' }]}
  * />
  */
-export const MyModalForm = ({ width, title, submit, record, visible, setModal, labelCol, formItems, wrapperCol, onValuesChange }) => {
+export const MyModalForm = ({ width, title, submit, record, visible, setModal, labelCol, formItems, wrapperCol, tableConfig, onValuesChange, handleModalTableOk }) => {
+
+    const rowKey = tableConfig?.rowKey || 'id'
 
     const [form] = Form.useForm()
     const [pending, setPending] = useState(false)
+    const [modalTable, setModalTable] = useState({})
+    const [selectedTableRows, setSelectedTableRows] = useState([])
+
+    const flattenFormItems = items => {
+        return items.flatMap(item => {
+            if (item.layoutType && item.childItems) {
+                return flattenFormItems(item.childItems)
+            }
+            return item
+        })
+    }
 
     /**
      * @description [数据回显协议] 当构筑舱开启时，自动对初始物资进行“语义格式化”。
@@ -41,11 +146,11 @@ export const MyModalForm = ({ width, title, submit, record, visible, setModal, l
         if (visible) {
             form.resetFields()
             if (record && Object.keys(record).length > 0) {
-                const itemMap = new Map(formItems.map(i => [i.name, i]))
+                const itemMap = new Map(flattenFormItems(formItems).map(i => [i.name, i]))
                 const initialData = {}
                 Object.entries(record).forEach(([key, value]) => {
                     const config = itemMap.get(key)
-                    // 💡 语义识别：若零部件类型为日期且数值存在，执行物理转化
+                    // 语义识别：若零部件类型为日期且数值存在，执行物理转化
                     if (config?.type?.includes('date') && value) {
                         if (Array.isArray(value)) {
                             // 处理范围日期
@@ -91,12 +196,15 @@ export const MyModalForm = ({ width, title, submit, record, visible, setModal, l
             if (submit) {
                 setPending(true)
                 await submit({ ...record, ...formattedValues })
-                setPending(false)
             }
         } catch (error) {
             console.log('表单校验失败:', error)
+        } finally {
+            setPending(false)
         }
     }
+
+    const modalTableOk = () => handleModalTableOk({ form, selectedTableRows, setModalTable })
 
     /**
      * @function handleCancel
@@ -107,15 +215,17 @@ export const MyModalForm = ({ width, title, submit, record, visible, setModal, l
         form.resetFields()
     }
 
+    const tableRowSelection = useMemo(() => ({
+        selectedRowKeys: selectedTableRows.map(row => row[rowKey]),
+        onChange: (selectedRowKeys, selectedRows) => setSelectedTableRows(selectedRows),
+    }), [rowKey, modalTable, selectedTableRows])
+
     return (
         <Modal centered title={title} width={width} open={visible} onOk={handleOk} destroyOnClose onCancel={handleCancel} confirmLoading={pending}>
+            {modalTable.visible && <MyModalTable rowKey={rowKey} {...modalTable} rowSelection={tableRowSelection} onOk={modalTableOk} setModal={setModalTable} />}
             <Form form={form} preserve={false} labelCol={labelCol} wrapperCol={wrapperCol} onValuesChange={(changed, all) => onValuesChange?.({ changed, all, form, record })}>
                 <Row gutter={[24, 0]}>
-                    {formItems.map((item, index) =>
-                        <Col span={item.span ?? 24} key={item.name || index}>
-                            <MyBaseForm item={item} form={form} />
-                        </Col>
-                    )}
+                    <FormRenderer form={form} formItems={formItems} tableConfig={tableConfig} setModalTable={setModalTable} setSelectedTableRows={setSelectedTableRows} />
                 </Row>
             </Form>
         </Modal>

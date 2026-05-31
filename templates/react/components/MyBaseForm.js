@@ -63,9 +63,9 @@ const renderFormContent = ({ item, prefixName = [] }) => {
  *
  * @param {Object} props - 组件属性
  * @param {Object} props.item - 构筑协议对象
+ * @param {Object} props.form - Antd Form 实例，用于实现复杂的跨组件联动
  * @param {boolean} [props.item.isList] - 模式切换：是否开启动态增减列表模式
  * @param {Function} [props.item.render] - 逻辑劫持：支持自定义渲染函数，可完全改写渲染行为
- * @param {Object} props.form - Antd Form 实例，用于实现复杂的跨组件联动
  *
  * @example
  * // 模式 A：标准表单项
@@ -99,7 +99,7 @@ export const MyBaseForm = ({ item, form }) => {
                 tooltip={item.tooltip}
                 labelCol={item.labelCol}
                 wrapperCol={item.wrapperCol}
-                required={item.required ?? !!item.rules}
+                required={item.required ?? item.rules?.some(v => v.required)}
                 style={{ marginBottom: !item.name ? 0 : undefined, ...item.style }}
             >
                 {/*

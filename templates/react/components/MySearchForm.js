@@ -10,25 +10,25 @@ import { Row, Col, Form, Button, Space } from 'antd'
  *
  * @param {Object} props - 指挥官指令包
  * @param {Object} props.form - Antd Form 实例，表单的主控舵盘
- * @param {Object} props.search - 当前的全局搜索状态（包含 pageNo, pageSize 及各过滤项）
- * @param {boolean} props.loading - 战场负载状态：请求中时锁定按钮，防止由于重复指令导致的逻辑冲突
- * @param {Function} props.setSearch - 状态分发器：用于更新全局搜索参数并触发重新构筑
- * @param {Array} props.formItems - 零部件清单：定义所有的搜索输入单元
- * @param {number} [props.showLimit=7] - 初始可见能级：默认展示的零部件数量
- * @param {Object} props.initialValues - 初始信号：从 URL 或缓存中解析出的初始参数
  * @param {Function} [props.customReset] - 逻辑劫持：自定义重置协议
  * @param {Function} [props.customFinish] - 逻辑劫持：自定义提交协议
- * @param {React.ReactNode} [props.extraOperate] - 额外挂件：在按钮区域注入自定义战术单元
- * @param {Function} [props.onValuesChange] - 联动传感：当表单值变动时的即时反馈
- * @param {boolean} [props.syncUrlParams=true] - 物理同步开关：是否将搜索状态实时镜像至 URL 链接中
+ * @param {Array} props.formItems - 零部件清单：定义所有的搜索输入单元
+ * @param {number} [props.showLimit=7] - 初始可见能级：默认展示的零部件数量
  * @param {number} [props.defaultPageSize=10] - 默认吞吐量：重置时的初始每页条数
+ * @param {Function} [props.onValuesChange] - 联动传感：当表单值变动时的即时反馈
+ * @param {Object} props.initialValues - 初始信号：从 URL 或缓存中解析出的初始参数
+ * @param {Function} props.setSearch - 状态分发器：用于更新全局搜索参数并触发重新构筑
+ * @param {Object} props.search - 当前的全局搜索状态（包含 pageNo, pageSize 及各过滤项）
+ * @param {React.ReactNode} [props.extraOperate] - 额外挂件：在按钮区域注入自定义战术单元
+ * @param {boolean} props.loading - 战场负载状态：请求中时锁定按钮，防止由于重复指令导致的逻辑冲突
+ * @param {boolean} [props.syncUrlParams=true] - 物理同步开关：是否将搜索状态实时镜像至 URL 链接中
  *
  * @example
  * <MySearchForm
  *   form={form}
  *   search={search}
- *   formItems={[{ label: '状态', name: 'status', type: 'select', options: [...] }]}
  *   setSearch={setSearch}
+ *   formItems={[{ label: '状态', name: 'status', type: 'select', options: [...] }]}
  * />
  */
 export const MySearchForm = ({ form, search, loading, labelCol, setSearch, formItems, showLimit = 7, initialValues, customReset, extraOperate, customFinish, onValuesChange, syncUrlParams = true, defaultPageSize = 10 }) => {
@@ -102,7 +102,7 @@ export const MySearchForm = ({ form, search, loading, labelCol, setSearch, formI
                     newValues[item.name] = item.type?.includes('date') ? dayjs(Number(value)) : value
                 }
                 // 处理双字段（日期范围）回显：执行物理重组
-                if (item.name.includes(',') && item.type?.includes('date')) {
+                if (item.name?.includes(',') && item.type?.includes('date')) {
                     const [startKey, endKey] = item.name.split(',')
                     if (initialValues[startKey] && initialValues[endKey]) {
                         newValues[item.name] = [dayjs(Number(initialValues[startKey])), dayjs(Number(initialValues[endKey]))]

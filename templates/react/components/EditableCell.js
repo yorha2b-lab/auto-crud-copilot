@@ -45,17 +45,17 @@ export const EditableRow = ({ index, record, ...props }) => {
  * 支持多种装配模式（text/number/select/checkbox），并具备“自动对焦”与“失焦自愈（自动保存）”功能。
  *
  * @param {Object} props - 构筑参数
- * @param {string} props.title - 零部件视觉标题，兼作占位符使用
+ * @param {Array} [props.rules=[]] - 逻辑校验准则
  * @param {Object} props.record - 当前行原始物资数据
- * @param {boolean} props.editable - 权限协议：是否允许开启编辑模式
  * @param {boolean} props.disabled - 物理锁定：是否禁止修改
+ * @param {string} props.title - 零部件视觉标题，兼作占位符使用
+ * @param {React.ReactNode} props.children - 默认展示的视觉节点
+ * @param {boolean} props.editable - 权限协议：是否允许开启编辑模式
  * @param {string} props.dataIndex - 逻辑寻址地址：对应后端数据的字段名
+ * @param {Array} [props.options=[]] - 数据字典（仅用于 select/checkbox）
  * @param {Function} props.handleSave - 物理封存协议：数据校验通过后的保存回调
  * @param {boolean} [props.defaultEdit] - 持久化模式：是否默认始终开启编辑状态
- * @param {Array} [props.rules=[]] - 逻辑校验准则
- * @param {Array} [props.options=[]] - 数据字典（仅用于 select/checkbox）
  * @param {string} [props.editType='text'] - 零部件型号（text/number/select/checkbox）
- * @param {React.ReactNode} props.children - 默认展示的视觉节点
  */
 export const EditableCell = ({ title, record, editable, disabled, children, dataIndex, placeholder, handleSave, defaultEdit, rules = [], options = [], editType = 'text', ...restProps }) => {
 

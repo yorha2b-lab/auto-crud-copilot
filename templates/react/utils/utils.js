@@ -51,8 +51,8 @@ export const initOSS = async (url, options) => {
 /**
  * @function formatQuery
  * @description [数据脱水] 搜索参数校准协议：根据零部件类型（如日期）自动执行类型转换（String -> Number）。
- * @param {Object} params - 原始表单/URL 传感器数据
  * @param {Array} formItems - 对应的零部件配置清单
+ * @param {Object} params - 原始表单/URL 传感器数据
  * @returns {Object} 经过物理清洗、可直接用于 API 请求的参数包
  */
 export const formatQuery = (params, formItems) => {
@@ -96,9 +96,9 @@ export const timeRender = ({ time, date, minute }) => {
  * @description [物资外运] 数据表格导出协议：支持复杂的渲染逻辑回溯，将页面数据封存为 .xlsx 格式。
  * @param {string} url - 数据源地址
  * @param {Object} options - 请求参数
- * @param {Array} columns - 表格列配置，支持 exportRender 优先级
  * @param {string} fileName - 导出的文件名
  * @param {Function} [formatter] - 数据预处理回调
+ * @param {Array} columns - 表格列配置，支持 exportRender 优先级
  */
 export const exportDataToExcel = async (url, options, columns, fileName, formatter) => {
     /* const response = await request(url, options)
@@ -216,8 +216,8 @@ export const moneyRender = (value, { decimals = 2, currency = 'CNY', language = 
  * @description [视觉渲染] 单位自动进阶协议：实现 B/KB/MB... 等数据的物理量级自动折算。
  * @param {number} value - 原始字节数值
  * @param {Object} [options] - 配置参数
- * @param {number} [options.k=1024] - 进位系数
  * @param {Array} [options.units] - 单位阶梯
+ * @param {number} [options.k=1024] - 进位系数
  * @param {number} [options.decimals=2] - 保留小数位
  * @returns {string} 带单位的物理量级文本
  */

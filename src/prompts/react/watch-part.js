@@ -40,8 +40,9 @@ module.exports = `
 - 命名规范:
     - daterange: name 必须设为 '字段英文名start,字段英文名end'。
 - 增强属性:
-    - 必填校验: 若图片中 label 前有红色星号，必须加入 rules:[{required:true,message:'xxx不能为空'}]。
     - 文字单位: 若项末尾有单位（如 元/kg），必须存入 unit 属性。
+    - 尾操作: 若项末尾有操作按钮（如 选择、编辑 等操作），必须存入 {renderAction:true,addonAfter:'尾操作名'} 属性。
+    - 必填校验: 若图片中 label 前有红色星号，必须加入 rules:[{required:true,message:'xxx不能为空'}]。
 
 ## 3. 下拉选项字典 (OptionDict)
 - 结构: optionDict: { 字段英文名Options: [] }

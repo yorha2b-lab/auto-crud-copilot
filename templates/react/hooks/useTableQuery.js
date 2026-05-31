@@ -6,21 +6,21 @@ import { useRef, useState, useEffect, useCallback } from 'react'
  * 负责全自动管理表格的生命周期，包括数据抓取、状态同步、动态列指纹识别及“竞态病毒”物理免疫。
  *
  * @param {Object} params - 引擎配置包
- * @param {Function} params.api - 任务指令：必须返回 Promise 的数据抓取函数
  * @param {Array} [params.cols] - 初始战备物资：前端预设的静态列配置
+ * @param {Function} params.api - 任务指令：必须返回 Promise 的数据抓取函数
  * @param {Object} [params.initialParams={}] - 初始导航坐标：包含 pageNo, pageSize 及默认过滤参数
  * @param {Function} params.formatResponse - 数据解码协议：将 API 原始信号转化为 { data, total, columns } 结构
  *
  * @returns {Object} 物理操作句柄包
  * @returns {number} .total - 仓库物资总量
- * @returns {Array} .columns - 当前生效的动态列配置（已通过指纹协议校验）
  * @returns {boolean} .loading - 引擎负载状态
- * @returns {Array} .dataSource - 已解压的物理物资列表
- * @returns {Object} .search - 当前导航参数（pageNo, pageSize 等）
  * @returns {Function} .setSearch - 坐标修改器
+ * @returns {Array} .dataSource - 已解压的物理物资列表
  * @returns {Function} .setLoading - 负载状态手动干预句柄
- * @returns {Function} .setDataSource - 物资流手动修改句柄（用于行内编辑等乐观更新）
+ * @returns {Object} .search - 当前导航参数（pageNo, pageSize 等）
  * @returns {Function} .refresh - 强制重启协议：立即执行一次数据抓取
+ * @returns {Array} .columns - 当前生效的动态列配置（已通过指纹协议校验）
+ * @returns {Function} .setDataSource - 物资流手动修改句柄（用于行内编辑等乐观更新）
  *
  * @example
  * const { dataSource, loading, refresh } = useTableQuery({

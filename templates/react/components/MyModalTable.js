@@ -11,22 +11,22 @@ import { useTableQuery } from '../hooks/useTableQuery'
  * 具备独立的数据获取链路、可选的搜索过滤系统以及与主构筑舱（setModalForm）的跨维协同能力。
  *
  * @param {Object} props - 支援参数
- * @param {Function} props.api - 弹窗内独立的数据源指令
- * @param {Function} [props.onOk] - 战果物理确认：按下确认按钮后的异步回调协议
  * @param {string} [props.title] - 舱体视觉标题
+ * @param {Function} props.api - 弹窗内独立的数据源指令
  * @param {string|number} [props.width] - 舱体物理宽度
- * @param {React.ReactNode} [props.footer] - 底座指令区：支持完全自定义操作按钮
- * @param {boolean} props.visible - 激活信号：控制支援单元的显示状态
- * @param {Function} props.operate - 动态火力配置：生成操作列的函数，接收 { refresh, setModalForm } 句柄
- * @param {Function} props.setModal - 单元注销中心：用于关闭当前弹窗
- * @param {Array} [props.formItems] - 局部搜索零部件：用于在弹窗内执行精准情报过滤
- * @param {Function} [props.setModalForm] - [重要] 跨维调用：由主页面注入的表单控制句柄，实现“弹窗开弹窗”的非耦合交互
  * @param {Object} [props.rowSelection] - 战术勾选：用于多选物资
- * @param {Function} props.formatResponse - 数据清洗协议：对 API 吐出的原始物资进行格式化
- * @param {Array} [props.functionButtons] - 功能挂件组：位于表格上方的操作按钮，可直接操控表格状态
+ * @param {boolean} props.visible - 激活信号：控制支援单元的显示状态
+ * @param {Function} props.setModal - 单元注销中心：用于关闭当前弹窗
  * @param {Array} props.columns - 零部件初始清单 (别名: modalColumns)
+ * @param {Function} [props.onOk] - 战果物理确认：按下确认按钮后的异步回调协议
  * @param {Object} [props.initialParams={}] - 初始战备物资：定义的初始搜索参数
+ * @param {React.ReactNode} [props.footer] - 底座指令区：支持完全自定义操作按钮
+ * @param {Array} [props.formItems] - 局部搜索零部件：用于在弹窗内执行精准情报过滤
+ * @param {Function} props.formatResponse - 数据清洗协议：对 API 吐出的原始物资进行格式化
  * @param {boolean|Object} [props.modalPagination=true] - 局部后勤协议：弹窗内是否开启分页
+ * @param {Array} [props.functionButtons] - 功能挂件组：位于表格上方的操作按钮，可直接操控表格状态
+ * @param {Function} props.operate - 动态火力配置：生成操作列的函数，接收 { refresh, setModalForm } 句柄
+ * @param {Function} [props.setModalForm] - [重要] 跨维调用：由主页面注入的表单控制句柄，实现“弹窗开弹窗”的非耦合交互
  *
  * @example
  * <MyModalTable
@@ -36,7 +36,7 @@ import { useTableQuery } from '../hooks/useTableQuery'
  *   operate={({ refresh, setModalForm }) => ({ label: '详情', onClick: (rec) => setModalForm(...) })}
  * />
  */
-export const MyModalTable = ({ api, onOk, title, width, footer, visible, operate, setModal, formItems, setModalForm, rowSelection, formatResponse, functionButtons, columns: modalColumns, initialParams = {}, modalPagination = true }) => {
+export const MyModalTable = ({ api, onOk, title, width, footer, visible, operate, setModal, formItems, setModalForm, rowSelection, formatResponse, functionButtons, columns: modalColumns, rowKey = 'id', initialParams = {}, modalPagination = true }) => {
 
     const [pending, setPending] = useState(false)
 
@@ -90,6 +90,7 @@ export const MyModalTable = ({ api, onOk, title, width, footer, visible, operate
             {functionButtons?.length > 0 && <Space>{functionButtons.map(item => <Button key={item.name} type={item.type} onClick={() => item.onClick({ refresh, setLoading, setSearch, setDataSource })}>{item.name}</Button>)}</Space>}
             <MyTable
                 total={total}
+                rowKey={rowKey}
                 search={search}
                 loading={loading}
                 scroll={{ y: 400 }}
