@@ -41,6 +41,8 @@ export const useTableQuery = ({ api, cols, initialParams = {}, formatResponse })
     const apiRef = useRef(api)
     // 💡 [核心防御] 信号 ID 计数器：用于物理拦截由于网络时延导致的“竞态病毒（Race Condition）”
     const fetchIdRef = useRef(0)
+    // 💡 [核心防御] 数据解码协议引用：确保异步回调中永远能指向最新的指令地址
+    const formatResponseRef = useRef(formatResponse)
 
     useEffect(() => {
         apiRef.current = api
@@ -70,10 +72,16 @@ export const useTableQuery = ({ api, cols, initialParams = {}, formatResponse })
             const response = await apiRef.current(search)
             // 💡 [物理拦截] 信号校准：若当前 ID 不是最新 ID，说明该信号已过期，执行丢弃协议
             if (currentFetchId !== fetchIdRef.current) return
-            const { data, total, columns: newCols } = formatResponse(response ?? {})
+            const { data, total, columns: newCols } = formatResponseRef.current?.(response ?? {}) || {}
             // 💡 [性能装甲] 只有当列指纹发生变化时，才触发 React 的重绘逻辑
-            if (newCols && getColumnSchema(newCols) !== getColumnSchema(columns)) {
-                setColumns(newCols)
+            if (newCols) {
+                // 使用函数式状态更新，既能拿到最新的 prevCols，又无需将 columns 作为 useCallback 的依赖！
+                setColumns(prevCols => {
+                    if (getColumnSchema(newCols) !== getColumnSchema(prevCols)) {
+                        return newCols
+                    }
+                    return prevCols
+                })
             }
             setDataSource(data)
             setTotal(total ?? 0)

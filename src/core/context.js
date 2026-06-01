@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const chalk = require('chalk')
 const Handlebars = require('handlebars')
 const stringify = require('json-stringify-pretty-compact')
 
@@ -26,10 +27,16 @@ module.exports = {
         const tplDir = config.hbsDir !== '' ? path.join(process.cwd(), config.hbsDir) : path.join(__dirname, `../../templates/${template}`)
 
         const compilerPath = path.join(__dirname, `./${template}-compiler.js`)
+        if (!fs.existsSync(compilerPath)) {
+            console.error(chalk.red(language(`❌ 暂不支持 [${template}] 框架。欢迎提交 Pull Request 贡献。`, `❌ [${template}] framework not supported. Welcome to contribute a Pull Request to help.`)))
+            return
+        }
         const { index, resource } = require(compilerPath)
 
         // 💡 物理扫描：把目录下所有的 .hbs 文件全部识别并自动注册
-        const partialsDir = path.join(__dirname, `../../templates/${template}/handlebars`)
+        const partialsDir = config.hbsDir !== ''
+            ? path.join(process.cwd(), config.hbsDir, 'handlebars')
+            : path.join(__dirname, `../../templates/${template}/handlebars`)
         fs.readdirSync(partialsDir).forEach(file => {
             if (file.endsWith('.hbs')) {
                 const name = path.basename(file, '.hbs') // 去掉后缀拿名字

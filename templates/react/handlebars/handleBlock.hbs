@@ -28,6 +28,7 @@ const {{this.action}} = () => {
 {{#if hasTabs}}
 const onTabChange = key => {
     setActiveKey(key)
+    {{#if hasFormItems}}form.resetFields(){{/if}}
     {{#if hasRowSelection}}setSelectedRows([]){{/if}}
     setSearch({ pageNo: 1, pageSize: 10, type: key })
 }

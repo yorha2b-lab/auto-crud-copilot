@@ -27,7 +27,10 @@
             window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`)
             setSearch(newSearch)
         } else {
-            setSearch({ ...search,pageNo: pagination.current, pageSize: pagination.pageSize, orderBy: undefined })
+            const newSearch = { ...search, pageNo: pagination.current, pageSize: pagination.pageSize, orderBy: undefined }
+            const params = new URLSearchParams(Object.fromEntries(Object.entries({ ...query, ...newSearch }).filter(([key, value]) => !['', null, undefined].includes(value))))
+            window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`)
+            setSearch(newSearch)
         }
     }}
     {{{{/raw}}}}

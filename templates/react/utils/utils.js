@@ -58,7 +58,7 @@ export const initOSS = async (url, options) => {
 export const formatQuery = (params, formItems) => {
     const cleanParams = {}
     Object.keys(params).forEach(key => {
-        if (formItems.some(item => item.name.includes(key) && item.type?.includes('date'))) {
+        if (formItems.some(item => item.name.includes(key) && item.type?.includes('date')) && params[key]) {
             cleanParams[key] = Number(params[key])
         } else {
             cleanParams[key] = params[key] ?? null
@@ -225,7 +225,9 @@ export const formatUnit = (value, { k = 1024, units = ['B', 'KB', 'MB', 'GB', 'T
     if (value === null || value === undefined || isNaN(value) || value === 0) {
         return `0 ${units[0] ?? ''}`
     }
-    const i = Math.floor(Math.log(value) / Math.log(k))
+    const absValue = Math.abs(value)
+    // 💡 安全屏障：小于 1 的数值直接归入初始级单位，不进行对数拆解
+    const i = absValue < 1 ? 0 : Math.floor(Math.log(absValue) / Math.log(k))
     const index = Math.min(i, units.length - 1)
     const result = (value / Math.pow(k, index)).toFixed(decimals)
     return `${parseFloat(result)} ${units[index]}`

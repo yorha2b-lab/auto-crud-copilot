@@ -1,7 +1,7 @@
 import { MyTable } from './MyTable'
 import { useMemo, useState } from 'react'
-import { Modal, Space, Button } from 'antd'
 import { MySearchForm } from './MySearchForm'
+import { Form, Modal, Space, Button } from 'antd'
 import { useTableQuery } from '../hooks/useTableQuery'
 
 /**
@@ -38,6 +38,7 @@ import { useTableQuery } from '../hooks/useTableQuery'
  */
 export const MyModalTable = ({ api, onOk, title, width, footer, visible, operate, setModal, formItems, setModalForm, rowSelection, formatResponse, functionButtons, columns: modalColumns, rowKey = 'id', initialParams = {}, modalPagination = true }) => {
 
+    const [form] = Form.useForm()
     const [pending, setPending] = useState(false)
 
     /**
@@ -82,7 +83,7 @@ export const MyModalTable = ({ api, onOk, title, width, footer, visible, operate
                 💡 [地堡战术细节]
                 syncUrlParams={false}：确保弹窗内的搜索行为不会干扰全局 URL 信号。
             */}
-            {formItems?.length > 0 && <MySearchForm search={search} formItems={formItems} setSearch={handleSearch} syncUrlParams={false} />}
+            {formItems?.length > 0 && <MySearchForm form={form} search={search} formItems={formItems} setSearch={handleSearch} syncUrlParams={false} />}
             {/*
                 💡 [高阶赋能逻辑]
                 functionButtons 能够获得对当前表格状态 (refresh, setLoading...) 的完全控制权。

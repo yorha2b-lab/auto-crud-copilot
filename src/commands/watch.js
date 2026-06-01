@@ -10,13 +10,7 @@ const watch = () => {
     const { copyTemplateDir } = require('../utils/utils.js')
     const { createTaskQueue } = require('../core/task-queue.js')
 
-    const { menus, config, options, template, language, apiHandler, pageHandler, partHandler } = get()
-
-    const compilerPath = path.join(__dirname, `../core/${template}-compiler.js`)
-    if (!fs.existsSync(compilerPath)) {
-        console.error(chalk.red(language(`❌ 暂不支持 [${template}] 框架。`, `❌ [${template}] framework not supported.`)))
-        return
-    }
+    const { menus, config, options, language, apiHandler, pageHandler, partHandler } = get()
 
     try {
         if (config.hbsDir === '') {
@@ -46,6 +40,7 @@ const watch = () => {
 
     const watcher = chokidar.watch(['./screenShot', './screenPart', './response'], {
         persistent: true,
+        ignoreInitial: true,
         ignored: /(^|[\/\\])\../,
         awaitWriteFinish: { stabilityThreshold: 500, pollInterval: 100 }
     })

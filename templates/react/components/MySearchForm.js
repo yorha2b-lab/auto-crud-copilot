@@ -40,6 +40,7 @@ export const MySearchForm = ({ form, search, loading, labelCol, setSearch, formI
      * @description 执行“归零协议”：清除当前所有搜索信号，并可选择性擦除 URL 中的物理记录。
      */
     const handleReset = () => {
+        form.resetFields()
         if (syncUrlParams) {
             // 物理清除：重置浏览器历史记录，保持 URL 纯净
             window.history.replaceState(null, '', window.location.pathname)
@@ -59,24 +60,24 @@ export const MySearchForm = ({ form, search, loading, labelCol, setSearch, formI
      */
     const handleFinish = values => {
         const formattedValues = { ...values }
-        if (syncUrlParams) {
-            Object.keys(formattedValues).forEach(key => {
-                const val = formattedValues[key]
-                const isDateType = formItems.find(item => item.name === key)?.type?.includes('date')
-                // 💡 [黑科技 1] 日期自动转换与拆解
-                if (isDateType && val) {
-                    if (Array.isArray(val) && val.length > 0) {
-                        // 物理拆分：当 name 为 'start,end' 格式时，自动拆解为两个独立的后端参数
-                        const [startKey, endKey] = key.split(',')
-                        formattedValues[startKey] = val[0].startOf('day').valueOf()// 修正为当日 00:00:00
-                        formattedValues[endKey] = val[1].endOf('day').valueOf()// 修正为当日 23:59:59
-                        delete formattedValues[key]
-                    } else {
-                        // 单日转换：转化为毫秒级数字
-                        formattedValues[key] = val.valueOf()
-                    }
+        Object.keys(formattedValues).forEach(key => {
+            const val = formattedValues[key]
+            const isDateType = formItems.find(item => item.name === key)?.type?.includes('date')
+            // 💡 [黑科技 1] 日期自动转换与拆解
+            if (isDateType && val) {
+                if (Array.isArray(val) && val.length > 0) {
+                    // 物理拆分：当 name 为 'start,end' 格式时，自动拆解为两个独立的后端参数
+                    const [startKey, endKey] = key.split(',')
+                    formattedValues[startKey] = val[0].startOf('day').valueOf()// 修正为当日 00:00:00
+                    formattedValues[endKey] = val[1].endOf('day').valueOf()// 修正为当日 23:59:59
+                    delete formattedValues[key]
+                } else {
+                    // 单日转换：转化为毫秒级数字
+                    formattedValues[key] = val.valueOf()
                 }
-            })
+            }
+        })
+        if (syncUrlParams) {
             // 💡 [黑科技 2] 镜像至 URL
             const params = new URLSearchParams(Object.fromEntries(Object.entries(formattedValues).filter(([key, value]) => !['', null, undefined].includes(value))))
             window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`)

@@ -130,8 +130,9 @@ export const MyModalForm = ({ width, title, submit, record, visible, setModal, l
     const [selectedTableRows, setSelectedTableRows] = useState([])
 
     const flattenFormItems = items => {
+        if (!Array.isArray(items)) return []
         return items.flatMap(item => {
-            if (item.layoutType && item.childItems) {
+            if (item.childItems) {
                 return flattenFormItems(item.childItems)
             }
             return item
@@ -181,7 +182,7 @@ export const MyModalForm = ({ width, title, submit, record, visible, setModal, l
         try {
             const values = await form.validateFields()
             const formattedValues = { ...values }
-            formItems.forEach(item => {
+            flattenFormItems(formItems).forEach(item => {
                 const val = formattedValues[item.name]
                 if (item.type?.includes('date') && val) {
                     if (Array.isArray(val)) {

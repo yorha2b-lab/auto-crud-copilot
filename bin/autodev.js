@@ -52,8 +52,11 @@ program
     .alias('start')
     .description(language('开启全频道联动监控：支持 Page/Part/API 协同构筑', 'Start full-channel linked monitoring: Coordinated Page/Part/API construction'))
     .action(() => {
+        const result = bunker.init(program.opts())
+        if (!result) {
+            return
+        }
         bootSequence(pkg.version)
-        bunker.init(program.opts())
         require('../src/commands/watch.js')()
         const { config } = bunker.get()
         if (config.proxyTarget && !config.needMock && config.enableAutoAlignment) {
