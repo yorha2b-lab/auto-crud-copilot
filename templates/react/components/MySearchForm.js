@@ -22,6 +22,7 @@ import { Row, Col, Form, Button, Space } from 'antd'
  * @param {React.ReactNode} [props.extraOperate] - 额外挂件：在按钮区域注入自定义战术单元
  * @param {boolean} props.loading - 战场负载状态：请求中时锁定按钮，防止由于重复指令导致的逻辑冲突
  * @param {boolean} [props.syncUrlParams=true] - 物理同步开关：是否将搜索状态实时镜像至 URL 链接中
+ * @param {Object} props.initialParams - [重要] 战术底价：定义不可被重置协议核平的核心业务参数（如 projectId）
  *
  * @example
  * <MySearchForm
@@ -31,7 +32,7 @@ import { Row, Col, Form, Button, Space } from 'antd'
  *   formItems={[{ label: '状态', name: 'status', type: 'select', options: [...] }]}
  * />
  */
-export const MySearchForm = ({ form, search, loading, labelCol, setSearch, formItems, showLimit = 7, initialValues, customReset, extraOperate, customFinish, onValuesChange, syncUrlParams = true, defaultPageSize = 10 }) => {
+export const MySearchForm = ({ form, search, loading, labelCol, setSearch, formItems, showLimit = 7, initialParams, initialValues, customReset, extraOperate, customFinish, onValuesChange, syncUrlParams = true, defaultPageSize = 10 }) => {
 
     const [limit, setLimit] = useState(showLimit)
 
@@ -42,14 +43,19 @@ export const MySearchForm = ({ form, search, loading, labelCol, setSearch, formI
     const handleReset = () => {
         form.resetFields()
         if (syncUrlParams) {
-            // 物理清除：重置浏览器历史记录，保持 URL 纯净
-            window.history.replaceState(null, '', window.location.pathname)
+            // 💡 修正逻辑：只有当 formItems 里【没有任何一项】包含这个 key 时，才视为默认参数
+            const defaultQueryEntries = Object.entries(initialValues).filter(([key, _]) => !formItems.some(item => item.name.includes(key)))
+            const defaultQuery = Object.fromEntries(defaultQueryEntries)
+            const params = new URLSearchParams(defaultQuery)
+            // 💡 执行物理重写：将 URL 恢复为仅含默认参数的状态
+            const newUrl = params.toString() ? `${window.location.pathname}?${params.toString()}` : window.location.pathname
+            window.history.replaceState(null, '', newUrl)
         }
         if (customReset) {
             customReset()
         } else {
             // 逻辑重置：强制返回第一页，并恢复默认吞吐量
-            setSearch({ pageNo: 1, pageSize: search.pageSize ?? defaultPageSize })
+            setSearch({ pageNo: 1, pageSize: search.pageSize ?? defaultPageSize, ...initialParams })
         }
     }
 
@@ -79,7 +85,8 @@ export const MySearchForm = ({ form, search, loading, labelCol, setSearch, formI
         })
         if (syncUrlParams) {
             // 💡 [黑科技 2] 镜像至 URL
-            const params = new URLSearchParams(Object.fromEntries(Object.entries(formattedValues).filter(([key, value]) => !['', null, undefined].includes(value))))
+            const currentQuery = Object.fromEntries(new URLSearchParams(window.location.search).entries())
+            const params = new URLSearchParams(Object.fromEntries(Object.entries({ ...currentQuery, ...formattedValues }).filter(([key, value]) => !['', null, undefined].includes(value))))
             window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`)
         }
         if (customFinish) {

@@ -1,10 +1,10 @@
-const initParams = {{#if hasTabs}}{ type: tabs[0].key }{{else}}{}{{/if}}
+const initialParams = {{#if hasTabs}}{ type: tabs[0].key }{{else}}{}{{/if}}
 
 const query = formatQuery(Object.fromEntries(new URLSearchParams(location.search).entries()),  {{formItems}})
 
 const { total, columns, loading, dataSource, search, setSearch, setDataSource, refresh } = useTableQuery({
         api: async params => await request('/api/{{fileName}}', { method: 'POST', body: params }),
-        initialParams: { pageNo: 1, pageSize: 10, ...initParams, ...query },
+        initialParams: { pageNo: 1, pageSize: 10, ...initialParams, ...query },
         cols:tableColumns,
         formatResponse: response => {
             return {

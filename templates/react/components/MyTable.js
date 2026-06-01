@@ -183,7 +183,7 @@ export const MyTable = ({ size, query, total, search, autoScroll, onChange, pagi
                 pagination={paginationConfig}
                 components={isEditable ? components : undefined}
                 // 💡 信号注入：将行监听协议绑定至底层 tr
-                onRow={(record, index) => ({ record, index, onValuesChange: lineFormChange })}
+                onRow={(record, index) => ({ record, index, ...(typeof onValuesChange === 'function' ? { onValuesChange: lineFormChange } : {}) })}
                 rowClassName={(record, index) => {
                     const externalClass = typeof rowClassName === 'function' ? rowClassName(record, index) : rowClassName
                     const classes = [externalClass]
