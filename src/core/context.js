@@ -61,10 +61,5 @@ module.exports = {
     /**
      * @description 全频道信号接入：获取全局上下文
      */
-    get: () => {
-        if (!instance) {
-            throw new Error(language('🤖 Pod 042 报警：中枢神经元尚未初始化，无法建立信号连接。', '🤖 Pod 042 Warnning：Central neuron not initialized, cannot establish signal connection.'))
-        }
-        return instance
-    }
+    get: () => instance
 }
