@@ -14,7 +14,6 @@ const resource = ({ pageConfig, resourceTpl }) => {
 
     const hasTabs = pageConfig.tabs?.length > 0
     const hasFormItems = pageConfig.formItems?.length > 0
-    const hasDateColumn = processedColumns.some(item => item.type === 'date')
 
     const columnsData = processedColumns.map(item => {
         delete item.type
@@ -31,7 +30,7 @@ const resource = ({ pageConfig, resourceTpl }) => {
     }
 
     const bodyCode = resourceTpl(viewData)
-    const importsStr = generateSmartImports({ module: 'resource', hasTabs, bodyCode, hasFormItems, hasDateColumn })
+    const importsStr = generateSmartImports({ module: 'resource', hasTabs, bodyCode, hasFormItems })
     return cleanCode(`${importsStr}\n\n${bodyCode}`)
 }
 

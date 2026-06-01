@@ -305,7 +305,7 @@ const copyTemplateDir = (options, templateSubDir, targetSubDir) => {
  * @param {boolean} hasTabs - 是否包含标签页
  * @returns {string} 拼接后的 import 语句
  */
-const generateSmartImports = ({ module, hasTabs, bodyCode, hasFormItems, hasDateColumn }) => {
+const generateSmartImports = ({ module, hasTabs, bodyCode, hasFormItems }) => {
 
     const hooksLib = ['useTableQuery']
     const utilsLib = ['timeRender', 'moneyRender']
