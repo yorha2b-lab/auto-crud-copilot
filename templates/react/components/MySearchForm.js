@@ -1,4 +1,4 @@
-import moment from 'moment'
+import dayjs from 'dayjs'
 import { MyBaseForm } from './MyBaseForm'
 import { useState, useEffect } from 'react'
 import { Row, Col, Form, Button, Space } from 'antd'
@@ -97,7 +97,7 @@ export const MySearchForm = ({ form, search, loading, labelCol, setSearch, formI
 
     /**
      * @description [信号自愈] 初始化逻辑：
-     * 将来自 URL 的字符串信号重新转化为地堡可读的 `moment` 对象。
+     * 将来自 URL 的字符串信号重新转化为地堡可读的 `dayjs` 对象。
      */
     useEffect(() => {
         if (Object.values(initialValues).length > 0 && formItems.length > 0) {
@@ -106,13 +106,13 @@ export const MySearchForm = ({ form, search, loading, labelCol, setSearch, formI
                 // 处理单字段回显
                 if (initialValues[item.name] !== undefined) {
                     const value = initialValues[item.name]
-                    newValues[item.name] = item.type?.includes('date') ? moment(Number(value)) : value
+                    newValues[item.name] = item.type?.includes('date') ? dayjs(Number(value)) : value
                 }
                 // 处理双字段（日期范围）回显：执行物理重组
                 if (item.name?.includes(',') && item.type?.includes('date')) {
                     const [startKey, endKey] = item.name.split(',')
                     if (initialValues[startKey] && initialValues[endKey]) {
-                        newValues[item.name] = [moment(Number(initialValues[startKey])), moment(Number(initialValues[endKey]))]
+                        newValues[item.name] = [dayjs(Number(initialValues[startKey])), dayjs(Number(initialValues[endKey]))]
                     }
                 }
             })

@@ -1,4 +1,4 @@
-import moment from 'moment'
+import dayjs from 'dayjs'
 import { MyBaseForm } from './MyBaseForm'
 import { MyModalTable } from './MyModalTable'
 import { useMemo, useState, useEffect } from 'react'
@@ -141,7 +141,7 @@ export const MyModalForm = ({ width, title, footer, submit, record, visible, set
 
     /**
      * @description [数据回显协议] 当构筑舱开启时，自动对初始物资进行“语义格式化”。
-     * 将后端传输的字符串/数字时间戳重新转化为地堡可读的 `moment` 对象。
+     * 将后端传输的字符串/数字时间戳重新转化为地堡可读的 `dayjs` 对象。
      */
     useEffect(() => {
         if (visible) {
@@ -155,13 +155,13 @@ export const MyModalForm = ({ width, title, footer, submit, record, visible, set
                     if (config?.type?.includes('date') && value) {
                         if (Array.isArray(value)) {
                             // 处理范围日期
-                            initialData[key] = value.map(v => moment(v))
+                            initialData[key] = value.map(v => dayjs(v))
                         } else if (typeof value === 'string' && value.includes(',')) {
                             // 处理逗号分隔的字符串日期
-                            initialData[key] = value.split(',').map(v => moment(v))
+                            initialData[key] = value.split(',').map(v => dayjs(v))
                         } else {
                             // 处理单日期
-                            initialData[key] = moment(value)
+                            initialData[key] = dayjs(value)
                         }
                     } else {
                         initialData[key] = value
@@ -189,7 +189,7 @@ export const MyModalForm = ({ width, title, footer, submit, record, visible, set
                         // 物理压实：将范围日期转化为逗号分隔的时间戳字符串
                         formattedValues[item.name] = val.map(v => v.valueOf()).join(',')
                     } else {
-                        // 物理转化：将 moment 对象还原为原始数值（毫秒）
+                        // 物理转化：将 dayjs 对象还原为原始数值（毫秒）
                         formattedValues[item.name] = val.valueOf()
                     }
                 }
