@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'
+import moment from 'moment'
 import { MyBaseForm } from './MyBaseForm'
 import { MyModalTable } from './MyModalTable'
 import { useMemo, useState, useEffect } from 'react'
@@ -120,7 +120,7 @@ const FormRenderer = ({ form, formItems, tableConfig, setModalTable, setSelected
  *   formItems={[{ label: '截止日期', name: 'deadline', type: 'date' }]}
  * />
  */
-export const MyModalForm = ({ width, title, submit, record, visible, setModal, labelCol, formItems, wrapperCol, tableConfig, onValuesChange, handleModalTableOk }) => {
+export const MyModalForm = ({ width, title, footer, submit, record, visible, setModal, labelCol, formItems, wrapperCol, tableConfig, onValuesChange, handleModalTableOk }) => {
 
     const rowKey = tableConfig?.rowKey || 'id'
 
@@ -141,7 +141,7 @@ export const MyModalForm = ({ width, title, submit, record, visible, setModal, l
 
     /**
      * @description [数据回显协议] 当构筑舱开启时，自动对初始物资进行“语义格式化”。
-     * 将后端传输的字符串/数字时间戳重新转化为地堡可读的 `dayjs` 对象。
+     * 将后端传输的字符串/数字时间戳重新转化为地堡可读的 `moment` 对象。
      */
     useEffect(() => {
         if (visible) {
@@ -155,13 +155,13 @@ export const MyModalForm = ({ width, title, submit, record, visible, setModal, l
                     if (config?.type?.includes('date') && value) {
                         if (Array.isArray(value)) {
                             // 处理范围日期
-                            initialData[key] = value.map(v => dayjs(v))
+                            initialData[key] = value.map(v => moment(v))
                         } else if (typeof value === 'string' && value.includes(',')) {
                             // 处理逗号分隔的字符串日期
-                            initialData[key] = value.split(',').map(v => dayjs(v))
+                            initialData[key] = value.split(',').map(v => moment(v))
                         } else {
                             // 处理单日期
-                            initialData[key] = dayjs(value)
+                            initialData[key] = moment(value)
                         }
                     } else {
                         initialData[key] = value
@@ -189,7 +189,7 @@ export const MyModalForm = ({ width, title, submit, record, visible, setModal, l
                         // 物理压实：将范围日期转化为逗号分隔的时间戳字符串
                         formattedValues[item.name] = val.map(v => v.valueOf()).join(',')
                     } else {
-                        // 物理转化：将 dayjs 对象还原为原始数值（毫秒）
+                        // 物理转化：将 moment 对象还原为原始数值（毫秒）
                         formattedValues[item.name] = val.valueOf()
                     }
                 }
@@ -219,10 +219,10 @@ export const MyModalForm = ({ width, title, submit, record, visible, setModal, l
     const tableRowSelection = useMemo(() => ({
         selectedRowKeys: selectedTableRows.map(row => row[rowKey]),
         onChange: (selectedRowKeys, selectedRows) => setSelectedTableRows(selectedRows),
-    }), [rowKey, selectedTableRows])
+    }), [rowKey, modalTable, selectedTableRows])
 
     return (
-        <Modal centered title={title} width={width} open={visible} onOk={handleOk} destroyOnClose onCancel={handleCancel} confirmLoading={pending}>
+        <Modal centered title={title} width={width} open={visible} onOk={handleOk} footer={footer?.({ setModal })} destroyOnClose onCancel={handleCancel} confirmLoading={pending} bodyStyle={{ paddingBottom: 0 }}>
             {modalTable.visible && <MyModalTable rowKey={rowKey} {...modalTable} rowSelection={tableRowSelection} onOk={modalTableOk} setModal={setModalTable} />}
             <Form form={form} preserve={false} labelCol={labelCol} wrapperCol={wrapperCol} onValuesChange={(changed, all) => onValuesChange?.({ changed, all, form, record })}>
                 <Row gutter={[24, 0]}>

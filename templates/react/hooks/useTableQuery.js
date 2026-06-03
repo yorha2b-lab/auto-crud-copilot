@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useCallback } from 'react'
+import { useRef, useMemo, useState, useEffect, useCallback } from 'react'
 
 /**
  * @hook useTableQuery
@@ -29,7 +29,7 @@ import { useRef, useState, useEffect, useCallback } from 'react'
  *   formatResponse: (res) => ({ data: res.list, total: res.total })
  * });
  */
-export const useTableQuery = ({ api, cols, initialParams = {}, formatResponse }) => {
+export const useTableQuery = ({ api, cols = [], initialParams = {}, formatResponse, isLocalPaging = false }) => {
 
     const [total, setTotal] = useState(0)
     const [columns, setColumns] = useState(cols)
@@ -41,6 +41,8 @@ export const useTableQuery = ({ api, cols, initialParams = {}, formatResponse })
     const apiRef = useRef(api)
     // 💡 [核心防御] 信号 ID 计数器：用于物理拦截由于网络时延导致的“竞态病毒（Race Condition）”
     const fetchIdRef = useRef(0)
+    // 💡 物理记录仪：记录上一次“真正”的过滤参数（不含分页）
+    const lastFilterRef = useRef('')
     // 💡 [核心防御] 数据解码协议引用：确保异步回调中永远能指向最新的指令地址
     const formatResponseRef = useRef(formatResponse)
 
@@ -65,6 +67,15 @@ export const useTableQuery = ({ api, cols, initialParams = {}, formatResponse })
      */
     const fetchData = useCallback(async () => {
         if (!apiRef.current) return
+
+        if (isLocalPaging) {
+            const currentFilter = JSON.stringify(Object.fromEntries(Object.entries(search).filter(([k]) => !['pageNo', 'pageSize'].includes(k))))
+            if (lastFilterRef.current === currentFilter && dataSource.length > 0) {
+                return
+            }
+            lastFilterRef.current = currentFilter
+        }
+
         setLoading(true)
         // 💡 信号加标：为本次请求分配唯一的物理 ID
         const currentFetchId = ++fetchIdRef.current
@@ -83,7 +94,7 @@ export const useTableQuery = ({ api, cols, initialParams = {}, formatResponse })
                     return prevCols
                 })
             }
-            setDataSource(data)
+            setDataSource(data ?? [])
             setTotal(total ?? 0)
         } catch (error) {
             console.error('查询失败', error)
@@ -93,11 +104,11 @@ export const useTableQuery = ({ api, cols, initialParams = {}, formatResponse })
                 setLoading(false)
             }
         }
-    }, [search])
+    }, [search, isLocalPaging, dataSource.length])
 
     useEffect(() => {
         fetchData()
     }, [fetchData])
 
-    return { total, columns, loading, dataSource, search, setSearch, setLoading, setDataSource, refresh: fetchData }
+    return { total, columns, search, loading, dataSource, setSearch, setLoading, setDataSource, refresh: fetchData }
 }

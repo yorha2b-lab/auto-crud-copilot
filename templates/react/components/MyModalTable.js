@@ -36,7 +36,7 @@ import { useTableQuery } from '../hooks/useTableQuery'
  *   operate={({ refresh, setModalForm }) => ({ label: '详情', onClick: (rec) => setModalForm(...) })}
  * />
  */
-export const MyModalTable = ({ api, onOk, title, width, footer, visible, operate, setModal, formItems, setModalForm, rowSelection, formatResponse, functionButtons, columns: modalColumns, rowKey = 'id', initialParams = {}, modalPagination = true }) => {
+export const MyModalTable = ({ api, onOk, title, width, footer, visible, operate, setModal, formItems, setModalForm, rowSelection, formatResponse, functionButtons, columns: modalColumns, rowKey = 'id', scroll = { y: 400 }, initialParams = {}, modalPagination = true, isLocalPaging = false }) => {
 
     const [form] = Form.useForm()
     const [pending, setPending] = useState(false)
@@ -45,7 +45,7 @@ export const MyModalTable = ({ api, onOk, title, width, footer, visible, operate
      * @description [独立信号链路]
      * 在弹窗内部启动专属的 useTableQuery，实现了与主页面逻辑的“物理隔绝”。
      */
-    const { total, loading, columns, dataSource, search, refresh, setLoading, setSearch, setDataSource } = useTableQuery({ api, cols: modalColumns, initialParams, formatResponse })
+    const { total, loading, columns, dataSource, search, refresh, setLoading, setSearch, setDataSource } = useTableQuery({ api, cols: modalColumns, initialParams, formatResponse, isLocalPaging })
 
     const handleSearch = values => setSearch({ ...search, ...values, pageNo: 1 })
 
@@ -78,7 +78,7 @@ export const MyModalTable = ({ api, onOk, title, width, footer, visible, operate
     }, [columns, operate])
 
     return (
-        <Modal centered destroyOnClose title={title} width={width} open={visible} onOk={handleOk} footer={footer} onCancel={() => setModal({ visible: false })} confirmLoading={pending}>
+        <Modal centered destroyOnClose title={title} width={width} open={visible} onOk={handleOk} footer={footer?.({ setModal })} onCancel={() => setModal({ visible: false })} confirmLoading={pending} bodyStyle={{ paddingBottom: 0 }}>
             {/*
                 💡 [地堡战术细节]
                 syncUrlParams={false}：确保弹窗内的搜索行为不会干扰全局 URL 信号。
@@ -88,18 +88,19 @@ export const MyModalTable = ({ api, onOk, title, width, footer, visible, operate
                 💡 [高阶赋能逻辑]
                 functionButtons 能够获得对当前表格状态 (refresh, setLoading...) 的完全控制权。
             */}
-            {functionButtons?.length > 0 && <Space>{functionButtons.map(item => <Button key={item.name} type={item.type} onClick={() => item.onClick({ refresh, setLoading, setSearch, setDataSource })}>{item.name}</Button>)}</Space>}
+            {functionButtons?.length > 0 && <Space style={{ marginBottom: 12 }}>{functionButtons.map(item => <Button key={item.name} type={item.type} loading={loading} disabled={item.disabled} onClick={() => item.onClick({ refresh, setLoading, setSearch, setDataSource })}>{item.name}</Button>)}</Space>}
             <MyTable
                 total={total}
                 rowKey={rowKey}
                 search={search}
+                scroll={scroll}
                 loading={loading}
-                scroll={{ y: 400 }}
                 columns={finalColumns}
                 dataSource={dataSource}
                 rowSelection={rowSelection}
                 pagination={modalPagination}
                 onChange={handleTableChange}
+                isLocalPaging={isLocalPaging}
                 setDataSource={setDataSource}
             />
         </Modal>

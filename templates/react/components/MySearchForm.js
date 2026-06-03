@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'
+import moment from 'moment'
 import { MyBaseForm } from './MyBaseForm'
 import { useState, useEffect } from 'react'
 import { Row, Col, Form, Button, Space } from 'antd'
@@ -22,7 +22,6 @@ import { Row, Col, Form, Button, Space } from 'antd'
  * @param {React.ReactNode} [props.extraOperate] - 额外挂件：在按钮区域注入自定义战术单元
  * @param {boolean} props.loading - 战场负载状态：请求中时锁定按钮，防止由于重复指令导致的逻辑冲突
  * @param {boolean} [props.syncUrlParams=true] - 物理同步开关：是否将搜索状态实时镜像至 URL 链接中
- * @param {Object} props.initialParams - [重要] 战术底价：定义不可被重置协议核平的核心业务参数（如 projectId）
  *
  * @example
  * <MySearchForm
@@ -32,7 +31,7 @@ import { Row, Col, Form, Button, Space } from 'antd'
  *   formItems={[{ label: '状态', name: 'status', type: 'select', options: [...] }]}
  * />
  */
-export const MySearchForm = ({ form, search, loading, labelCol, setSearch, formItems, showLimit = 7, initialParams, initialValues, customReset, extraOperate, customFinish, onValuesChange, syncUrlParams = true, defaultPageSize = 10 }) => {
+export const MySearchForm = ({ form, search, loading, labelCol, setSearch, formItems, showLimit = 7, initialValues, initialParams, customReset, extraOperate, customFinish, onValuesChange, syncUrlParams = true, defaultPageSize = 10 }) => {
 
     const [limit, setLimit] = useState(showLimit)
 
@@ -98,7 +97,7 @@ export const MySearchForm = ({ form, search, loading, labelCol, setSearch, formI
 
     /**
      * @description [信号自愈] 初始化逻辑：
-     * 将来自 URL 的字符串信号重新转化为地堡可读的 `dayjs` 对象。
+     * 将来自 URL 的字符串信号重新转化为地堡可读的 `moment` 对象。
      */
     useEffect(() => {
         if (Object.values(initialValues).length > 0 && formItems.length > 0) {
@@ -107,13 +106,13 @@ export const MySearchForm = ({ form, search, loading, labelCol, setSearch, formI
                 // 处理单字段回显
                 if (initialValues[item.name] !== undefined) {
                     const value = initialValues[item.name]
-                    newValues[item.name] = item.type?.includes('date') ? dayjs(Number(value)) : value
+                    newValues[item.name] = item.type?.includes('date') ? moment(Number(value)) : value
                 }
                 // 处理双字段（日期范围）回显：执行物理重组
                 if (item.name?.includes(',') && item.type?.includes('date')) {
                     const [startKey, endKey] = item.name.split(',')
                     if (initialValues[startKey] && initialValues[endKey]) {
-                        newValues[item.name] = [dayjs(Number(initialValues[startKey])), dayjs(Number(initialValues[endKey]))]
+                        newValues[item.name] = [moment(Number(initialValues[startKey])), moment(Number(initialValues[endKey]))]
                     }
                 }
             })

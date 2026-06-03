@@ -21,17 +21,15 @@
     {{#if hasPagination}}
     {{{{raw}}}}
     onChange={(pagination, filters, sorter) => {
-        if (sorter.column) {
-            const newSearch = { ...search, pageNo: pagination.current, pageSize: pagination.pageSize, orderBy: sorter.field }
-            const params = new URLSearchParams(Object.fromEntries(Object.entries({ ...query, ...newSearch }).filter(([key, value]) => !['', null, undefined].includes(value))))
-            window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`)
-            setSearch(newSearch)
+        const newSearch = { ...search, pageNo: pagination.current ?? 1, pageSize: pagination.pageSize ?? 10 }
+        if (sorter.order) {
+            newSearch.orderBys = sorter.column
         } else {
-            const newSearch = { ...search, pageNo: pagination.current, pageSize: pagination.pageSize, orderBy: undefined }
-            const params = new URLSearchParams(Object.fromEntries(Object.entries({ ...query, ...newSearch }).filter(([key, value]) => !['', null, undefined].includes(value))))
-            window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`)
-            setSearch(newSearch)
+            newSearch.orderBys = undefined
         }
+        const params = new URLSearchParams(Object.fromEntries(Object.entries({ ...query, ...newSearch }).filter(([key, value]) => !['', null, undefined].includes(value))))
+        window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`)
+        setSearch(newSearch)
     }}
     {{{{/raw}}}}
     {{/if}}

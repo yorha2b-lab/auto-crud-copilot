@@ -54,7 +54,7 @@ import { useRef, useMemo, useEffect, useCallback } from 'react'
  *   }}
  * />
  */
-export const MyTable = ({ size, query, total, search, autoScroll, onChange, pagination, renderAction, rowClassName, customSave, setDataSource, lineFormChange, columns = [], rowSelection, rowKey = 'id', loading = false, dataSource = [], scroll = { x: 'max-content' }, ...restProps }) => {
+export const MyTable = ({ size, query, total, search, autoScroll, onChange, pagination, renderAction, rowClassName, customSave, setDataSource, lineFormChange, columns = [], rowSelection, rowKey = 'id', loading = false, dataSource = [], scroll = { x: 'max-content' }, isLocalPaging = false, ...restProps }) => {
 
     const tableRef = useRef(null)
     const hasScrolledRef = useRef(false)
@@ -138,9 +138,11 @@ export const MyTable = ({ size, query, total, search, autoScroll, onChange, pagi
         return {
             total,
             showSizeChanger: true,
-            current: Number(search?.pageNo),
-            pageSize: Number(search?.pageSize),
             showTotal: (total) => `共 ${total} 条`,
+            ...(isLocalPaging ? {} : {
+                current: Number(search?.pageNo),
+                pageSize: Number(search?.pageSize),
+            }),
             ...(typeof pagination === 'object' ? pagination : {})
         }
     }, [total, search, pagination])
