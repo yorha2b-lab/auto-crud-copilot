@@ -18,7 +18,7 @@ module.exports = `
 - ⚠️ 属性精简规则:
     - 默认输入框: 仅保留 [label, name] 属性。**严禁出现 type 属性**。
     - 非默认组件: 仅当类型为 [auto, date, radio, select, upload, checkbox, textarea, daterange] 时才允许添加 type 属性。
-**标准定义 (Columns)**:
+**标准定义 (FormItem)**:
     - date: 单日期
     - daterange: 日期范围
     - enum: 枚举类型

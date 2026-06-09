@@ -5,28 +5,26 @@ import { useMemo, useState, useEffect } from 'react'
 import { Row, Col, Form, Modal, Button, Collapse } from 'antd'
 
 const LAYOUT_PROCESSORS = {
-    // 分节布局
-    section: ({ item, children }) => (
-        <Col span={item.span ?? 24}>
-            <div className={item.className}>{item.title}</div>
-            <Row gutter={[24, 0]}>{children}</Row>
+    section: ({ item, renderCore }) => (
+        <Col span={item.span ?? 24} style={{ marginBottom: 16 }}>
+            <div style={{ fontWeight: 'bold', marginBottom: 12, borderLeft: '4px solid #1890ff', paddingLeft: 8 }}>{item.title}</div>
+            <Row gutter={[24, 0]}>
+                {renderCore(item.childItems || [])}
+            </Row>
         </Col>
     ),
-    // 手风琴布局
     collapse: ({ item, renderCore }) => (
-        <Col span={item.span ?? 24}>
-            <Collapse ghost accordion defaultActiveKey={[0]}>
-                {item.childItems?.map((child, ind) => (
-                    <Collapse.Panel key={child.name || ind} header={<span style={{ fontWeight: 'bold' }}>{child.title}</span>}>
-                        <Row gutter={[24, 0]}>
-                            {renderCore(child.childItems || [child])}
-                        </Row>
-                    </Collapse.Panel>
-                ))}
+        <Col span={item.span ?? 24} style={{ marginBottom: 16 }}>
+            <Collapse defaultActiveKey={['1']}>
+                <Collapse.Panel key='1' header={<span style={{ fontWeight: 'bold' }}>{item.title}</span>}>
+                    <Row gutter={[24, 0]}>
+                        {renderCore(item.childItems || [])}
+                    </Row>
+                </Collapse.Panel>
             </Collapse>
         </Col>
     ),
-    default: ({ children }) => <>{children}</>
+    default: ({ item, renderCore }) => <Row gutter={[24, 0]}>{renderCore(item.childItems || [])}</Row>
 }
 
 // 定义“零部件增强协议”处理器,以后加任何新功能，只需要在这个对象里加一个 Key，不需要动主逻辑！
@@ -88,7 +86,7 @@ const FormRenderer = ({ form, formItems, tableConfig, setModalTable, setSelected
 
         // 情况 B：标准作战零件
         return (
-            <Col span={item.span ?? 24} key={item.name || index}>
+            <Col span={item.span ?? 6} key={item.name || index}>
                 <MyBaseForm item={{ ...item, ...getRenderItemProps(item) }} form={form} />
             </Col>
         )
