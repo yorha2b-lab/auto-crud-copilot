@@ -27,7 +27,7 @@ import { Button, Tree, Radio, Input, Upload, Select, Cascader, Checkbox, DatePic
 const AliyunOSSUpload = ({ value, onChange, ...restProps }) => {
 
     // 💡 物理剥离：将地堡专用参数与 Antd 原生属性分离
-    const { oss, url, path, options, ...originUploadProps } = restProps
+    const { oss, url, path, options, expireField = 'expire', ...originUploadProps } = restProps
 
     const [OSSData, setOSSData] = useState(oss)
 
@@ -81,7 +81,7 @@ const AliyunOSSUpload = ({ value, onChange, ...restProps }) => {
      */
     const beforeUpload = async file => {
         let currentOSS = OSSData
-        const expire = Number(OSSData?.expire ?? 0) * 1000
+        const expire = Number(OSSData?.[expireField] ?? 0) * 1000
         if (expire < Date.now()) {
             currentOSS = await init()
         }
