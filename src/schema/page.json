@@ -1,0 +1,228 @@
+{
+    "strict": true,
+    "name": "page_construction_protocol",
+    "schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+            "tabs",
+            "table",
+            "formItems",
+            "staticInfo",
+            "optionList",
+            "pageStruct",
+            "functionButton"
+        ],
+        "properties": {
+            "tabs": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": [
+                        "label",
+                        "key"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                        "label": {
+                            "type": "string"
+                        },
+                        "key": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "table": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "columns",
+                    "operation",
+                    "pagination",
+                    "expandable",
+                    "rowSelection"
+                ],
+                "properties": {
+                    "columns": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                                "title",
+                                "dataIndex",
+                                "type"
+                            ],
+                            "properties": {
+                                "title": {
+                                    "type": "string"
+                                },
+                                "dataIndex": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "enum": [
+                                        "tag",
+                                        "text",
+                                        "date",
+                                        "enum",
+                                        "badge",
+                                        "money",
+                                        "index",
+                                        "image"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "operation": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "label",
+                                "action"
+                            ],
+                            "additionalProperties": false,
+                            "properties": {
+                                "label": {
+                                    "type": "string"
+                                },
+                                "action": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "pagination": {
+                        "type": "boolean"
+                    },
+                    "expandable": {
+                        "type": "boolean"
+                    },
+                    "rowSelection": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "formItems": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": [
+                        "label",
+                        "name",
+                        "type"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                        "label": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "text",
+                                "auto",
+                                "date",
+                                "radio",
+                                "select",
+                                "upload",
+                                "checkbox",
+                                "textarea",
+                                "daterange"
+                            ]
+                        }
+                    }
+                }
+            },
+            "staticInfo": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "has",
+                    "text"
+                ],
+                "properties": {
+                    "has": {
+                        "type": "boolean"
+                    },
+                    "text": {
+                        "type": "string"
+                    }
+                }
+            },
+            "optionList": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": [
+                        "name",
+                        "options"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "options": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "label",
+                                    "value"
+                                ],
+                                "additionalProperties": false,
+                                "properties": {
+                                    "label": {
+                                        "type": "string"
+                                    },
+                                    "value": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "pageStruct": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "enum": [
+                        "MyTable",
+                        "AlertInfo",
+                        "MySearchForm",
+                        "FunctionButtonsBlock"
+                    ]
+                }
+            },
+            "functionButton": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": [
+                        "btn",
+                        "action"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                        "btn": {
+                            "type": "string"
+                        },
+                        "action": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

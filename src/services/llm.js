@@ -18,7 +18,7 @@ const getOpenAI = () => {
     return client
 }
 
-const askAI = async (model, messages, retryCount = 0) => {
+const askAI = async ({ model, messages, response_format = { type: 'json_object' }, retryCount = 0 }) => {
 
     if (retryCount > 3) {
         throw new Error(language(
@@ -33,8 +33,8 @@ const askAI = async (model, messages, retryCount = 0) => {
             model,
             messages,
             top_p: 0.1,
+            response_format,
             temperature: 0.01,
-            response_format: { type: 'json_object' }
         })
         let raw = response.choices[0].message.content.trim()
         raw = raw.replace(/^```json\n?/, '').replace(/\n?```$/, '')
@@ -65,15 +65,15 @@ module.exports = {
         const config = getConfig()
         const mockPrompt = require('../prompts/mock.js')
         const { MOCK_DESIGNER } = require('../prompts/system.js')
-        return askAI(
-            config.textModel,
-            [
+        return askAI({
+            model: config.textModel,
+            messages: [
                 { role: 'system', content: MOCK_DESIGNER },
                 { role: 'user', content: mockPrompt(columns, fileName) }
             ]
-        )
+        })
     },
-    recognizePage: async (prompt, filePath) => {
+    recognizePage: async (prompt, filePath, taskType = 'page') => {
         const config = getConfig()
         const { UI_DESIGNER } = require('../prompts/system.js')
         const sharp = require('sharp')
@@ -83,9 +83,9 @@ module.exports = {
             .toBuffer()
         const base64Image = compressedBuffer.toString('base64')
 
-        return askAI(
-            config.visionModel,
-            [
+        return askAI({
+            model: config.visionModel,
+            messages: [
                 { role: 'system', content: UI_DESIGNER },
                 {
                     role: 'user',
@@ -94,19 +94,20 @@ module.exports = {
                         { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${base64Image}` } }
                     ]
                 }
-            ]
-        )
+            ],
+            response_format: taskType === 'page' ? { type: 'json_schema', strict: true, json_schema: require('../schema/page.json') } : { type: 'json_object' }
+        })
     },
     alignResponseFields: async (options, responseStr, resourceStr) => {
         const config = getConfig()
         const { API_DESIGNER } = require('../prompts/system.js')
         const apiPrompt = require(`../prompts/${options.template}/watch-api.js`)
-        return askAI(
-            config.textModel,
-            [
+        return askAI({
+            model: config.textModel,
+            messages: [
                 { role: 'system', content: API_DESIGNER },
                 { role: 'user', content: apiPrompt(responseStr, resourceStr) }
             ]
-        )
+        })
     }
 }

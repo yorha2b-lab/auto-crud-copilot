@@ -167,7 +167,7 @@ const matrixEffect = async (duration = 1500) => {
         '5f 43 4f 44 45 5f' // _CODE_
     ]
 
-    const threshold = 3000
+    const threshold = 5000
     const endTime = Date.now() + duration
     const width = process.stdout.columns || 80
     const isLegendary = currentTotal >= threshold
@@ -255,10 +255,17 @@ const formatFormItemAndColumns = ({ pageConfig }) => {
     const formDicts = pageConfig.formItems?.filter(item => item.type === 'select')?.map(item => `${item.name}Options`) ?? []
     const dictBlocks = Array.from(new Set([...formDicts, ...tableDicts]))
 
-    const formItems = pageConfig.formItems?.map(item => ({
-        ...item,
-        ...(item.type === 'select' ? { options: `_CODE_${item.name}Options_CODE_` } : {})
-    }))
+    const formItems = pageConfig.formItems?.map(item => {
+
+        if (item.type === 'text') {
+            delete item.type
+        }
+
+        return {
+            ...item,
+            ...(item.type === 'select' ? { options: `_CODE_${item.name}Options_CODE_` } : {})
+        }
+    })
 
     const processedColumns = columns?.map(col => {
         if (['image'].includes(col.type)) {

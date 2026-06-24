@@ -25,7 +25,7 @@ module.exports = async filePath => {
             `🤖 Pod 042: Extracting UI metadata from neural cloud network...\n`
         ))
 
-        const pageConfig = await recognizePage(partPrompt, filePath)
+        const pageConfig = await recognizePage(partPrompt, filePath, 'part')
 
         const { formItems, dictBlocks, processedColumns } = formatFormItemAndColumns({ pageConfig })
 

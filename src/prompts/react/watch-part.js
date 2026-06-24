@@ -21,25 +21,26 @@ module.exports = `
     - image: 图片列
     - date: 时间/日期列
     - text: 普通文本（默认）
-    - tag: 标签列(有背景色的标签)
+    - tag: 标签列(有背景色的文本)
     - badge: 徽标列(文本前有颜色小圆点)
     - **行操作 (Operation)**: [{label:'操作名', action:'动词ByRecord'}]
 
 ## 2. 表单 (Form)
 - **基础格式**: [{ label: '文本', name: 'englishName',type:''}]
 - **高级格式**: [{ title: '文本', layoutType:'',childItems:[{ label: '文本', name: 'englishName',type:'' }] }]
+- ***⚠️⚠️⚠️注意⚠️⚠️⚠️***：当存在明显的粗体标题或者有明显的分组式结构时，必须使用高级格式。
 - 禁止输出:
     - ***⚠️⚠️⚠️严禁输出columns,只允许输出formItems⚠️⚠️⚠️***
 - ⚠️ 属性精简规则:
     - 默认输入框: 仅保留 [label, name] 属性。**严禁出现 type 属性**。
     - 非默认组件: 仅当类型为 [auto, date, radio, select, upload, checkbox, textarea, daterange] 时才允许添加 type 属性。
-- ⚠️ layoutType:
+- ***⚠️⚠️⚠️layoutType⚠️⚠️⚠️***:
     - section: 段落布局(分段title+childItems项，无明显背景色，纯文本title)
     - collapse: 折叠布局(折叠展开title+childItems项，有明显背景色，或文本前有展开箭头)
 **标准定义 (FormItem)**:
     - date: 单日期
-    - daterange: 日期范围
     - enum: 枚举类型
+    - daterange: 日期范围
     - text: 普通文本（默认）
 - 命名规范:
     - daterange: name 必须设为 '字段英文名start,字段英文名end'。
