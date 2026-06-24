@@ -56,7 +56,7 @@ const askAI = async ({ model, messages, response_format = { type: 'json_object' 
             `[SYSTEM ALERT] Neural Network instability detected. Attempting to re-establish link... (Retry #${retryCount + 1})`
         )), err.message)
 
-        return askAI(model, messages, retryCount + 1)
+        return askAI({ model, messages, response_format, retryCount: retryCount + 1 })
     }
 }
 
