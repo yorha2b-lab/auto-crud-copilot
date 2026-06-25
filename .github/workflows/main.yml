@@ -56,7 +56,6 @@ jobs:
           TOTAL_CLONES=$(grep -v "date" "ghrs-data/clones_ledger.csv" | awk -F',' '{sum+=$2} END {print sum}')
           STARS=$(jq '.stargazers_count // 0' raw_repo.json)
           FORKS=$(jq '.forks_count // 0' raw_repo.json)
-          SAVED_HOURS=$((TOTAL_CLONES * 2))
           jq -n --arg tc "$TOTAL_CLONES" --arg sh "$SAVED_HOURS" --arg st "$STARS" --arg fk "$FORKS" \
             '{total_clones: ($tc|tonumber), saved_hours: ($sh|tonumber), stars: ($st|tonumber), forks: ($fk|tonumber)}' > bunker-stats.json
 
