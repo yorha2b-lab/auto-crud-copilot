@@ -1,15 +1,15 @@
-name: Bunker Sovereign Intelligence (v8.0)
+name: Bunker Sovereign Intelligence (v7.0)
 
 on:
   schedule:
-    - cron: '45 19 * * *' 
+    - cron: '45 19 * * *' # 北京时间凌晨 03:45
   workflow_dispatch:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  recon-and-ledger:
+  all-seeing-eye:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -24,9 +24,9 @@ jobs:
       - name: Setup Plotting Environment
         run: |
           python -m pip install --upgrade pip
-          pip install matplotlib pandas seaborn scipy numpy
+          pip install matplotlib pandas seaborn
 
-      # 2. 全频道数据搜刮协议 (含去垢焊接逻辑)
+      # 2. 全频道数据搜刮协议 [逻辑升级：专业 JSON 构筑]
       - name: Full Spectrum Data Mining
         run: |
           echo "🤖 Pod 042: 启动‘全领域信号搜刮协议’..."
@@ -39,93 +39,169 @@ jobs:
           eval curl -s $AUTH $API > raw_repo.json
 
           mkdir -p ghrs-data
-          # 物理清洗与焊接 (Clones & Views)
-          clean_merge() {
-            if [ ! -f "$1" ]; then cp "$2" "$1";
-            else (tail -n +2 "$1"; tail -n +2 "$2") | grep -v "date" | sed 's/\//-/g' | awk -F',' '!a[$1]++' | sort -r > tmp.csv
-            echo "date,$3,uniques" > "$1"; cat tmp.csv >> "$1"; fi
-          }
-          
-          echo "date,clones,uniques" > /tmp/nc.csv && jq -r '.clones[] | "\(.timestamp[0:10]),\(.count),\(.uniques)"' raw_clones.json >> /tmp/nc.csv
-          clean_merge "ghrs-data/clones_ledger.csv" "/tmp/nc.csv" "clones"
-          
-          echo "date,views,uniques" > /tmp/nv.csv && jq -r '.views[] | "\(.timestamp[0:10]),\(.count),\(.uniques)"' raw_views.json >> /tmp/nv.csv
-          clean_merge "ghrs-data/views_ledger.csv" "/tmp/nv.csv" "views"
 
-          # 战绩结算
-          TOTAL_CLONES=$(grep -v "date" "ghrs-data/clones_ledger.csv" | awk -F',' '{sum+=$2} END {print sum}')
+          # --- 物理焊接：Views 账本 ---
+          echo "date,views,uniques" > /tmp/new_views.csv
+          jq -r '.views[] | "\(.timestamp[0:10]),\(.count),\(.uniques)"' raw_views.json >> /tmp/new_views.csv
+          
+          V_LEDGER="ghrs-data/views_ledger.csv"
+          if [ ! -f "$V_LEDGER" ]; then
+            cp /tmp/new_views.csv "$V_LEDGER"
+          else
+            (tail -n +2 "$V_LEDGER"; tail -n +2 /tmp/new_views.csv) | grep -v "date" | \
+            sed 's/\//-/g' | awk -F',' '!a[$1]++' | sort -r > /tmp/final_v_data.csv
+            echo "date,views,uniques" > "$V_LEDGER"
+            cat /tmp/final_v_data.csv >> "$V_LEDGER"
+          fi
+
+          # --- 物理焊接：Clones 账本 ---
+          echo "date,clones,uniques" > /tmp/new_clones.csv
+          jq -r '.clones[] | "\(.timestamp[0:10]),\(.count),\(.uniques)"' raw_clones.json >> /tmp/new_clones.csv
+          
+          C_LEDGER="ghrs-data/clones_ledger.csv"
+          if [ ! -f "$C_LEDGER" ]; then
+            cp /tmp/new_clones.csv "$C_LEDGER"
+          else
+            (tail -n +2 "$C_LEDGER"; tail -n +2 /tmp/new_clones.csv) | grep -v "date" | \
+            sed 's/\//-/g' | awk -F',' '!a[$1]++' | sort -r > /tmp/final_c_data.csv
+            echo "date,clones,uniques" > "$C_LEDGER"
+            cat /tmp/final_c_data.csv >> "$C_LEDGER"
+          fi
+
+          # --- 战绩核算 (使用高级变量防护) ---
+          TOTAL_CLONES=$(grep -v "date" "$C_LEDGER" | awk -F',' '{sum+=$2} END {print sum}')
+          TOTAL_CLONES=${TOTAL_CLONES:-0}
           STARS=$(jq '.stargazers_count // 0' raw_repo.json)
           FORKS=$(jq '.forks_count // 0' raw_repo.json)
-          SAVED_HOURS=$((TOTAL_CLONES * 2)) 
-          jq -n --arg tc "$TOTAL_CLONES" --arg sh "$SAVED_HOURS" --arg st "$STARS" --arg fk "$FORKS" \
-            '{total_clones: ($tc|tonumber), saved_hours: ($sh|tonumber), stars: ($st|tonumber), forks: ($fk|tonumber)}' > bunker-stats.json
+          
+          # 💡 偷师点：用 jq 物理合成 JSON，彻底杜绝语法错误
+          jq -n \
+            --arg tc "$TOTAL_CLONES" \
+            --arg st "$STARS" \
+            --arg fk "$FORKS" \
+            '{total_clones: ($tc|tonumber), stars: ($st|tonumber), forks: ($fk|tonumber)}' > bunker-stats.json
+          
+          echo "✅ 地堡 7.4 核心战绩封存达成：$TOTAL_CLONES"
 
-      # 3. 🧬 【地堡 8.0 核心】：三位一体可视化构筑 (原版 + Kimi 高阶版)
-      - name: Construct Integrated Visual Dashboards
+      # 3. 🧬 【地堡 7.2 终极修复版】：带强力类型转换的看板构筑
+      - name: Construct Sovereign Dashboard
         run: |
-          echo "🤖 Pod 042: 执行‘全量视觉资产重构协议’..."
+          echo "🤖 Pod 042: 执行‘全频道看板构筑协议 [类型强转版]’..."
           python3 <<EOF
           import pandas as pd
           import matplotlib.pyplot as plt
           import seaborn as sns
           import os
 
-          def load_clean(path, col):
+          # 💡 偷师点：定义一个“暴力清洗”函数，确保数据类型绝对纯净
+          def load_hard_clean_csv(path, col_name):
               df = pd.read_csv(path)
-              df['date'] = pd.to_datetime(df['date'], errors='coerce')
+              # 1. 强制转换日期，指定格式并踢走非日期行
+              df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d', errors='coerce')
               df = df.dropna(subset=['date'])
-              df[col] = pd.to_numeric(df[col.lower()], errors='coerce').fillna(0)
-              return df[['date', col]]
+              
+              # 2. 🔥 核心修正：强制将数据列转换为数字，脏数据变 NaN 然后填 0
+              target_col = col_name.lower()
+              if target_col in df.columns:
+                  df[col_name] = pd.to_numeric(df[target_col], errors='coerce').fillna(0)
+              
+              return df[['date', col_name]]
 
-          df = pd.merge(load_clean('ghrs-data/clones_ledger.csv', 'Clones'), load_clean('ghrs-data/views_ledger.csv', 'Views'), on='date', how='outer').fillna(0).sort_values('date')
-          df['cumulative'] = df['Clones'].cumsum()
-          plt.style.use('dark_background')
-          os.makedirs('plots', exist_ok=True)
+          try:
+              # 分别读取并清洗两个账本
+              df_c = load_hard_clean_csv('ghrs-data/clones_ledger.csv', 'Clones')
+              df_v = load_hard_clean_csv('ghrs-data/views_ledger.csv', 'Views')
+              
+              # 物理对齐与合并（按日期合并）
+              df = pd.merge(df_c, df_v, on='date', how='outer').fillna(0)
+              df = df.sort_values('date')
+              
+              # 确保合并后的数据也是 float 类型，防止绘图器罢工
+              df['Clones'] = df['Clones'].astype(float)
+              df['Views'] = df['Views'].astype(float)
+              df['cumulative'] = df['Clones'].cumsum()
 
-          # --- 看板 1: 原版 V7 核心看板 (保持传统荣光) ---
-          fig1 = plt.figure(figsize=(12, 10))
-          gs1 = fig1.add_gridspec(3, 1)
-          ax1 = fig1.add_subplot(gs1[0]); ax1.plot(df['date'].tail(30), df['Views'].tail(30), alpha=0.5, ls='--'); ax1.plot(df['date'].tail(30), df['Clones'].tail(30), color='#33cc33', lw=2); ax1.set_title('Recon: Views vs Clones (30D)')
-          ax2 = fig1.add_subplot(gs1[1]); ax2.fill_between(df['date'], df['cumulative'], color='#0066ff', alpha=0.2); ax2.plot(df['date'], df['cumulative'], color='#0066ff', lw=3); ax2.set_title('Bunker Glory: Cumulative Clones')
-          ax3 = fig1.add_subplot(gs1[2]); pivot = df.assign(week=df['date'].dt.isocalendar().week, day=df['date'].dt.day_name()).pivot_table(index='day', columns='week', values='Clones', aggfunc='sum').fillna(0).reindex(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
-          sns.heatmap(pivot, cmap='Greens', ax=ax3, cbar=False, lw=2, linecolor='#1a1a1a'); ax3.set_title('Global Deployment Heatmap')
-          plt.tight_layout(); plt.savefig('plots/bunker_main_v7.png', dpi=120)
+              # --- 开始绘图 ---
+              plt.style.use('dark_background')
+              fig = plt.figure(figsize=(12, 10))
+              gs = fig.add_gridspec(3, 1)
 
-          # --- 看板 2: Kimi 风格高阶分析 (数据深潜) ---
-          fig2, axes = plt.subplots(2, 2, figsize=(16, 12))
-          sns.regplot(data=df, x='Views', y='Clones', ax=axes[0,0], color='#0066ff'); axes[0,0].set_title('Correlation Analysis')
-          sns.histplot(df['Clones']/df['Views'].replace(0,1), bins=15, ax=axes[0,1], kde=True, color='#ff9900'); axes[0,1].set_title('Clones Per Visitor Distribution')
-          df.assign(W=df['date'].dt.strftime('%Y-W%U')).groupby('W')['Clones'].sum().tail(10).plot(kind='bar', ax=axes[1,0], color='#33cc33'); axes[1,0].set_title('Weekly Performance')
-          df.set_index('date')['Clones'].rolling(7).mean().plot(ax=axes[1,1], color='#33cc33'); axes[1,1].set_title('7-Day Moving Average')
-          plt.tight_layout(); plt.savefig('plots/bunker_advanced_intel.png', dpi=100)
+              # 子图 1：Views vs Clones
+              ax1 = fig.add_subplot(gs[0])
+              plot_df = df.tail(30)
+              ax1.plot(plot_df['date'], plot_df['Views'], color='#ffffff', label='Views (Web)', alpha=0.5, linestyle='--')
+              ax1.plot(plot_df['date'], plot_df['Clones'], color='#33cc33', label='Clones (Terminal)', linewidth=2)
+              ax1.fill_between(plot_df['date'], plot_df['Clones'], color='#33cc33', alpha=0.1)
+              ax1.set_title('Strategic Recon: Web Visitors vs Terminal Commandos (Last 30 Days)', color='#33cc33', pad=15)
+              ax1.legend()
+              ax1.grid(color='#444', linestyle='--', alpha=0.3)
+
+              # 子图 2：累计荣光抛物线
+              ax2 = fig.add_subplot(gs[1])
+              ax2.fill_between(df['date'], df['cumulative'], color='#0066ff', alpha=0.2)
+              ax2.plot(df['date'], df['cumulative'], color='#0066ff', linewidth=3)
+              ax2.set_title('Bunker Glory: Total Cumulative Clones', color='#0066ff', pad=15)
+              ax2.grid(color='#444', linestyle=':', alpha=0.3)
+
+              # 子图 3：作战热力图
+              ax3 = fig.add_subplot(gs[2])
+              df['week'] = df['date'].dt.isocalendar().week
+              df['day'] = df['date'].dt.day_name()
+              pivot = df.pivot_table(index='day', columns='week', values='Clones', aggfunc='sum').fillna(0)
+              days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+              pivot = pivot.reindex(days_order)
+              sns.heatmap(pivot, cmap='Greens', ax=ax3, cbar=False, annot=False, linewidths=2, linecolor='#1a1a1a')
+              ax3.set_title('Deployment Matrix: All-Time Activity', color='#33cc33', pad=15)
+              ax3.set_xlabel('Weeks of the Year')
+              ax3.set_ylabel('')
+
+              os.makedirs('plots', exist_ok=True)
+              plt.tight_layout()
+              plt.savefig('plots/bunker_dashboard.png', dpi=120)
+              print(f"✅ 视觉矩阵重构成功！当前全量战绩：{df['cumulative'].max()}")
+          except Exception as e:
+              print(f"❌ 构筑失败：检测到物理层逻辑冲突: {e}")
+              import traceback
+              traceback.print_exc()
+              exit(1)
           EOF
 
       # 4. [报表装修]
       - name: Assemble Sovereignty Report
         run: |
           STATS="bunker-stats.json"
+          TOTAL=$(jq '.total_clones' $STATS)
+          STARS=$(jq '.stars' $STATS)
+          FORKS=$(jq '.forks' $STATS)
+          
           echo "# 🛰️ 地堡终极运行报告 (Sovereign Dashboard)" > README.md
           echo "## 📊 核心战力指标" >> README.md
-          echo "- **物理克隆总计**: \`$(jq '.total_clones' $STATS)\` 次" >> README.md
-          echo "- **物理抢救工时**: \`$(jq '.saved_hours' $STATS)\` 小时 (低调算法: 2h/Page)" >> README.md
-          echo "- **社群声望**: ⭐ \`$(jq '.stars' $STATS)\` / 🍴 \`$(jq '.forks' $STATS)\`" >> README.md
+          echo "- **物理克隆总计**: \`$TOTAL\` 次" >> README.md
+          echo "- **当前社群声望**: ⭐ \`$STARS\` / 🍴 \`$FORKS\`" >> README.md
+          echo "- **地堡协议防护**: AGPL-3.0 生效中" >> README.md
           echo "" >> README.md
+          
           echo "### 🖥️ 实时作战看板 (Visual Radar)" >> README.md
-          echo "![Main](./plots/bunker_main_v7.png)" >> README.md
-          echo "### 🔍 战略深度审计 (Advanced Intelligence)" >> README.md
-          echo "![Intel](./plots/bunker_advanced_intel.png)" >> README.md
-          echo "#### 📡 流量来源实时追踪" >> README.md
+          echo "![Dashboard](./plots/bunker_dashboard.png)" >> README.md
+          echo "" >> README.md
+          
+          echo "#### 📡 全球流量来源 (Top Referrers)" >> README.md
           echo "| 来源站点 | 访问量 | 独立指挥官 |" >> README.md
           echo "| :--- | :--- | :--- |" >> README.md
-          [ -s raw_referrers.json ] && jq -r '.[] | "| \(.referrer) | \(.count) | \(.uniques) |"' raw_referrers.json >> README.md || echo "| 信号屏蔽中 | - | - |" >> README.md
-          echo -e "\n> 📡 物理封存点: $(date +'%Y-%m-%d %H:%M:%S') CST | Glory to Mankind." >> README.md
+          if [ -s raw_referrers.json ]; then
+            jq -r '.[] | "| \(.referrer) | \(.count) | \(.uniques) |"' raw_referrers.json >> README.md
+          else
+            echo "| 信号屏蔽中 | - | - |" >> README.md
+          fi
+          echo "" >> README.md
+          echo "> 📡 数据已物理封存：$(date +'%Y-%m-%d %H:%M:%S') CST | Glory to Mankind." >> README.md
 
-      # 5. 最终物理封存
+      # 5. 封存推送
       - name: Final Sealing
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add -A
           TOTAL=$(jq '.total_clones' bunker-stats.json)
-          git commit -m "chore: sovereign update v8.0 - mega dashboard [total $TOTAL]" || echo "no changes"
+          git commit -m "chore: sovereign update v7.0 - total $TOTAL" || echo "no changes"
           git push origin github-repo-stats --force
