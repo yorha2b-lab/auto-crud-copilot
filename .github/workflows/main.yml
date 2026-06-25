@@ -1,4 +1,4 @@
-name: Bunker Sovereign Intelligence (v8.1)
+name: Bunker Sovereign Intelligence (v8.2)
 
 on:
   schedule:
@@ -9,7 +9,7 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  intelligence-center:
+  integrated-intelligence:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -21,18 +21,21 @@ jobs:
           token: ${{ secrets.STATS_TOKEN }}
           fetch-depth: 0
 
+      # 1. 环境准备：物理封存所有绘图依赖
       - name: Setup Plotting Environment
         run: |
           python -m pip install --upgrade pip
           pip install matplotlib pandas seaborn scipy numpy
 
-      # 2. 数据搜刮与物理对账 (保持原有稳定性)
+      # 2. 全频道数据搜刮与物理焊接 (核心去垢逻辑)
       - name: Data Mining & Ledger Sync
         run: |
           echo "🤖 Pod 042: 启动‘全领域信号搜刮协议’..."
           AUTH="-H 'Authorization: token ${{ secrets.STATS_TOKEN }}' -H 'Accept: application/vnd.github.v3+json'"
           API="https://api.github.com/repos/${{ github.repository }}"
+          
           eval curl -s $AUTH $API/traffic/clones > raw_clones.json
+          eval curl -s $AUTH $API/traffic/popular/referrers > raw_referrers.json
           eval curl -s $AUTH $API/traffic/views > raw_views.json
           eval curl -s $AUTH $API > raw_repo.json
 
@@ -42,11 +45,14 @@ jobs:
             else (tail -n +2 "$1"; tail -n +2 "$2") | grep -v "date" | sed 's/\//-/g' | awk -F',' '!a[$1]++' | sort -r > tmp.csv
             echo "date,$3,uniques" > "$1"; cat tmp.csv >> "$1"; fi
           }
+          
           echo "date,clones,uniques" > /tmp/nc.csv && jq -r '.clones[] | "\(.timestamp[0:10]),\(.count),\(.uniques)"' raw_clones.json >> /tmp/nc.csv
           clean_merge "ghrs-data/clones_ledger.csv" "/tmp/nc.csv" "clones"
+          
           echo "date,views,uniques" > /tmp/nv.csv && jq -r '.views[] | "\(.timestamp[0:10]),\(.count),\(.uniques)"' raw_views.json >> /tmp/nv.csv
           clean_merge "ghrs-data/views_ledger.csv" "/tmp/nv.csv" "views"
 
+          # 战绩物理结算
           TOTAL_CLONES=$(grep -v "date" "ghrs-data/clones_ledger.csv" | awk -F',' '{sum+=$2} END {print sum}')
           STARS=$(jq '.stargazers_count // 0' raw_repo.json)
           FORKS=$(jq '.forks_count // 0' raw_repo.json)
@@ -54,19 +60,18 @@ jobs:
           jq -n --arg tc "$TOTAL_CLONES" --arg sh "$SAVED_HOURS" --arg st "$STARS" --arg fk "$FORKS" \
             '{total_clones: ($tc|tonumber), saved_hours: ($sh|tonumber), stars: ($st|tonumber), forks: ($fk|tonumber)}' > bunker-stats.json
 
-      # 3. 🧬 物理焊死
-      - name: Construct Advanced Visual Intelligence
+      # 3. 🧬 【地堡 8.2 核心】：三位一体物理构筑协议
+      - name: Construct Sovereign Mega Dashboard
         run: |
-          echo "🤖 Pod 042: 正在执行‘战略级视觉构筑协议’..."
+          echo "🤖 Pod 042: 执行‘全量视觉资产重构协议’..."
           python3 <<EOF
           import pandas as pd
           import matplotlib.pyplot as plt
-          import matplotlib.dates as mdates
           import seaborn as sns
           import numpy as np
           import os
 
-          # A. 数据脱水与清洗
+          # A. 物理清洗
           def load_clean(path, col):
               df = pd.read_csv(path)
               df['date'] = pd.to_datetime(df['date'], errors='coerce')
@@ -78,92 +83,72 @@ jobs:
           df_c = load_clean('ghrs-data/clones_ledger.csv', 'Clones')
           df_v = load_clean('ghrs-data/views_ledger.csv', 'Views').rename(columns={'uniques': 'uv'})
           df = pd.merge(df_c, df_v, on='date', how='outer').fillna(0).sort_values('date')
-          df['ratio'] = df['Clones'] / df['uniques'].replace(0, 1)
           df['cumulative'] = df['Clones'].cumsum()
+          df['ratio'] = df['Clones'] / df['uniques'].replace(0, 1)
           df['clones_ma7'] = df['Clones'].rolling(window=7, min_periods=1).mean()
 
           plt.style.use('dark_background')
           os.makedirs('plots', exist_ok=True)
 
-          # --- 看板 1: 6-Grid Intelligence (6宫格深度分析) ---
-          fig, axes = plt.subplots(3, 2, figsize=(16, 14))
-          fig.suptitle('YoRHa Bunker - All-Channel Signal Analysis', fontsize=18, fontweight='bold', color='#33cc33', y=0.98)
+          # --- 图表 1: 传统作战看板 (Original V7 Heritage) ---
+          fig1 = plt.figure(figsize=(12, 10))
+          gs1 = fig1.add_gridspec(3, 1)
+          ax1 = fig1.add_subplot(gs1[0]); ax1.plot(df['date'].tail(30), df['Views'].tail(30), alpha=0.5, ls='--'); ax1.plot(df['date'].tail(30), df['Clones'].tail(30), color='#33cc33', lw=2); ax1.set_title('Strategic Recon: Views vs Clones (Last 30D)', color='#33cc33')
+          ax2 = fig1.add_subplot(gs1[1]); ax2.fill_between(df['date'], df['cumulative'], color='#0066ff', alpha=0.2); ax2.plot(df['date'], df['cumulative'], color='#0066ff', lw=3); ax2.set_title('Bunker Glory: Total Cumulative Growth', color='#0066ff')
+          ax3 = fig1.add_subplot(gs1[2]); pivot = df.assign(week=df['date'].dt.isocalendar().week, day=df['date'].dt.day_name()).pivot_table(index='day', columns='week', values='Clones', aggfunc='sum').fillna(0).reindex(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
+          sns.heatmap(pivot, cmap='Greens', ax=ax3, cbar=False, lw=2, linecolor='#1a1a1a'); ax3.set_title('Deployment Matrix: All-Time Activity', color='#33cc33')
+          plt.tight_layout(); plt.savefig('plots/bunker_main_v7.png', dpi=120)
 
-          # 1. 日克隆量趋势
-          axes[0, 0].fill_between(df['date'], df['Clones'], alpha=0.3, color='#33cc33')
-          axes[0, 0].plot(df['date'], df['Clones'], color='#33cc33', lw=1.5)
-          axes[0, 0].axhline(y=df['Clones'].mean(), color='red', ls='--', alpha=0.6, label=f'Avg: {df["Clones"].mean():.1f}')
-          axes[0, 0].set_title('Daily Clone Volume', color='#33cc33')
-          axes[0, 0].legend()
+          # --- 图表 2: 高级情报 6 宫格 (Advanced Intelligence Grid) ---
+          fig2, axes = plt.subplots(3, 2, figsize=(16, 14))
+          fig2.suptitle('Bunker Strategic Analytics - Intelligence Grid', color='#33cc33', fontsize=20)
+          axes[0,0].fill_between(df['date'], df['Clones'], color='#33cc33', alpha=0.3); axes[0,0].set_title('Daily Clones')
+          axes[0,1].fill_between(df['date'], df['uniques'], color='#A23B72', alpha=0.3); axes[0,1].set_title('Daily Unique Commanders')
+          sns.regplot(data=df, x='uniques', y='Clones', ax=axes[1,0], color='#0066ff'); axes[1,0].set_title('Correlation Analysis')
+          sns.histplot(df['ratio'], bins=15, ax=axes[1,1], kde=True, color='#ff9900'); axes[1,1].set_title('Clones Per User Distribution')
+          df.assign(W=df['date'].dt.strftime('%W')).groupby('W')['Clones'].sum().tail(12).plot(kind='bar', ax=axes[2,0], color='#33cc33'); axes[2,0].set_title('Weekly Throughput')
+          axes[2,1].plot(df['date'], df['clones_ma7'], color='#33cc33', lw=2); axes[2,1].set_title('7-Day Smoothing Trend')
+          plt.tight_layout(rect=[0, 0.03, 1, 0.95]); plt.savefig('plots/bunker_intelligence_grid.png', dpi=100)
 
-          # 2. 日访客量趋势
-          axes[0, 1].fill_between(df['date'], df['uniques'], alpha=0.3, color='#A23B72')
-          axes[0, 1].plot(df['date'], df['uniques'], color='#A23B72', lw=1.5)
-          axes[0, 1].set_title('Daily Unique Commanders', color='#A23B72')
-
-          # 3. 相关性散点图
-          sns.regplot(data=df, x='uniques', y='Clones', ax=axes[1, 0], color='#0066ff', scatter_kws={'alpha':0.4})
-          axes[1, 0].set_title('Correlation: Visitors vs Clones', color='#0066ff')
-
-          # 4. 人均克隆次数分布 (判别CI/自动化程度)
-          sns.histplot(df['ratio'], bins=20, ax=axes[1, 1], color='#F18F01', kde=True)
-          axes[1, 1].set_title('Distribution: Clones Per Unit', color='#F18F01')
-
-          # 5. 最近 12 周汇总
-          df['week'] = df['date'].dt.strftime('%W')
-          weekly = df.groupby('week')['Clones'].sum().tail(12)
-          weekly.plot(kind='bar', ax=axes[2, 0], color='#33cc33', alpha=0.6)
-          axes[2, 0].set_title('Weekly Throughput (Last 12 Weeks)', color='#33cc33')
-
-          # 6. 7日移动平均线
-          axes[2, 1].plot(df['date'], df['clones_ma7'], color='#33cc33', lw=2, label='7D Moving Avg')
-          axes[2, 1].set_title('Sovereign Smoothing Trend', color='#888')
-          axes[2, 1].legend()
-
-          plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-          plt.savefig('plots/bunker_analytics_grid.png', dpi=120)
-
-          # --- 看板 2: Peak & Deep Dive (高峰标注与对比) ---
-          fig2, ax1 = plt.subplots(figsize=(16, 8))
-          ax2 = ax1.twinx()
-          ax1.fill_between(df['date'], df['Clones'], alpha=0.1, color='#33cc33')
-          ax1.plot(df['date'], df['Clones'], color='#33cc33', lw=2, label='Clones')
-          ax2.plot(df['date'], df['uniques'], color='#e74c3c', lw=1.5, label='Visitors', alpha=0.7)
-          
-          # 标注历史最高峰 (The Legend Point)
-          peak_val = df['Clones'].max()
-          peak_date = df.loc[df['Clones'].idxmax(), 'date']
-          ax1.annotate(f'LEGEND PEAK: {peak_val}', xy=(peak_date, peak_val), xytext=(20, 20),
-                       textcoords='offset points', arrowprops=dict(arrowstyle='->', color='yellow'),
-                       color='yellow', fontweight='bold')
-          
-          ax1.set_title('Strategic Signal Intensity (All Time)', fontsize=15, color='#33cc33')
-          plt.savefig('plots/bunker_peak_recon.png', dpi=120)
+          # --- 图表 3: 高峰侦察图 (Peak Signal Intensity) ---
+          fig3, axP = plt.subplots(figsize=(16, 6))
+          axP2 = axP.twinx()
+          axP.plot(df['date'], df['Clones'], color='#33cc33', lw=2, label='Clones')
+          axP2.plot(df['date'], df['uniques'], color='#ff6666', lw=1, ls=':', label='Visitors')
+          peak_val = df['Clones'].max(); peak_date = df.loc[df['Clones'].idxmax(), 'date']
+          axP.annotate(f'LEGEND PEAK: {peak_val}', xy=(peak_date, peak_val), xytext=(20, 20), textcoords='offset points', arrowprops=dict(arrowstyle='->', color='yellow'), color='yellow', fontweight='bold')
+          axP.set_title('Bunker Peak Signal Acquisition', color='#33cc33')
+          plt.tight_layout(); plt.savefig('plots/bunker_peak_recon.png', dpi=100)
           EOF
 
-      # 4. [报表装修]
-      - name: Assemble Sovereign Intelligence Report
+      # 4. [报表装修]：物理组合所有战果
+      - name: Assemble Sovereignty Mega Report
         run: |
           STATS="bunker-stats.json"
           TOTAL=$(jq '.total_clones' $STATS)
           HOURS=$(jq '.saved_hours' $STATS)
           
-          echo "# 🛰️ 地堡终极运行报告 (Sovereign Dashboard v8.1)" > README.md
+          echo "# 🛰️ 地堡终极运行报告 (Sovereign Dashboard v8.2)" > README.md
           echo "## 📊 核心战力指标" >> README.md
-          echo "- **累计物理克隆**: \`$TOTAL\` 次" >> README.md
+          echo "- **物理克隆总计**: \`$TOTAL\` 次" >> README.md
           echo "- **物理抢救工时**: \`$HOURS\` 小时 (低调算法: 2h/Page)" >> README.md
           echo "- **社群声望**: ⭐ \`$(jq '.stars' $STATS)\` / 🍴 \`$(jq '.forks' $STATS)\`" >> README.md
+          echo "- **地堡协议防护**: AGPL-3.0 生效中" >> README.md
           echo "" >> README.md
           
-          echo "### 🖥️ 战略分析大屏 (Visual Intelligence)" >> README.md
-          echo "![Analysis Grid](./plots/bunker_analytics_grid.png)" >> README.md
+          echo "### 🖥️ 1. 实时作战看板 (Visual Radar)" >> README.md
+          echo "![Main](./plots/bunker_main_v7.png)" >> README.md
           echo "" >> README.md
           
-          echo "### 🔍 高峰侦察与深潜审计 (Strategic Recon)" >> README.md
+          echo "### 🔍 2. 战略情报大屏 (Intelligence Grid)" >> README.md
+          echo "![Intelligence](./plots/bunker_intelligence_grid.png)" >> README.md
+          echo "" >> README.md
+          
+          echo "### 📡 3. 深度作战审计 (Deep Dive Recon)" >> README.md
           echo "![Peak Recon](./plots/bunker_peak_recon.png)" >> README.md
           echo "" >> README.md
           
-          echo "#### 📡 全球流量来源追踪" >> README.md
+          echo "#### 🛰️ 流量来源实时追踪" >> README.md
           echo "| 来源站点 | 访问量 | 独立指挥官 |" >> README.md
           echo "| :--- | :--- | :--- |" >> README.md
           [ -s raw_referrers.json ] && jq -r '.[] | "| \(.referrer) | \(.count) | \(.uniques) |"' raw_referrers.json >> README.md || echo "| 信号屏蔽中 | - | - |" >> README.md
@@ -176,5 +161,5 @@ jobs:
           git config user.email github-actions@github.com
           git add -A
           TOTAL=$(jq '.total_clones' bunker-stats.json)
-          git commit -m "chore: sovereign update v8.1 [Bunker Analytics]" || echo "no changes"
+          git commit -m "chore: sovereign update v8.2 - ultimate mega dashboard [total $TOTAL]" || echo "no changes"
           git push origin github-repo-stats --force
