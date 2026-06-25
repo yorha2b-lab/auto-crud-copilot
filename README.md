@@ -1,16 +1,19 @@
-# 🛰️ 地堡终极运行报告 (Sovereign Dashboard)
+# 🛰️ 地堡终极运行报告 (Sovereign Dashboard v8.1)
 ## 📊 核心战力指标
-- **物理克隆总计**: `5200` 次
-- **当前社群声望**: ⭐ `2` / 🍴 `0`
-- **地堡协议防护**: AGPL-3.0 生效中
+- **累计物理克隆**: `5200` 次
+- **物理抢救工时**: `10400` 小时 (低调算法: 2h/Page)
+- **社群声望**: ⭐ `2` / 🍴 `0`
 
-### 🖥️ 实时作战看板 (Visual Radar)
-![Dashboard](./plots/bunker_dashboard.png)
+### 🖥️ 战略分析大屏 (Visual Intelligence)
+![Analysis Grid](./plots/bunker_analytics_grid.png)
 
-#### 📡 全球流量来源 (Top Referrers)
+### 🔍 高峰侦察与深潜审计 (Strategic Recon)
+![Peak Recon](./plots/bunker_peak_recon.png)
+
+#### 📡 全球流量来源追踪
 | 来源站点 | 访问量 | 独立指挥官 |
 | :--- | :--- | :--- |
 | chatgpt.com | 1 | 1 |
 | github.com | 1 | 1 |
 
-> 📡 数据已物理封存：2026-06-25 09:09:21 CST | Glory to Mankind.
+> 📡 物理封存点: 2026-06-25 09:14:01 CST | Glory to Mankind.
