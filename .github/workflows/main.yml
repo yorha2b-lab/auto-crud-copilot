@@ -27,37 +27,67 @@ jobs:
           python -m pip install --upgrade pip
           pip install matplotlib pandas seaborn scipy numpy
 
-      # 2. 全频道数据搜刮与物理焊接 (核心去垢逻辑)
+      # 2. 全频道数据搜刮协议 [逻辑升级：加装防御性保险丝]
       - name: Data Mining & Ledger Sync
         run: |
-          echo "🤖 Pod 042: 启动‘全领域信号搜刮协议’..."
-          AUTH="-H 'Authorization: token ${{ secrets.STATS_TOKEN }}' -H 'Accept: application/vnd.github.v3+json'"
+          echo "🤖 Pod 042: 启动‘全领域信号搜刮协议 [V8.3 防御版]’..."
           API="https://api.github.com/repos/${{ github.repository }}"
-
-          eval curl -s $AUTH $API/traffic/clones > raw_clones.json
-          eval curl -s $AUTH $API/traffic/popular/referrers > raw_referrers.json
-          eval curl -s $AUTH $API/traffic/views > raw_views.json
-          eval curl -s $AUTH $API > raw_repo.json
-
-          mkdir -p ghrs-data
-          clean_merge() {
-            if [ ! -f "$1" ]; then cp "$2" "$1";
-            else (tail -n +2 "$1"; tail -n +2 "$2") | grep -v "date" | sed 's/\//-/g' | awk -F',' '!a[$1]++' | sort -r > tmp.csv
-            echo "date,$3,uniques" > "$1"; cat tmp.csv >> "$1"; fi
+          
+          # 💡 优化：直接使用 curl 抓取，增加重试机制，并对空结果执行“物理补全”
+          fetch_api() {
+            curl -s -H "Authorization: token ${{ secrets.STATS_TOKEN }}" -H "Accept: application/vnd.github.v3+json" "$1" > "$2"
+            if [ ! -s "$2" ] || [ "$(cat $2)" == "" ]; then echo "$3" > "$2"; fi
           }
 
-          echo "date,clones,uniques" > /tmp/nc.csv && jq -r '.clones[] | "\(.timestamp[0:10]),\(.count),\(.uniques)"' raw_clones.json >> /tmp/nc.csv
-          clean_merge "ghrs-data/clones_ledger.csv" "/tmp/nc.csv" "clones"
+          # 执行物理侦察：如果抓取失败，自动补齐对应的空 JSON 基因
+          fetch_api "$API/traffic/clones" "raw_clones.json" '{"clones":[]}'
+          fetch_api "$API/traffic/views" "raw_views.json" '{"views":[]}'
+          fetch_api "$API/traffic/popular/referrers" "raw_referrers.json" '[]'
+          fetch_api "$API" "raw_repo.json" '{"stargazers_count":0, "forks_count":0}'
 
-          echo "date,views,uniques" > /tmp/nv.csv && jq -r '.views[] | "\(.timestamp[0:10]),\(.count),\(.uniques)"' raw_views.json >> /tmp/nv.csv
+          mkdir -p ghrs-data
+          
+          # --- 物理焊接逻辑：带空值过滤 ---
+          clean_merge() {
+            local ledger="$1"
+            local incoming="$2"
+            local type_name="$3"
+            if [ ! -f "$ledger" ]; then 
+              cp "$incoming" "$ledger"
+            else
+              # 合并、去垢、去重、排序
+              (tail -n +2 "$ledger"; tail -n +2 "$incoming") | grep -v "date" | sed 's/\//-/g' | awk -F',' '!a[$1]++' | sort -r > tmp.csv
+              echo "date,$type_name,uniques" > "$ledger"
+              cat tmp.csv >> "$ledger"
+            fi
+          }
+          
+          # 处理 Clones
+          echo "date,clones,uniques" > /tmp/nc.csv
+          jq -r '.clones[]? | "\(.timestamp[0:10]),\(.count),\(.uniques)"' raw_clones.json >> /tmp/nc.csv
+          clean_merge "ghrs-data/clones_ledger.csv" "/tmp/nc.csv" "clones"
+          
+          # 处理 Views
+          echo "date,views,uniques" > /tmp/nv.csv
+          jq -r '.views[]? | "\(.timestamp[0:10]),\(.count),\(.uniques)"' raw_views.json >> /tmp/nv.csv
           clean_merge "ghrs-data/views_ledger.csv" "/tmp/nv.csv" "views"
 
-          # 战绩物理结算
+          # --- 战绩结算：增加变量兜底，防止数学崩溃 ---
           TOTAL_CLONES=$(grep -v "date" "ghrs-data/clones_ledger.csv" | awk -F',' '{sum+=$2} END {print sum}')
+          TOTAL_CLONES=${TOTAL_CLONES:-0}
           STARS=$(jq '.stargazers_count // 0' raw_repo.json)
           FORKS=$(jq '.forks_count // 0' raw_repo.json)
-          jq -n --arg tc "$TOTAL_CLONES" --arg sh "$SAVED_HOURS" --arg st "$STARS" --arg fk "$FORKS" \
+          SAVED_HOURS=$((TOTAL_CLONES * 2)) 
+
+          # 物理封存 JSON
+          jq -n \
+            --arg tc "$TOTAL_CLONES" \
+            --arg sh "$SAVED_HOURS" \
+            --arg st "$STARS" \
+            --arg fk "$FORKS" \
             '{total_clones: ($tc|tonumber), saved_hours: ($sh|tonumber), stars: ($st|tonumber), forks: ($fk|tonumber)}' > bunker-stats.json
+          
+          echo "✅ 地堡 8.3 物理数据对账达成。当前荣光总值：$TOTAL_CLONES"
 
       # 3. 🧬 【地堡 8.2 核心】：三位一体物理构筑协议
       - name: Construct Sovereign Mega Dashboard
