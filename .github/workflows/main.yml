@@ -147,85 +147,81 @@ jobs:
           weekly.columns = ['week', 'clones', 'uniques', 'start_date', 'end_date']
           weekly = weekly.sort_values('start_date').reset_index(drop=True)
 
-          weekly_top = weekly.nlargest(10, 'clones')[['week', 'clones', 'uniques']]
-
           # --- 图表 2: 高级情报 6 宫格 (Advanced Intelligence Grid) ---
           fig2, axes = plt.subplots(3, 2, figsize=(16, 14))
           fig2.suptitle('Bunker Strategic Analytics - Intelligence Grid', color='#33cc33', fontsize=20)
-          # 1. 日克隆量趋势
+
+          # 1. Daily Clone Trend
           ax1 = axes[0, 0]
           ax1.plot(df2['date'], df2['clones'], color='#2E86AB', linewidth=1.5, alpha=0.8)
           ax1.fill_between(df2['date'], df2['clones'], alpha=0.3, color='#2E86AB')
-          ax1.axhline(y=df2['clones'].mean(), color='red', linestyle='--', alpha=0.7, label=f'均值: {df2["clones"].mean():.0f}')
-          ax1.set_title('日克隆量趋势', fontsize=12, fontweight='bold')
-          ax1.set_ylabel('克隆次数')
+          ax1.axhline(y=df2['clones'].mean(), color='red', linestyle='--', alpha=0.7, label=f'Avg: {df2["clones"].mean():.0f}')
+          ax1.set_title('Daily Clone Trend', fontsize=12, fontweight='bold')
+          ax1.set_ylabel('Clones')
           ax1.legend()
           ax1.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
           ax1.xaxis.set_major_locator(mdates.WeekdayLocator(interval=2))
           ax1.tick_params(axis='x', rotation=45)
           ax1.grid(True, alpha=0.3)
 
-          # 2. 日独立访客趋势
+          # 2. Daily Unique Visitor Trend
           ax2 = axes[0, 1]
           ax2.plot(df2['date'], df2['uniques'], color='#A23B72', linewidth=1.5, alpha=0.8)
           ax2.fill_between(df2['date'], df2['uniques'], alpha=0.3, color='#A23B72')
-          ax2.axhline(y=df2['uniques'].mean(), color='red', linestyle='--', alpha=0.7, label=f'均值: {df2["uniques"].mean():.0f}')
-          ax2.set_title('日独立访客趋势', fontsize=12, fontweight='bold')
-          ax2.set_ylabel('独立访客数')
+          ax2.axhline(y=df2['uniques'].mean(), color='red', linestyle='--', alpha=0.7, label=f'Avg: {df2["uniques"].mean():.0f}')
+          ax2.set_title('Daily Unique Commanders', fontsize=12, fontweight='bold')
+          ax2.set_ylabel('Unique Visitors')
           ax2.legend()
           ax2.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
           ax2.xaxis.set_major_locator(mdates.WeekdayLocator(interval=2))
           ax2.tick_params(axis='x', rotation=45)
           ax2.grid(True, alpha=0.3)
 
-          # 3. 克隆量 vs 独立访客 散点图
+          # 3. Clones vs Visitors Scatter
           ax3 = axes[1, 0]
           ax3.scatter(df2['uniques'], df2['clones'], alpha=0.6, c=df2['date'].map(mdates.date2num), cmap='viridis', s=50)
-          ax3.set_xlabel('独立访客数')
-          ax3.set_ylabel('克隆次数')
-          ax3.set_title('克隆量 vs 独立访客 (颜色=时间)', fontsize=12, fontweight='bold')
-          # 添加趋势线
+          ax3.set_xlabel('Unique Visitors')
+          ax3.set_ylabel('Clones')
+          ax3.set_title('Clones vs Visitors (Color=Time)', fontsize=12, fontweight='bold')
           z = np.polyfit(df2['uniques'], df2['clones'], 1)
           p = np.poly1d(z)
-          ax3.plot(df2['uniques'].sort_values(), p(df2['uniques'].sort_values()), "r--", alpha=0.7, label=f'趋势: y={z[0]:.1f}x+{z[1]:.1f}')
+          ax3.plot(df2['uniques'].sort_values(), p(df2['uniques'].sort_values()), "r--", alpha=0.7, label=f'Trend: y={z[0]:.1f}x+{z[1]:.1f}')
           ax3.legend()
           ax3.grid(True, alpha=0.3)
 
-          # 4. 人均克隆次数分布
+          # 4. Clones Per User Distribution
           ax4 = axes[1, 1]
-          df2['clones_per_unique'] = df2['clones'] / df2['uniques']
+          df2['clones_per_unique'] = df2['clones'] / df2['uniques'].replace(0, 1)
           ax4.hist(df2['clones_per_unique'], bins=25, color='#F18F01', alpha=0.7, edgecolor='white')
-          ax4.axvline(x=df2['clones_per_unique'].mean(), color='red', linestyle='--', label=f'均值: {df2["clones_per_unique"].mean():.2f}')
-          ax4.set_xlabel('人均克隆次数')
-          ax4.set_ylabel('天数')
-          ax4.set_title('人均克隆次数分布', fontsize=12, fontweight='bold')
+          ax4.axvline(x=df2['clones_per_unique'].mean(), color='red', linestyle='--', label=f'Avg: {df2["clones_per_unique"].mean():.2f}')
+          ax4.set_xlabel('Clones Per Unit')
+          ax4.set_ylabel('Days')
+          ax4.set_title('Clones Per User Distribution', fontsize=12, fontweight='bold')
           ax4.legend()
           ax4.grid(True, alpha=0.3)
 
-          # 5. 每周克隆量柱状图
+          # 5. Weekly Throughput
           ax5 = axes[2, 0]
           weekly_sorted = weekly.sort_values('start_date').tail(12)
           colors = ['#2E86AB' if c < 300 else '#F18F01' if c < 600 else '#E63946' for c in weekly_sorted['clones']]
           bars = ax5.bar(range(len(weekly_sorted)), weekly_sorted['clones'], color=colors, alpha=0.8, edgecolor='white')
           ax5.set_xticks(range(len(weekly_sorted)))
           ax5.set_xticklabels(weekly_sorted['week'].str[-2:], rotation=45)
-          ax5.set_xlabel('周')
-          ax5.set_ylabel('克隆次数')
-          ax5.set_title('最近12周克隆量', fontsize=12, fontweight='bold')
+          ax5.set_xlabel('Week Index')
+          ax5.set_ylabel('Total Clones')
+          ax5.set_title('Weekly Throughput (Last 12 Weeks)', fontsize=12, fontweight='bold')
           ax5.grid(True, alpha=0.3, axis='y')
-          # 添加数值标签
           for bar, val in zip(bars, weekly_sorted['clones']):
-              ax5.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 10, str(val),
-                      ha='center', va='bottom', fontsize=8)
+              ax5.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 10, str(val), ha='center', va='bottom', fontsize=8)
 
-          # 6. 7日移动平均
+          # 6. 7-Day Moving Average
           ax6 = axes[2, 1]
           df2['clones_ma7'] = df2['clones'].rolling(window=7, min_periods=1).mean()
           df2['uniques_ma7'] = df2['uniques'].rolling(window=7, min_periods=1).mean()
-          ax6.plot(df2['date'], df2['clones_ma7'], color='#2E86AB', linewidth=2, label='克隆量 7日MA')
-          ax6.plot(df2['date'], df2['uniques_ma7'], color='#A23B72', linewidth=2, label='独立访客 7日MA')
-          ax6.set_title('7日移动平均趋势', fontsize=12, fontweight='bold')
-          ax6.set_ylabel('次数')
+          ax6.plot(df2['date'], df2['clones_ma7'], color='#2E86AB', linewidth=2, label='Clones 7D MA')
+          ax6.plot(df2['date'], df2['uniques_ma7'], color='#A23B72', linewidth=2, label='Visitors 7D MA')
+          ax6.set_title('7-Day Moving Average Trend', fontsize=12, fontweight='bold')
+          ax6.set_ylabel('Frequency')
           ax6.legend()
           ax6.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
           ax6.xaxis.set_major_locator(mdates.WeekdayLocator(interval=2))
@@ -238,68 +234,40 @@ jobs:
           df3 = df3.sort_values('date').reset_index(drop=True)
 
           # --- 图表 3: 高峰侦察图 (Peak Signal Intensity) ---
-          fig3, axes = plt.subplots(3, 1, figsize=(16, 14))
-          # 1. 时间序列图
-          ax1 = axes[0]
-          ax1.fill_between(df3['date'], df3['clones'], alpha=0.3, color='#3498db', label='克隆次数 (clones)')
-          ax1.plot(df3['date'], df3['clones'], color='#3498db', linewidth=1.2)
-          ax1_twin = ax1.twinx()
-          ax1_twin.plot(df3['date'], df3['uniques'], color='#e74c3c', linewidth=1.2, label='独立访客 (uniques)')
-          ax1_twin.fill_between(df3['date'], df3['uniques'], alpha=0.15, color='#e74c3c')
+          fig3, axes3 = plt.subplots(3, 1, figsize=(16, 14))
+          # 3.1 时间序列图
+          axA = axes3[0]
+          axA.fill_between(df3['date'], df3['clones'], alpha=0.3, color='#3498db', label='Clones')
+          axA.plot(df3['date'], df3['clones'], color='#3498db', linewidth=1.2)
+          axA_twin = axA.twinx()
+          axA_twin.plot(df3['date'], df3['uniques'], color='#e74c3c', linewidth=1.2, label='Visitors')
+          axA_twin.fill_between(df3['date'], df3['uniques'], alpha=0.15, color='#e74c3c')
+          axA.set_ylabel('Clones', color='#3498db', fontsize=12)
+          axA_twin.set_ylabel('Visitors', color='#e74c3c', fontsize=12)
+          axA.set_title('Bunker Signal Intensity (Peak Detection Mode)', fontsize=14, fontweight='bold')
 
-          ax1.set_ylabel('克隆次数', color='#3498db', fontsize=12)
-          ax1_twin.set_ylabel('独立访客', color='#e74c3c', fontsize=12)
-          ax1.set_title('仓库克隆流量趋势 (2026-04-03 ~ 2026-06-23)', fontsize=14, fontweight='bold')
-          ax1.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
-          ax1.xaxis.set_major_locator(mdates.WeekdayLocator(interval=1))
-          plt.setp(ax1.xaxis.get_majorticklabels(), rotation=45, ha='right')
-
-          # 标注峰值
           peak_clone_idx = df3['clones'].idxmax()
-          peak_unique_idx = df3['uniques'].idxmax()
-          ax1.annotate(f'峰值: {df3["clones"].max()}',
+          axA.annotate(f'LEGEND PEAK: {df3["clones"].max()}',
                       xy=(df3.loc[peak_clone_idx, 'date'], df3.loc[peak_clone_idx, 'clones']),
                       xytext=(10, 20), textcoords='offset points',
-                      arrowprops=dict(arrowstyle='->', color='#3498db'),
-                      fontsize=10, color='#3498db', fontweight='bold')
-          ax1_twin.annotate(f'峰值: {df3["uniques"].max()}',
-                            xy=(df3.loc[peak_unique_idx, 'date'], df3.loc[peak_unique_idx, 'uniques']),
-                            xytext=(10, -20), textcoords='offset points',
-                            arrowprops=dict(arrowstyle='->', color='#e74c3c'),
-                            fontsize=10, color='#e74c3c', fontweight='bold')
+                      arrowprops=dict(arrowstyle='->', color='yellow'),
+                      fontsize=10, color='yellow', fontweight='bold')
 
-          # 2. 每周聚合分析
-          df3['week'] = df3['date'].dt.isocalendar().week
-          df3['year_week'] = df3['date'].dt.strftime('%Y-W%W')
-          weekly = df3.groupby('year_week').agg({'clones': 'sum', 'uniques': 'sum'}).reset_index()
-          weekly = weekly.tail(12)  # 最近12周
+          # 3.2 每周汇总
+          axB = axes3[1]
+          weekly_agg = df3.assign(W=df3['date'].dt.strftime('%Y-W%W')).groupby('W')[['clones', 'uniques']].sum().tail(12)
+          weekly_agg.plot(kind='bar', ax=axB, alpha=0.8)
+          axB.set_title('Weekly Operational Summary', fontsize=14, fontweight='bold')
 
-          ax2 = axes[1]
-          x = np.arange(len(weekly))
-          width = 0.35
-          bars1 = ax2.bar(x - width/2, weekly['clones'], width, label='克隆次数', color='#3498db', alpha=0.8)
-          bars2 = ax2.bar(x + width/2, weekly['uniques'], width, label='独立访客', color='#e74c3c', alpha=0.8)
-          ax2.set_ylabel('数量', fontsize=12)
-          ax2.set_title('每周克隆流量汇总', fontsize=14, fontweight='bold')
-          ax2.set_xticks(x)
-          ax2.set_xticklabels(weekly['year_week'], rotation=45, ha='right')
-          ax2.legend()
+          # 3.3 比值分析
+          axC = axes3[2]
+          df3['ratio'] = df3['clones'] / df3['uniques'].replace(0, 1)
+          colors3 = ['#2ecc71' if r < 3 else '#f39c12' if r < 5 else '#e74c3c' for r in df3['ratio']]
+          axC.bar(df3['date'], df3['ratio'], color=colors3, alpha=0.7)
+          axC.axhline(y=df3['ratio'].mean(), color='#9b59b6', ls='--', label=f'Avg: {df3["ratio"].mean():.2f}')
+          axC.set_title('Clones/Visitor Ratio (High Ratio = CI/Automation)', fontsize=14, fontweight='bold')
+          axC.legend()
 
-          # 3. 克隆/访客比分析（每人平均克隆次数）
-          df3['ratio'] = df3['clones'] / df3['uniques']
-          df3['ratio'] = df3['ratio'].replace([np.inf, -np.inf], np.nan)
-
-          ax3 = axes[2]
-          colors = ['#2ecc71' if r < 3 else '#f39c12' if r < 5 else '#e74c3c' for r in df3['ratio']]
-          ax3.bar(df3['date'], df3['ratio'], color=colors, alpha=0.7, width=0.8)
-          ax3.axhline(y=df3['ratio'].mean(), color='#9b59b6', linestyle='--', linewidth=2, label=f'平均: {df3["ratio"].mean():.2f}')
-          ax3.axhline(y=3, color='#2ecc71', linestyle=':', linewidth=1.5, alpha=0.7, label='健康阈值: 3')
-          ax3.set_ylabel('每人平均克隆次数', fontsize=12)
-          ax3.set_title('克隆/访客比分析（比值越高，说明重复克隆/CI 构建越多）', fontsize=14, fontweight='bold')
-          ax3.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
-          ax3.xaxis.set_major_locator(mdates.WeekdayLocator(interval=1))
-          plt.setp(ax3.xaxis.get_majorticklabels(), rotation=45, ha='right')
-          ax3.legend()
           plt.tight_layout(); plt.savefig('plots/bunker_peak_recon.png', dpi=100)
           EOF
 
