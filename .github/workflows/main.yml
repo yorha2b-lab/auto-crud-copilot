@@ -32,7 +32,7 @@ jobs:
         run: |
           echo "🤖 Pod 042: 启动‘全领域信号搜刮协议 [V8.3 防御版]’..."
           API="https://api.github.com/repos/${{ github.repository }}"
-          
+
           # 💡 优化：直接使用 curl 抓取，增加重试机制，并对空结果执行“物理补全”
           fetch_api() {
             curl -s -H "Authorization: token ${{ secrets.STATS_TOKEN }}" -H "Accept: application/vnd.github.v3+json" "$1" > "$2"
@@ -46,13 +46,13 @@ jobs:
           fetch_api "$API" "raw_repo.json" '{"stargazers_count":0, "forks_count":0}'
 
           mkdir -p ghrs-data
-          
+
           # --- 物理焊接逻辑：带空值过滤 ---
           clean_merge() {
             local ledger="$1"
             local incoming="$2"
             local type_name="$3"
-            if [ ! -f "$ledger" ]; then 
+            if [ ! -f "$ledger" ]; then
               cp "$incoming" "$ledger"
             else
               # 合并、去垢、去重、排序
@@ -61,12 +61,12 @@ jobs:
               cat tmp.csv >> "$ledger"
             fi
           }
-          
+
           # 处理 Clones
           echo "date,clones,uniques" > /tmp/nc.csv
           jq -r '.clones[]? | "\(.timestamp[0:10]),\(.count),\(.uniques)"' raw_clones.json >> /tmp/nc.csv
           clean_merge "ghrs-data/clones_ledger.csv" "/tmp/nc.csv" "clones"
-          
+
           # 处理 Views
           echo "date,views,uniques" > /tmp/nv.csv
           jq -r '.views[]? | "\(.timestamp[0:10]),\(.count),\(.uniques)"' raw_views.json >> /tmp/nv.csv
@@ -77,7 +77,7 @@ jobs:
           TOTAL_CLONES=${TOTAL_CLONES:-0}
           STARS=$(jq '.stargazers_count // 0' raw_repo.json)
           FORKS=$(jq '.forks_count // 0' raw_repo.json)
-          SAVED_HOURS=$((TOTAL_CLONES * 2)) 
+          SAVED_HOURS=$((TOTAL_CLONES * 2))
 
           # 物理封存 JSON
           jq -n \
@@ -86,7 +86,7 @@ jobs:
             --arg st "$STARS" \
             --arg fk "$FORKS" \
             '{total_clones: ($tc|tonumber), saved_hours: ($sh|tonumber), stars: ($st|tonumber), forks: ($fk|tonumber)}' > bunker-stats.json
-          
+
           echo "✅ 地堡 8.3 物理数据对账达成。当前荣光总值：$TOTAL_CLONES"
 
       # 3. 🧬 【地堡 8.2 核心】：三位一体物理构筑协议
@@ -96,6 +96,7 @@ jobs:
           python3 <<EOF
           import pandas as pd
           import matplotlib.pyplot as plt
+          import matplotlib.dates as mdates
           import seaborn as sns
           import numpy as np
           import os
@@ -131,22 +132,150 @@ jobs:
           # --- 图表 2: 高级情报 6 宫格 (Advanced Intelligence Grid) ---
           fig2, axes = plt.subplots(3, 2, figsize=(16, 14))
           fig2.suptitle('Bunker Strategic Analytics - Intelligence Grid', color='#33cc33', fontsize=20)
-          axes[0,0].fill_between(df['date'], df['Clones'], color='#33cc33', alpha=0.3); axes[0,0].set_title('Daily Clones')
-          axes[0,1].fill_between(df['date'], df['uniques'], color='#A23B72', alpha=0.3); axes[0,1].set_title('Daily Unique Commanders')
-          sns.regplot(data=df, x='uniques', y='Clones', ax=axes[1,0], color='#0066ff'); axes[1,0].set_title('Correlation Analysis')
-          sns.histplot(df['ratio'], bins=15, ax=axes[1,1], kde=True, color='#ff9900'); axes[1,1].set_title('Clones Per User Distribution')
-          df.assign(W=df['date'].dt.strftime('%W')).groupby('W')['Clones'].sum().tail(12).plot(kind='bar', ax=axes[2,0], color='#33cc33'); axes[2,0].set_title('Weekly Throughput')
-          axes[2,1].plot(df['date'], df['clones_ma7'], color='#33cc33', lw=2); axes[2,1].set_title('7-Day Smoothing Trend')
+          # 1. 日克隆量趋势
+          ax1 = axes[0, 0]
+          ax1.plot(df['date'], df['clones'], color='#2E86AB', linewidth=1.5, alpha=0.8)
+          ax1.fill_between(df['date'], df['clones'], alpha=0.3, color='#2E86AB')
+          ax1.axhline(y=df['clones'].mean(), color='red', linestyle='--', alpha=0.7, label=f'均值: {df["clones"].mean():.0f}')
+          ax1.set_title('日克隆量趋势', fontsize=12, fontweight='bold')
+          ax1.set_ylabel('克隆次数')
+          ax1.legend()
+          ax1.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
+          ax1.xaxis.set_major_locator(mdates.WeekdayLocator(interval=2))
+          ax1.tick_params(axis='x', rotation=45)
+          ax1.grid(True, alpha=0.3)
+
+          # 2. 日独立访客趋势
+          ax2 = axes[0, 1]
+          ax2.plot(df['date'], df['uniques'], color='#A23B72', linewidth=1.5, alpha=0.8)
+          ax2.fill_between(df['date'], df['uniques'], alpha=0.3, color='#A23B72')
+          ax2.axhline(y=df['uniques'].mean(), color='red', linestyle='--', alpha=0.7, label=f'均值: {df["uniques"].mean():.0f}')
+          ax2.set_title('日独立访客趋势', fontsize=12, fontweight='bold')
+          ax2.set_ylabel('独立访客数')
+          ax2.legend()
+          ax2.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
+          ax2.xaxis.set_major_locator(mdates.WeekdayLocator(interval=2))
+          ax2.tick_params(axis='x', rotation=45)
+          ax2.grid(True, alpha=0.3)
+
+          # 3. 克隆量 vs 独立访客 散点图
+          ax3 = axes[1, 0]
+          ax3.scatter(df['uniques'], df['clones'], alpha=0.6, c=df['date'].map(mdates.date2num), cmap='viridis', s=50)
+          ax3.set_xlabel('独立访客数')
+          ax3.set_ylabel('克隆次数')
+          ax3.set_title('克隆量 vs 独立访客 (颜色=时间)', fontsize=12, fontweight='bold')
+          # 添加趋势线
+          z = np.polyfit(df['uniques'], df['clones'], 1)
+          p = np.poly1d(z)
+          ax3.plot(df['uniques'].sort_values(), p(df['uniques'].sort_values()), "r--", alpha=0.7, label=f'趋势: y={z[0]:.1f}x+{z[1]:.1f}')
+          ax3.legend()
+          ax3.grid(True, alpha=0.3)
+
+          # 4. 人均克隆次数分布
+          ax4 = axes[1, 1]
+          df['clones_per_unique'] = df['clones'] / df['uniques']
+          ax4.hist(df['clones_per_unique'], bins=25, color='#F18F01', alpha=0.7, edgecolor='white')
+          ax4.axvline(x=df['clones_per_unique'].mean(), color='red', linestyle='--', label=f'均值: {df["clones_per_unique"].mean():.2f}')
+          ax4.set_xlabel('人均克隆次数')
+          ax4.set_ylabel('天数')
+          ax4.set_title('人均克隆次数分布', fontsize=12, fontweight='bold')
+          ax4.legend()
+          ax4.grid(True, alpha=0.3)
+
+          # 5. 每周克隆量柱状图
+          ax5 = axes[2, 0]
+          weekly_sorted = weekly.sort_values('start_date').tail(12)
+          colors = ['#2E86AB' if c < 300 else '#F18F01' if c < 600 else '#E63946' for c in weekly_sorted['clones']]
+          bars = ax5.bar(range(len(weekly_sorted)), weekly_sorted['clones'], color=colors, alpha=0.8, edgecolor='white')
+          ax5.set_xticks(range(len(weekly_sorted)))
+          ax5.set_xticklabels(weekly_sorted['week'].str[-2:], rotation=45)
+          ax5.set_xlabel('周')
+          ax5.set_ylabel('克隆次数')
+          ax5.set_title('最近12周克隆量', fontsize=12, fontweight='bold')
+          ax5.grid(True, alpha=0.3, axis='y')
+          # 添加数值标签
+          for bar, val in zip(bars, weekly_sorted['clones']):
+              ax5.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 10, str(val),
+                      ha='center', va='bottom', fontsize=8)
+
+          # 6. 7日移动平均
+          ax6 = axes[2, 1]
+          df['clones_ma7'] = df['clones'].rolling(window=7, min_periods=1).mean()
+          df['uniques_ma7'] = df['uniques'].rolling(window=7, min_periods=1).mean()
+          ax6.plot(df['date'], df['clones_ma7'], color='#2E86AB', linewidth=2, label='克隆量 7日MA')
+          ax6.plot(df['date'], df['uniques_ma7'], color='#A23B72', linewidth=2, label='独立访客 7日MA')
+          ax6.set_title('7日移动平均趋势', fontsize=12, fontweight='bold')
+          ax6.set_ylabel('次数')
+          ax6.legend()
+          ax6.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
+          ax6.xaxis.set_major_locator(mdates.WeekdayLocator(interval=2))
+          ax6.tick_params(axis='x', rotation=45)
+          ax6.grid(True, alpha=0.3)
           plt.tight_layout(rect=[0, 0.03, 1, 0.95]); plt.savefig('plots/bunker_intelligence_grid.png', dpi=100)
 
           # --- 图表 3: 高峰侦察图 (Peak Signal Intensity) ---
-          fig3, axP = plt.subplots(figsize=(16, 6))
-          axP2 = axP.twinx()
-          axP.plot(df['date'], df['Clones'], color='#33cc33', lw=2, label='Clones')
-          axP2.plot(df['date'], df['uniques'], color='#ff6666', lw=1, ls=':', label='Visitors')
-          peak_val = df['Clones'].max(); peak_date = df.loc[df['Clones'].idxmax(), 'date']
-          axP.annotate(f'LEGEND PEAK: {peak_val}', xy=(peak_date, peak_val), xytext=(20, 20), textcoords='offset points', arrowprops=dict(arrowstyle='->', color='yellow'), color='yellow', fontweight='bold')
-          axP.set_title('Bunker Peak Signal Acquisition', color='#33cc33')
+          fig3, axes = plt.subplots(3, 1, figsize=(16, 14))
+          # 1. 时间序列图
+          ax1 = axes[0]
+          ax1.fill_between(df['date'], df['clones'], alpha=0.3, color='#3498db', label='克隆次数 (clones)')
+          ax1.plot(df['date'], df['clones'], color='#3498db', linewidth=1.2)
+          ax1_twin = ax1.twinx()
+          ax1_twin.plot(df['date'], df['uniques'], color='#e74c3c', linewidth=1.2, label='独立访客 (uniques)')
+          ax1_twin.fill_between(df['date'], df['uniques'], alpha=0.15, color='#e74c3c')
+
+          ax1.set_ylabel('克隆次数', color='#3498db', fontsize=12)
+          ax1_twin.set_ylabel('独立访客', color='#e74c3c', fontsize=12)
+          ax1.set_title('仓库克隆流量趋势 (2026-04-03 ~ 2026-06-23)', fontsize=14, fontweight='bold')
+          ax1.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
+          ax1.xaxis.set_major_locator(mdates.WeekdayLocator(interval=1))
+          plt.setp(ax1.xaxis.get_majorticklabels(), rotation=45, ha='right')
+
+          # 标注峰值
+          peak_clone_idx = df['clones'].idxmax()
+          peak_unique_idx = df['uniques'].idxmax()
+          ax1.annotate(f'峰值: {df["clones"].max()}',
+                      xy=(df.loc[peak_clone_idx, 'date'], df.loc[peak_clone_idx, 'clones']),
+                      xytext=(10, 20), textcoords='offset points',
+                      arrowprops=dict(arrowstyle='->', color='#3498db'),
+                      fontsize=10, color='#3498db', fontweight='bold')
+          ax1_twin.annotate(f'峰值: {df["uniques"].max()}',
+                            xy=(df.loc[peak_unique_idx, 'date'], df.loc[peak_unique_idx, 'uniques']),
+                            xytext=(10, -20), textcoords='offset points',
+                            arrowprops=dict(arrowstyle='->', color='#e74c3c'),
+                            fontsize=10, color='#e74c3c', fontweight='bold')
+
+          # 2. 每周聚合分析
+          df['week'] = df['date'].dt.isocalendar().week
+          df['year_week'] = df['date'].dt.strftime('%Y-W%W')
+          weekly = df.groupby('year_week').agg({'clones': 'sum', 'uniques': 'sum'}).reset_index()
+          weekly = weekly.tail(12)  # 最近12周
+
+          ax2 = axes[1]
+          x = np.arange(len(weekly))
+          width = 0.35
+          bars1 = ax2.bar(x - width/2, weekly['clones'], width, label='克隆次数', color='#3498db', alpha=0.8)
+          bars2 = ax2.bar(x + width/2, weekly['uniques'], width, label='独立访客', color='#e74c3c', alpha=0.8)
+          ax2.set_ylabel('数量', fontsize=12)
+          ax2.set_title('每周克隆流量汇总', fontsize=14, fontweight='bold')
+          ax2.set_xticks(x)
+          ax2.set_xticklabels(weekly['year_week'], rotation=45, ha='right')
+          ax2.legend()
+
+          # 3. 克隆/访客比分析（每人平均克隆次数）
+          df['ratio'] = df['clones'] / df['uniques']
+          df['ratio'] = df['ratio'].replace([np.inf, -np.inf], np.nan)
+
+          ax3 = axes[2]
+          colors = ['#2ecc71' if r < 3 else '#f39c12' if r < 5 else '#e74c3c' for r in df['ratio']]
+          ax3.bar(df['date'], df['ratio'], color=colors, alpha=0.7, width=0.8)
+          ax3.axhline(y=df['ratio'].mean(), color='#9b59b6', linestyle='--', linewidth=2, label=f'平均: {df["ratio"].mean():.2f}')
+          ax3.axhline(y=3, color='#2ecc71', linestyle=':', linewidth=1.5, alpha=0.7, label='健康阈值: 3')
+          ax3.set_ylabel('每人平均克隆次数', fontsize=12)
+          ax3.set_title('克隆/访客比分析（比值越高，说明重复克隆/CI 构建越多）', fontsize=14, fontweight='bold')
+          ax3.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
+          ax3.xaxis.set_major_locator(mdates.WeekdayLocator(interval=1))
+          plt.setp(ax3.xaxis.get_majorticklabels(), rotation=45, ha='right')
+          ax3.legend()
           plt.tight_layout(); plt.savefig('plots/bunker_peak_recon.png', dpi=100)
           EOF
 
