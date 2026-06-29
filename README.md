@@ -13,6 +13,11 @@
 ### 📡 3. 深度作战审计 (Deep Dive Recon)
 ![Peak Recon](./plots/bunker_peak_recon.png)
 
+### 🧠 4. 深度情报审计 (Intelligence Intelligence)
+| 成分分析 (Meat vs Machine) | 战力梯度 (Hierarchy) |
+| :---: | :---: |
+| ![Bot](./plots/bot_composition.png) | ![Cluster](./plots/commander_profiles.png) |
+
 #### 🛰️ 流量来源实时追踪
 | Referrer | Views | Uniques |
 | :--- | :--- | :--- |
@@ -20,4 +25,4 @@
 | chatgpt.com | 1 | 1 |
 
 
-> 📡 物理封存点: 2026-06-29 08:51:58 CST | Glory to Mankind.
+> 📡 物理封存点: 2026-06-29 09:14:17 CST | Glory to Mankind.
