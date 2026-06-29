@@ -32,6 +32,11 @@ def assemble_readme():
 ### 📡 3. 深度作战审计 (Deep Dive Recon)
 ![Peak Recon](./plots/bunker_peak_recon.png)
 
+### 🧠 4. 深度情报审计 (Intelligence Intelligence)
+| 成分分析 (Meat vs Machine) | 战力梯度 (Hierarchy) |
+| :---: | :---: |
+| ![Bot](./plots/bot_composition.png) | ![Cluster](./plots/commander_profiles.png) |
+
 #### 🛰️ 流量来源实时追踪
 {ref_table}
 

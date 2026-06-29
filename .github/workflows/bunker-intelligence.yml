@@ -41,16 +41,24 @@ jobs:
       # 我们在当前根目录运行，调用 scripts_repo 里的脚本，去处理 data_repo 里的数据
       - name: "🛰️ Step 1: Data Collection"
         run: |
-          # 告诉 Python 去哪里找数据，我们进到 data_repo 目录去执行 main 分支的脚本
           cd data_repo
           python ../scripts_repo/.github/scripts/collect/traffic.py
 
-      - name: "📈 Step 2: Visualization Rendering"
+      - name: "🧠 Step 2: Intelligence Analysis"
         run: |
           cd data_repo
+          # 执行“肉机比”扫描与“军衔”聚类分析
+          python ../scripts_repo/.github/scripts/analyze/bot_detect.py
+          python ../scripts_repo/.github/scripts/analyze/cluster.py
+
+      - name: "📈 Step 3: Visualization Rendering"
+        run: |
+          cd data_repo
+          # 渲染核心看板
           python ../scripts_repo/.github/scripts/render/dashboard.py
 
-      - name: "💾 Step 3: Deployment & Sealing"
+      - name: "💾 Step 4: Deployment & Sealing"
         run: |
           cd data_repo
+          # 物理封存至 README
           python ../scripts_repo/.github/scripts/deploy/publish.py
