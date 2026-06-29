@@ -1,4 +1,4 @@
-name: Bunker Sovereign Intelligence (v8.5)
+name: Bunker Sovereign Intelligence (v8.6)
 
 on:
   schedule:
@@ -16,11 +16,18 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout Data Branch
+      # 💡 步骤 1：先拉取 main 分支，确保我们拿到了所有的 Python 脚本
+      - name: Checkout Scripts (Main)
+        uses: actions/checkout@v4
+        with:
+          path: scripts_repo # 把 main 放到这个子目录
+
+      # 💡 步骤 2：拉取数据分支，这是我们要工作的地方
+      - name: Checkout Data (Stats)
         uses: actions/checkout@v4
         with:
           ref: github-repo-stats
-          fetch-depth: 0
+          path: data_repo # 把数据分支放到这个子目录
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -30,12 +37,20 @@ jobs:
       - name: Install Dependencies
         run: pip install matplotlib pandas seaborn scipy numpy requests
 
-      # 💡 模块化执行流
-      - name: "🛰️ Step 1: Data Collection & Ledger Fusion"
-        run: python .github/scripts/collect/traffic.py
+      # 💡 步骤 3：运行脚本，注意现在的相对路径！
+      # 我们在当前根目录运行，调用 scripts_repo 里的脚本，去处理 data_repo 里的数据
+      - name: "🛰️ Step 1: Data Collection"
+        run: |
+          # 告诉 Python 去哪里找数据，我们进到 data_repo 目录去执行 main 分支的脚本
+          cd data_repo
+          python ../scripts_repo/.github/scripts/collect/traffic.py
 
       - name: "📈 Step 2: Visualization Rendering"
-        run: python .github/scripts/render/dashboard.py
+        run: |
+          cd data_repo
+          python ../scripts_repo/.github/scripts/render/dashboard.py
 
       - name: "💾 Step 3: Deployment & Sealing"
-        run: python .github/scripts/deploy/publish.py
+        run: |
+          cd data_repo
+          python ../scripts_repo/.github/scripts/deploy/publish.py
