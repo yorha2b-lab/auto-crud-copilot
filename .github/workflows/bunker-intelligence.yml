@@ -31,11 +31,11 @@ jobs:
         run: pip install matplotlib pandas seaborn scipy numpy requests
 
       # 💡 模块化执行流
-      - name: Step 1: Data Collection & Ledger Fusion
+      - name: 🛰️ Step 1: Data Collection & Ledger Fusion
         run: python .github/scripts/collect/traffic.py
 
-      - name: Step 2: Visualization Rendering
+      - name: 📈 Step 2: Visualization Rendering
         run: python .github/scripts/render/dashboard.py
 
-      - name: Step 3: Deployment & Sealing
+      - name: 💾 Step 3: Deployment & Sealing
         run: python .github/scripts/deploy/publish.py
