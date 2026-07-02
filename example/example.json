@@ -21,7 +21,7 @@
         "columns": [
             {
                 "title": "职业",
-                "dataIndex": "job",
+                "dataIndex": "profession",
                 "type": "text"
             },
             {
@@ -61,7 +61,7 @@
             },
             {
                 "title": "职业类型",
-                "dataIndex": "jobType",
+                "dataIndex": "professionType",
                 "type": "tag"
             },
             {
@@ -70,9 +70,6 @@
                 "type": "date"
             }
         ],
-        "rowSelection": true,
-        "expandable": true,
-        "pagination": true,
         "operation": [
             {
                 "label": "查看",
@@ -86,12 +83,15 @@
                 "label": "删除",
                 "action": "deleteByRecord"
             }
-        ]
+        ],
+        "pagination": true,
+        "expandable": true,
+        "rowSelection": true
     },
     "formItems": [
         {
             "label": "转职职业",
-            "name": "jobTransfer",
+            "name": "transferProfession",
             "type": "select"
         },
         {
@@ -101,7 +101,7 @@
         },
         {
             "label": "职业类型",
-            "name": "jobType",
+            "name": "professionType",
             "type": "select"
         },
         {
@@ -115,38 +115,55 @@
             "type": "daterange"
         }
     ],
-    "staticInfo": {},
-    "optionDict": {
-        "jobTransferOptions": [
-            {
-                "label": "选择转职",
-                "value": "selectJob"
-            }
-        ],
-        "weaponTypeOptions": [],
-        "jobTypeOptions": []
+    "staticInfo": {
+        "has": false,
+        "text": ""
     },
-    "functionButton": [
+    "optionList": [
         {
-            "btn": "查询",
-            "action": "search"
+            "name": "weaponTypeOptions",
+            "options": [
+                {
+                    "label": "光剑",
+                    "value": "lightSword"
+                },
+                {
+                    "label": "太刀",
+                    "value": "katana"
+                },
+                {
+                    "label": "巨剑",
+                    "value": "greatSword"
+                }
+            ]
         },
         {
-            "btn": "重置",
-            "action": "reset"
-        },
-        {
-            "btn": "批量删除",
-            "action": "batchDeleteBySelected"
-        },
-        {
-            "btn": "批量导出",
-            "action": "exportData"
+            "name": "professionTypeOptions",
+            "options": [
+                {
+                    "label": "物理",
+                    "value": "physical"
+                },
+                {
+                    "label": "魔法",
+                    "value": "magical"
+                }
+            ]
         }
     ],
     "pageStruct": [
         "MySearchForm",
         "FunctionButtonsBlock",
         "MyTable"
+    ],
+    "functionButton": [
+        {
+            "btn": "批量删除",
+            "action": "batchDeleteBySelected"
+        },
+        {
+            "btn": "批量导出",
+            "action": "batchExportBySelected"
+        }
     ]
 }

@@ -46,6 +46,7 @@ const resource = ({ pageConfig, resourceTpl }) => {
 const index = ({ config, fileName, indexTpl, pageConfig }) => {
 
     const hasTabs = pageConfig.tabs?.length > 0
+    const hasPagination = pageConfig.table.pagination
     const hasFormItems = pageConfig.formItems?.length > 0
     const hasOperate = pageConfig.table?.operation?.length > 0
     const hasImageColumn = pageConfig.table?.columns?.some(item => item.type === 'image')
@@ -69,17 +70,18 @@ const index = ({ config, fileName, indexTpl, pageConfig }) => {
         columnsValue,
         hasFormItems,
         renderAction,
+        hasPagination,
         hasImageColumn,
         functionButtons,
         needRenderAction,
         tabs: pageConfig.tabs,
         responseSuccess: config.responseSuccess,
         hasExpandable: pageConfig.table.expandable,
-        hasPagination: pageConfig.table.pagination,
         staticInfoText: pageConfig.staticInfo?.text,
         operations: pageConfig.table.operation || [],
         hasRowSelection: pageConfig.table.rowSelection,
         formItems: hasFormItems ? (hasTabs ? 'formItems[activeKey]' : 'formItems') : '[]',
+        initParams: `{ ${hasTabs ? 'type: tabs[0].key ,' : ''}${hasPagination ? 'pageNo: 1 , pageSize: 10' : ''}}`,
     }
 
     const bodyCode = indexTpl(viewData)

@@ -45,15 +45,55 @@ module.exports = {
             }
         })
 
-        instance = {
-            resource, index, template,
-            apiHandler, pageHandler, partHandler,
-            recognizePage, generateMock, alignResponseFields,
+        const cliCtx = {
+            options,
+            template,
+        }
+
+        const llmCtx = {
+            generateMock,
+            recognizePage,
+            alignResponseFields
+        }
+
+        const utilsCtx = {
+            menus,
+            config,
+            language,
+            unwrapSignal,
+            isQuerySignal,
+        }
+
+        const handlerCtx = {
+            apiHandler,
+            pageHandler,
+            partHandler
+        }
+
+        const compileCtx = {
+            index,
+            resource
+        }
+
+        const promptCtx = {
             pagePrompt: require(`../prompts/${template}/watch-page.js`),
             partPrompt: require(`../prompts/${template}/watch-part.js`),
-            menus, config, options, language, unwrapSignal, isQuerySignal,
+        }
+
+        const templateCtx = {
             indexTpl: Handlebars.compile(fs.readFileSync(path.join(tplDir, 'index.hbs'), 'utf-8')),
             resourceTpl: Handlebars.compile(fs.readFileSync(path.join(tplDir, 'resource.hbs'), 'utf-8')),
+        }
+
+
+        instance = {
+            ...cliCtx,
+            ...llmCtx,
+            ...utilsCtx,
+            ...promptCtx,
+            ...handlerCtx,
+            ...compileCtx,
+            ...templateCtx,
         }
         return instance
     },
