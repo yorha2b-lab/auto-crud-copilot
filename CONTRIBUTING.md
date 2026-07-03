@@ -44,6 +44,16 @@
 4. 推送到分支 (`git push origin feature/AmazingFeature`)
 5. 创建一个 Pull Request
 
+### 贡献许可
+
+提交 Pull Request 即表示您确认：您有权提交该贡献，并同意该贡献在合并后按本项目的 [GNU AGPL v3.0](./LICENSE) 许可证进行授权和分发。
+
+贡献者保留其对原创贡献的版权；本条不构成版权转让。
+
+By submitting a Pull Request, you confirm that you have the right to submit the contribution and agree that, once merged, it will be licensed and distributed under this project's [GNU AGPL v3.0](./LICENSE).
+
+Contributors retain copyright in their original contributions; this does not constitute a copyright assignment.
+
 ## 📋 开发指南
 
 ### 环境准备
