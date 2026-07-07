@@ -12,7 +12,7 @@ module.exports = `
 - ⚠️ 字段白名单: [title, dataIndex, sorter, render, filters, onFilter]
 - 禁止输出:
     - 严禁在 columns 中包含“操作”列。
-    - ***⚠️⚠️⚠️严禁输出formItems,只允许输出coloumns⚠️⚠️⚠️***
+    - ***⚠️⚠️⚠️严禁输出formItems,只允许输出columns⚠️⚠️⚠️***
 - **标准定义 (Columns)**:
     - ⚠️ **操作锁定**: 严禁在 columns 数组中包含“操作”列。
     - enum: 枚举列
