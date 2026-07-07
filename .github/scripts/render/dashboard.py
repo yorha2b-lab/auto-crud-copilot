@@ -201,8 +201,9 @@ def main_dashboard(df_c, df_v):
         30), alpha=0.5, ls='--', label='Views (Web)')
     ax1.plot(df['date'].tail(30), df['Clones'].tail(30),
              color='#33cc33', lw=2, label='Clones (Terminal)')
-    ax1.tick_params(axis='x', rotation=45)
     ax1.grid(True, alpha=0.3)
+    ticks = df['date'].tail(30)[::5]
+    ax1.set_xticks(ticks)
     ax1.set_title(
         'Strategic Recon: Views vs Clones (Last 30D)', color='#33cc33')
     ax1.legend(loc='upper left', frameon=True, fontsize='small')
