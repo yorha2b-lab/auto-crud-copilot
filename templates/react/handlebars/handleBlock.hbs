@@ -1,6 +1,6 @@
 {{#each operations}}
 const {{this.action}} = async record => {
-    const response = await request('/api')
+    const response = await request('/api',{ method: 'POST', body:{} })
     if({{{../responseSuccess}}}){
         refresh()
     }
@@ -15,7 +15,7 @@ const {{this.action}} = () => {
         centered: true,
         content: '确认{{this.btn}}吗？',
         onOk: async () => {
-            const response = await request('/api')
+            const response = await request('/api',{ method: 'POST', body:{} })
             if({{{../responseSuccess}}}){
                 refresh()
             }
@@ -63,8 +63,9 @@ const showImg = (record, dataIndex) => {
 
 const modalSubmit = async values => {
     let response
+    let body = values
     if(modal.type==='add'){
-        response = await request('/api')
+        response = await request('/api',{ method: 'POST', body })
     }
     if({{{responseSuccess}}}){
         setModal({ visible: false })
