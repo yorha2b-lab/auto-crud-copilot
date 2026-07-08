@@ -15,7 +15,7 @@ module.exports = {
      */
     init: options => {
 
-        const { recognizePage, generateMock, alignResponseFields } = require('../services/llm')
+        const { apiLinker, recognizePage, generateMock, alignResponseFields } = require('../services/llm')
         const { language, getConfig, unwrapSignal, isQuerySignal, getExistingMenus } = require('../utils/utils')
 
         const config = getConfig()
@@ -51,6 +51,7 @@ module.exports = {
         }
 
         const llmCtx = {
+            apiLinker,
             generateMock,
             recognizePage,
             alignResponseFields

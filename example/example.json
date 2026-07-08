@@ -72,14 +72,17 @@
         ],
         "operation": [
             {
+                "uri": "BUNKER_API_ANCHOR_viewByRecord",
                 "label": "查看",
                 "action": "viewByRecord"
             },
             {
+                "uri": "BUNKER_API_ANCHOR_editByRecord",
                 "label": "编辑",
                 "action": "editByRecord"
             },
             {
+                "uri": "BUNKER_API_ANCHOR_deleteByRecord",
                 "label": "删除",
                 "action": "deleteByRecord"
             }
@@ -146,7 +149,7 @@
                 },
                 {
                     "label": "魔法",
-                    "value": "magical"
+                    "value": "magic"
                 }
             ]
         }
@@ -159,11 +162,13 @@
     "functionButton": [
         {
             "btn": "批量删除",
+            "uri": "BUNKER_API_ANCHOR_batchDeleteBySelected",
             "action": "batchDeleteBySelected"
         },
         {
             "btn": "批量导出",
-            "action": "batchExportBySelected"
+            "uri": "BUNKER_API_ANCHOR_exportData",
+            "action": "exportData"
         }
     ]
 }

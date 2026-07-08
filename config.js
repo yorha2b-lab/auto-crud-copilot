@@ -18,7 +18,10 @@ module.exports = {
     utilsDir: 'src/utils',
     componentsDir: 'src/components',
 
+    // 代理目标
+    proxyTarget: 'http://id:port',
     responseSuccess: `response?.code === 200`,
-    proxyTarget: 'http://id:port',// 代理目标，例如 http://localhost:3000
+    // 指向公司的 Swagger JSON 地址
+    apiDoc: 'http://api.company.com/v2/api-docs',
 
 }

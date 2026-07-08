@@ -73,6 +73,18 @@ module.exports = {
             ]
         })
     },
+    apiLinker: async (options, bunkerAnchors, realApis) => {
+        const config = getConfig()
+        const { API_DESIGNER } = require('../prompts/system.js')
+        const apiPrompt = require(`../prompts/${options.template}/api-linker.js`)
+        return askAI({
+            model: config.textModel,
+            messages: [
+                { role: 'system', content: API_DESIGNER },
+                { role: 'user', content: apiPrompt(bunkerAnchors, realApis) }
+            ]
+        })
+    },
     recognizePage: async (prompt, filePath, taskType = 'page') => {
         const config = getConfig()
         const { UI_DESIGNER } = require('../prompts/system.js')

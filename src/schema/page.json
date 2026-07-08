@@ -82,11 +82,15 @@
                         "items": {
                             "type": "object",
                             "required": [
+                                "uri",
                                 "label",
                                 "action"
                             ],
                             "additionalProperties": false,
                             "properties": {
+                                "uri": {
+                                    "type": "string"
+                                },
                                 "label": {
                                     "type": "string"
                                 },
@@ -113,8 +117,7 @@
                     "type": "object",
                     "required": [
                         "label",
-                        "name",
-                        "type"
+                        "name"
                     ],
                     "additionalProperties": false,
                     "properties": {
@@ -210,11 +213,15 @@
                     "type": "object",
                     "required": [
                         "btn",
+                        "uri",
                         "action"
                     ],
                     "additionalProperties": false,
                     "properties": {
                         "btn": {
+                            "type": "string"
+                        },
+                        "uri": {
                             "type": "string"
                         },
                         "action": {

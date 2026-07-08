@@ -64,7 +64,6 @@ const index = ({ config, fileName, indexTpl, pageConfig }) => {
 
     const viewData = {
         hasTabs,
-        fileName,
         pageStruct,
         hasOperate,
         columnsValue,
@@ -80,6 +79,7 @@ const index = ({ config, fileName, indexTpl, pageConfig }) => {
         staticInfoText: pageConfig.staticInfo?.text,
         operations: pageConfig.table.operation || [],
         hasRowSelection: pageConfig.table.rowSelection,
+        uri: config.needMock ? fileName : 'BUNKER_API_ANCHOR_pages',
         formItems: hasFormItems ? (hasTabs ? 'formItems[activeKey]' : 'formItems') : '[]',
         initParams: `{ ${hasTabs ? 'type: tabs[0].key ,' : ''}${hasPagination ? 'pageNo: 1 , pageSize: 10' : ''}}`,
     }

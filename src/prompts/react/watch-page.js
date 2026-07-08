@@ -44,10 +44,10 @@ module.exports = `
     - text: 普通文本（默认）
     - tag: 标签列(有背景色的文本)
     - badge: 徽标列(文本前有颜色小圆点)
-    - **行操作 (operation)**: [{label:'操作名', action:'动词ByRecord'}]。
+    - **行操作 (operation)**: [{label:'操作名', action:'动词ByRecord',uri:'BUNKER_API_ANCHOR_动词ByRecord'}]。
 
 ### 全局功能按钮 (FunctionButton)
-- **格式**: [{btn:'显示文本', action:'操作动词BySelected'}]。
+- **格式**: [{btn:'显示文本', action:'操作动词BySelected',uri:'BUNKER_API_ANCHOR_动词BySelected'}]。
 - **导出数据**: action 设为 'exportData' 或 'export+模块名'。
 - **逻辑锁定**: ⚠️只要页面中出现了非查询、非重置的独立操作按钮，必须识别并存入 [functionButton] 数组。
 - **构筑联动**: ⚠️若 [functionButton] 数组不为空，则在下文的 [pageStruct] 中必须包含 "FunctionButtonsBlock"。

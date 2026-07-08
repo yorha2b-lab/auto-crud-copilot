@@ -57,10 +57,13 @@ program
             return
         }
         bootSequence(pkg.version)
-        require('../src/commands/watch.js')()
+        require('../src/commands/watch')()
         const { config } = bunker.get()
+        if (config.apiDoc && config.enableAutoAlignment) {
+            require('../src/services/api-linker')()
+        }
         if (config.proxyTarget && !config.needMock && config.enableAutoAlignment) {
-            require('../src/services/proxy-tower.js')()
+            require('../src/services/proxy-tower')()
         }
         process.on('SIGINT', () => {
             console.log('\n')
