@@ -83,7 +83,6 @@ module.exports = async () => {
                 // 💡 锁定待通电锚点
                 if (indexCode.includes('BUNKER_API_ANCHOR')) {
                     const resourceCode = fs.readFileSync(resourcePath, 'utf-8')
-                    const fileName = path.basename(indexPath, path.extname(indexPath))
                     const bunkerAnchors = indexCode.match(/BUNKER_API_ANCHOR_\w+/g).join('\n')
 
                     // 💡 执行语义提取流程
@@ -92,7 +91,6 @@ module.exports = async () => {
 
                     const moduleSemantics = `${returnStatement}${resourceCode}`.match(/[\u4e00-\u9fa5][\u4e00-\u9fa5A-Za-z0-9？。，、：；！（） ]*/g) || []
                     const pageKeywords = getSemanticKeywords(moduleSemantics)
-
                     // 💡 物理扫描：执行“语义雷达”过滤
                     const candidates = refinedApis
                         .map(api => ({
