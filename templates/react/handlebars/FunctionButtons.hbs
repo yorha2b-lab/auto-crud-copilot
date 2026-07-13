@@ -1,11 +1,6 @@
 {{#if hasTabs}}
 {{#each tabs}}
-{activeKey === '{{this.key}}' &&
-    <Space style=\{{ marginBottom: 16 }}>
-        {{#each ../functionButtons}}
-        <Button type='primary' onClick={ {{this.action}} }>{{this.btn}}</Button>
-        {{/each}}
-    </Space>}
+{activeKey === '{{this.key}}' && commonButtons}
 {{/each}}
 {{else}}
 <Space style=\{{ marginBottom: 16 }}>

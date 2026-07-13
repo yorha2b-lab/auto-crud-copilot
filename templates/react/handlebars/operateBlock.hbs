@@ -1,0 +1,22 @@
+
+const operate = {
+    title: '操作',
+    render: (_, record) => (
+        <Space>
+            {{#each operations}}
+            <a onClick={()=> {{this.action}}(record)}>{{this.label}}</a>
+            {{/each}}
+        </Space>
+    )
+}
+
+{{#if hasTabs}}
+const commonButtons = (
+    <Space style=\{{ marginBottom: 16 }}>
+        {{#each functionButtons}}
+        <Button type='primary' onClick={ {{this.action}} }>{{this.btn}}</Button>
+        {{/each}}
+    </Space>
+)
+
+{{/if}}

@@ -50,12 +50,12 @@ module.exports = `
 - **格式**: [{btn:'显示文本', action:'操作动词BySelected',uri:'BUNKER_API_ANCHOR_动词BySelected'}]。
 - **导出数据**: action 设为 'exportData' 或 'export+模块名'。
 - **逻辑锁定**: ⚠️只要页面中出现了非查询、非重置的独立操作按钮，必须识别并存入 [functionButton] 数组。
-- **构筑联动**: ⚠️若 [functionButton] 数组不为空，则在下文的 [pageStruct] 中必须包含 "FunctionButtonsBlock"。
+- **构筑联动**: ⚠️若 [functionButton] 数组不为空，则在下文的 [RenderTree] 中必须包含 "FunctionButtons"。
 
-## 3. 布局逻辑编排 (PageStruct)
+## 3. 布局逻辑编排 (RenderTree)
 - **定义**: 定义从上至下的物理堆叠顺序。
-- **白名单**: [MyTable, AlertInfo, MySearchForm, FunctionButtonsBlock]
-- **注释**: MyTable 是表格主体，AlertInfo 是统计条，MySearchForm 是搜索表单，FunctionButtonsBlock 是全局功能按钮。
+- **白名单**: [MyTable, AlertInfo, MySearchForm, FunctionButtons]
+- **注释**: MyTable 是表格主体，AlertInfo 是统计条，MySearchForm 是搜索表单，FunctionButtons 是全局功能按钮。
 
 
 ## 4. 字典数组 (OptionList)

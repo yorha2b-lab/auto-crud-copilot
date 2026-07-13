@@ -10,7 +10,7 @@
             "formItems",
             "staticInfo",
             "optionList",
-            "pageStruct",
+            "renderTree",
             "functionButton"
         ],
         "properties": {
@@ -195,7 +195,7 @@
                     }
                 }
             },
-            "pageStruct": {
+            "renderTree": {
                 "type": "array",
                 "items": {
                     "type": "string",
@@ -203,7 +203,7 @@
                         "MyTable",
                         "AlertInfo",
                         "MySearchForm",
-                        "FunctionButtonsBlock"
+                        "FunctionButtons"
                     ]
                 }
             },

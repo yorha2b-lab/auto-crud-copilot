@@ -14,6 +14,7 @@ const resource = ({ pageConfig, resourceTpl }) => {
 
     const hasTabs = pageConfig.tabs?.length > 0
     const hasFormItems = pageConfig.formItems?.length > 0
+    const tabKeys = pageConfig.tabs.map(tab => tab.key).sort((a, b) => a.length - b.length)
     const optionDict = pageConfig.optionList?.reduce((acc, item) => ({ ...acc, [item.name]: item.options }), {})
 
     const columnsData = processedColumns.map(item => {
@@ -23,11 +24,14 @@ const resource = ({ pageConfig, resourceTpl }) => {
 
     const viewData = {
         hasTabs,
+        columnsData,
         hasFormItems,
         tabs: pageConfig.tabs,
         dictBlocks: dictBlocks.map(item => ({ name: item, data: optionDict[item] ?? [] })),
-        formItemsData: hasTabs ? Object.fromEntries(pageConfig.tabs.map(tab => [tab.key, formItems])) : formItems,
-        columnsData: hasTabs ? Object.fromEntries(pageConfig.tabs.map(tab => [tab.key, columnsData])) : columnsData,
+        tabColumns: stringify.default(Object.fromEntries(tabKeys.map(tab => [tab, '_CODE_commonColumns_CODE_'])), { indent: 4, maxLength: 100 }),
+        formItemsData: !hasTabs ?
+            `export const formItems = ${stringify.default(formItems, { indent: 4, maxLength: 120 })}` :
+            `const searchItems = ${stringify.default(formItems, { indent: 4, maxLength: 120 })}\n\nexport const formItems = ${stringify.default(Object.fromEntries(tabKeys.map(tab => [tab, '_CODE_searchItems_CODE_'])), { indent: 4, maxLength: 100 })}`,
     }
 
     const bodyCode = resourceTpl(viewData)
@@ -50,9 +54,11 @@ const index = ({ config, fileName, indexTpl, pageConfig }) => {
     const hasFormItems = pageConfig.formItems?.length > 0
     const hasOperate = pageConfig.table?.operation?.length > 0
     const hasImageColumn = pageConfig.table?.columns?.some(item => item.type === 'image')
-    const pageStruct = pageConfig.pageStruct?.filter(item => item.toLowerCase() !== 'tabs') || []
+    const renderTree = pageConfig.renderTree?.filter(item => item.toLowerCase() !== 'tabs') || []
     const functionButtons = pageConfig.functionButton?.filter(item => !['查询', '重置', 'query', 'search', 'reset'].includes(item.btn.toLowerCase().replaceAll(' ', ''))) || []
     const needRenderAction = hasImageColumn
+
+    const pageStruct = ['stateBlock', 'handleBlock', 'hookBlock', hasOperate ? 'operateBlock' : '', 'renderBlock'].filter(Boolean)
 
     let columnsValue = hasTabs ? 'columns[activeKey]' : 'columns'
     if (hasOperate) {
@@ -64,8 +70,8 @@ const index = ({ config, fileName, indexTpl, pageConfig }) => {
 
     const viewData = {
         hasTabs,
+        renderTree,
         pageStruct,
-        hasOperate,
         columnsValue,
         hasFormItems,
         renderAction,

@@ -8,9 +8,15 @@ export const {{this.name}} = {{{stringify this.data 50}}}
 {{/each}}
 
 {{#if hasFormItems}}
-export const formItems = {{{stringify formItemsData 150}}}
+{{{formItemsData}}}
 {{/if}}
 
+{{#if hasTabs}}
+const commonColumns = {{{stringify columnsData 200}}}
+
+export const tableColumns = {{{tabColumns}}}
+{{else}}
 export const tableColumns = {{{stringify columnsData 200}}}
+{{/if}}
 
 export const modalItems = []

@@ -21,37 +21,33 @@
         "columns": [
             {
                 "title": "职业",
-                "dataIndex": "profession",
-                "type": "text"
+                "dataIndex": "profession"
             },
             {
                 "title": "一觉",
-                "dataIndex": "firstAwakening",
-                "type": "text"
+                "dataIndex": "firstAwakening"
             },
             {
                 "title": "一觉立绘",
-                "dataIndex": "firstAwakeningImage",
+                "dataIndex": "firstAwakeningArt",
                 "type": "image"
             },
             {
                 "title": "二觉",
-                "dataIndex": "secondAwakening",
-                "type": "text"
+                "dataIndex": "secondAwakening"
             },
             {
                 "title": "二觉立绘",
-                "dataIndex": "secondAwakeningImage",
+                "dataIndex": "secondAwakeningArt",
                 "type": "image"
             },
             {
                 "title": "三觉",
-                "dataIndex": "thirdAwakening",
-                "type": "text"
+                "dataIndex": "thirdAwakening"
             },
             {
                 "title": "三觉立绘",
-                "dataIndex": "thirdAwakeningImage",
+                "dataIndex": "thirdAwakeningArt",
                 "type": "image"
             },
             {
@@ -61,7 +57,7 @@
             },
             {
                 "title": "职业类型",
-                "dataIndex": "professionType",
+                "dataIndex": "jobType",
                 "type": "tag"
             },
             {
@@ -72,17 +68,17 @@
         ],
         "operation": [
             {
-                "uri": "BUNKER_API_ANCHOR_viewByRecord",
+                "uri": "BUNKER_API_ANCHOR_view",
                 "label": "查看",
                 "action": "viewByRecord"
             },
             {
-                "uri": "BUNKER_API_ANCHOR_editByRecord",
+                "uri": "BUNKER_API_ANCHOR_edit",
                 "label": "编辑",
                 "action": "editByRecord"
             },
             {
-                "uri": "BUNKER_API_ANCHOR_deleteByRecord",
+                "uri": "BUNKER_API_ANCHOR_delete",
                 "label": "删除",
                 "action": "deleteByRecord"
             }
@@ -94,7 +90,7 @@
     "formItems": [
         {
             "label": "转职职业",
-            "name": "transferProfession",
+            "name": "transferJob",
             "type": "select"
         },
         {
@@ -104,13 +100,12 @@
         },
         {
             "label": "职业类型",
-            "name": "professionType",
+            "name": "jobType",
             "type": "select"
         },
         {
             "label": "觉醒名称关键词",
-            "name": "awakeningKeyword",
-            "type": "text"
+            "name": "awakeningKeyword"
         },
         {
             "label": "登场时间",
@@ -141,7 +136,7 @@
             ]
         },
         {
-            "name": "professionTypeOptions",
+            "name": "jobTypeOptions",
             "options": [
                 {
                     "label": "物理",
@@ -154,20 +149,20 @@
             ]
         }
     ],
-    "pageStruct": [
+    "renderTree": [
         "MySearchForm",
-        "FunctionButtonsBlock",
+        "FunctionButtons",
         "MyTable"
     ],
     "functionButton": [
         {
             "btn": "批量删除",
-            "uri": "BUNKER_API_ANCHOR_batchDeleteBySelected",
+            "uri": "BUNKER_API_ANCHOR_batchDelete",
             "action": "batchDeleteBySelected"
         },
         {
             "btn": "批量导出",
-            "uri": "BUNKER_API_ANCHOR_exportData",
+            "uri": "BUNKER_API_ANCHOR_batchExport",
             "action": "exportData"
         }
     ]

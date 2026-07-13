@@ -1,0 +1,9 @@
+return (
+    <Card {{#if hasTabs}}tabList={tabs} activeTabKey={activeKey} onTabChange={onTabChange}{{/if}}>
+        {{#if hasImageColumn}}{img.visible && <MyImage img={img} setImg={setImg}/>}{{~/if}}
+        {modal.visible && <MyModalForm {...modal} submit={modalSubmit} setModal={setModal} />}
+        {{#each renderTree as |treeNode|}}
+        {{> (treeNode) @root }}
+        {{/each}}
+    </Card>
+)
