@@ -43,7 +43,8 @@ module.exports = () => {
                 }
 
                 const referer = req.headers.referer || ''
-                const fileName = referer.split('?')[0].split('/').filter(Boolean).at(-1)
+                const urlPath = new URL(referer).pathname
+                const fileName = config.routeMap?.[urlPath] ?? urlPath.split('/').filter(Boolean).at(-1)
 
                 const fingerprint = getJsonFingerprint(unwrapSignal(json)) // 获取数据指纹
                 const lastFingerprint = hackedRegistry.get(fileName)
