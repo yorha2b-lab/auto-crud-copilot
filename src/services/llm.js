@@ -85,7 +85,7 @@ module.exports = {
             ]
         })
     },
-    recognizePage: async (prompt, filePath, taskType = 'page') => {
+    recognizePage: async ({ prompt, filePath, options, taskType = 'page' }) => {
         const config = getConfig()
         const { UI_DESIGNER } = require('../prompts/system.js')
         const sharp = require('sharp')
@@ -107,7 +107,7 @@ module.exports = {
                     ]
                 }
             ],
-            response_format: taskType === 'page' ? { type: 'json_schema', strict: true, json_schema: require('../schema/page.json') } : { type: 'json_object' }
+            response_format: taskType === 'page' ? { type: 'json_schema', strict: true, json_schema: require(`../schema/${options.template}/page.json`) } : { type: 'json_object' }
         })
     },
     alignResponseFields: async (options, responseStr, resourceStr) => {

@@ -6,7 +6,7 @@ const stringify = require('json-stringify-pretty-compact')
 module.exports = async filePath => {
 
     const { get } = require('../../core/context')
-    const { language, partPrompt, recognizePage } = get()
+    const { options, language, partPrompt, recognizePage } = get()
     const { cleanCode, formatFormItemAndColumns } = require('../../utils/utils')
 
     const startTime = Date.now()
@@ -25,7 +25,7 @@ module.exports = async filePath => {
             `🤖 Pod 042: Extracting UI metadata from neural cloud network...\n`
         ))
 
-        const pageConfig = await recognizePage(partPrompt, filePath, 'part')
+        const pageConfig = await recognizePage({ prompt: partPrompt, filePath, options, taskType: 'part' })
 
         const { formItems, dictBlocks, processedColumns } = formatFormItemAndColumns({ pageConfig })
 

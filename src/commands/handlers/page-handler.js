@@ -9,7 +9,7 @@ module.exports = async filePath => {
     const { get } = require('../../core/context')
 
     const {
-        config, language, menus,
+        config, language, menus, options,
         pagePrompt, resourceTpl, indexTpl,
         recognizePage, generateMock, resource, index
     } = get()
@@ -52,7 +52,7 @@ module.exports = async filePath => {
                 `🤖 Pod 042: 正在上传视觉元数据至司令部进行语义分析...\n`,
                 `🤖 Pod 042: Uploading visual metadata to Command for semantic analysis...\n`
             ))
-            pageConfig = await recognizePage(pagePrompt, filePath)
+            pageConfig = await recognizePage({ prompt: pagePrompt, filePath, options })
         }
 
         fs.writeFileSync(path.join(targetDir, 'resource.js'), resource({ pageConfig, resourceTpl }))

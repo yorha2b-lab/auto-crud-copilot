@@ -256,11 +256,9 @@ const formatFormItemAndColumns = ({ pageConfig }) => {
     const dictBlocks = Array.from(new Set([...formDicts, ...tableDicts]))
 
     const formItems = pageConfig.formItems?.map(item => {
-
         if (item.type === 'text') {
             delete item.type
         }
-
         return {
             ...item,
             ...(item.type === 'select' ? { options: `_CODE_${item.name}Options_CODE_` } : {})
@@ -268,6 +266,9 @@ const formatFormItemAndColumns = ({ pageConfig }) => {
     })
 
     const processedColumns = columns?.map(col => {
+        if (col.type === 'text') {
+            delete col.type
+        }
         if (['image'].includes(col.type)) {
             return { ...col, renderAction: true }
         }
