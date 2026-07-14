@@ -10,6 +10,7 @@ module.exports = `
 ## 1. 表格 (Table)
 - 结构: { columns: [{ title: '列名', dataIndex: '列名英文名词', type: '' }] }
 - ⚠️ 字段白名单: [title, dataIndex, sorter, render, filters, onFilter]
+- **注意**: type为text时必须省略type属性。
 - 禁止输出:
     - 严禁在 columns 中包含“操作”列。
     - ***⚠️⚠️⚠️严禁输出formItems,只允许输出columns⚠️⚠️⚠️***

@@ -34,6 +34,7 @@ module.exports = `
 ### 表格主体 (Table)
 - ⚠️ **操作锁定**: 严禁在 columns 数组中包含“操作”列。
 - **标准项**: {title:'列名', dataIndex:'列名英文名词',type:''}。
+- **注意**: type为text时必须省略type属性。
 - **配置项**: [pagination, expandable, rowSelection] 均为布尔值false,只有页面明确有对应功能时才为true。
 - **标准定义 (Columns)**:
     - enum: 枚举列
