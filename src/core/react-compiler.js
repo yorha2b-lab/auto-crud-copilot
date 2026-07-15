@@ -54,7 +54,6 @@ const index = ({ config, fileName, indexTpl, pageConfig }) => {
     const hasFormItems = pageConfig.formItems?.length > 0
     const hasOperate = pageConfig.table?.operation?.length > 0
     const hasImageColumn = pageConfig.table?.columns?.some(item => item.type === 'image')
-    const renderTree = pageConfig.renderTree?.filter(item => item.toLowerCase() !== 'tabs') || []
     const functionButtons = pageConfig.functionButton?.filter(item => !['查询', '重置', 'query', 'search', 'reset'].includes(item.btn.toLowerCase().replaceAll(' ', ''))) || []
     const needRenderAction = hasImageColumn
 
@@ -70,7 +69,6 @@ const index = ({ config, fileName, indexTpl, pageConfig }) => {
 
     const viewData = {
         hasTabs,
-        renderTree,
         pageStruct,
         columnsValue,
         hasFormItems,
@@ -80,6 +78,7 @@ const index = ({ config, fileName, indexTpl, pageConfig }) => {
         functionButtons,
         needRenderAction,
         tabs: pageConfig.tabs,
+        renderTree: pageConfig.renderTree,
         responseSuccess: config.responseSuccess,
         hasExpandable: pageConfig.table.expandable,
         staticInfoText: pageConfig.staticInfo?.text,
