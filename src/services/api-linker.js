@@ -1,65 +1,27 @@
-const fs = require('fs')
-const path = require('path')
-const chalk = require('chalk')
-const { Segment, useDefault } = require('segmentit')
-const segmentit = useDefault(new Segment())
-
-/**
- * @function getSemanticKeywords
- * @description [语义精炼厂 2.0] 使用 segmentit 引擎进行物理切片。
- */
-const getSemanticKeywords = text => {
-    // 💡 物理脱水：确保输入为纯净字符串
-    const content = Array.isArray(text) ? text.join(' ') : (text || '')
-    // 💡 执行分词
-    const result = segmentit.doSegment(content, {
-        simple: true, // 开启简易模式，提升吞吐效率
-        stripPunctuation: true // 物理过滤掉所有的标点符号
-    })
-    // 💡 提取词条并执行“基因筛选”
-    return Array.from(new Set(result.filter(word => word.length >= 2 && !/^[0-9]+$/.test(word))))
-}
-
-/**
- * @function getLocalScore
- * @description [战力评估协议] 计算语义重合度。
- */
-const getLocalScore = (api, pageKeywords, moduleName) => {
-    let score = 0
-    const path = api.path.toLowerCase()
-    const desc = api.desc.toLowerCase()
-    const mod = moduleName.toLowerCase()
-
-    // 💡 权重 A：路径直接包含模块名 (暴击加分 +50)
-    if (path.includes(mod)) score += 50
-
-    // 💡 权重 B：描述包含模块核心词 (中量加分 +10)
-    pageKeywords.forEach(word => {
-        if (desc.includes(word.toLowerCase())) score += 10
-        if (path.includes(word.toLowerCase())) score += 5
-    })
-
-    return score
-}
-
-/**
- * @module apiLinker
- * @description [地堡 4.0 核心] 全频道自动寻址协议。
- */
 module.exports = async () => {
 
-    const { get } = require('../core/context')
-    const { config, options, language, apiLinker } = get()
-    if (!config.apiDoc) return
+    const fs = require('fs')
+    const path = require('path')
+    const chalk = require('chalk')
+
+    const {
+        config,
+        language,
+        apiLinker,
+        getLocalScore, getSemanticKeywords,
+    } = require('../core/context').get()
+
+    const { apiDoc, pagesDir } = config
+    if (!apiDoc) return
 
     console.log(chalk.cyan(language(
         `\n🤖 Pod 153: 启动‘全频道自动寻址协议 [语义扫描版]’...`,
-        `\n🤖 Pod 153: Initiating "Full-Channel Autonomous Addressing Protocol [Semantic Scan]"...`
+        `\n🤖 Pod 153: Initiating 'Full-Channel Autonomous Addressing Protocol [Semantic Scan]'...`
     )))
 
     try {
         // 1. 抓取情报
-        const apiData = await fetch(config.apiDoc).then(res => res.json())
+        const apiData = await fetch(apiDoc).then(res => res.json())
         const refinedApis = Object.entries(apiData.paths).flatMap(([apiUrl, methods]) => {
             // 💡 适配多方法接口：有的路径下可能既有 GET 也有 POST
             return Object.entries(methods).map(([method, info]) => ({
@@ -70,12 +32,12 @@ module.exports = async () => {
         })
 
         // 2. 战场侦察
-        const pagesDir = path.join(process.cwd(), config.pagesDir)
-        const files = fs.readdirSync(pagesDir)
+        const pages = path.join(process.cwd(), pagesDir)
+        const files = fs.readdirSync(pages)
 
         for (const fileName of files) {
-            const indexPath = path.join(pagesDir, fileName, 'index.js')
-            const resourcePath = path.join(pagesDir, fileName, 'resource.js')
+            const indexPath = path.join(pages, fileName, 'index.js')
+            const resourcePath = path.join(pages, fileName, 'resource.js')
 
             if (fs.existsSync(indexPath) && fs.existsSync(resourcePath)) {
                 let indexCode = fs.readFileSync(indexPath, 'utf-8')
@@ -83,7 +45,7 @@ module.exports = async () => {
                 // 💡 锁定待通电锚点
                 if (indexCode.includes('BUNKER_API_ANCHOR')) {
                     const resourceCode = fs.readFileSync(resourcePath, 'utf-8')
-                    const bunkerAnchors = indexCode.match(/BUNKER_API_ANCHOR_\w+/g).join('\n')
+                    const bunkerAnchors = indexCode.match(/BUNKER_API_ANCHOR_\w+/g)?.join('\n') ?? ''
 
                     // 💡 执行语义提取流程
                     const returnMatch = indexCode.match(/return\s*\(([\s\S]*?)\)\s*}/)
@@ -109,7 +71,7 @@ module.exports = async () => {
                     )))
 
                     // 3. 驱动 9S 最终裁决
-                    const result = await apiLinker(options, bunkerAnchors, finalCandidates)
+                    const result = await apiLinker({ bunkerAnchors, realApis: finalCandidates })
 
                     if (result) {
                         // 💡 执行物理更替

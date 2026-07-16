@@ -112,7 +112,7 @@ const FormRenderer = ({ form, formItems, tableConfig, setModalTable, setSelected
  *
  * @example
  * <MyModalForm
- *   title="构筑新模块"
+ *   title='构筑新模块'
  *   visible={visible}
  *   submit={async (vals) => await save(vals)}
  *   formItems={[{ label: '截止日期', name: 'deadline', type: 'date' }]}

@@ -1,24 +1,8 @@
-const fs = require('fs')
-const path = require('path')
+
 const chalk = require('chalk')
-const { language, getConfig } = require('../utils/utils.js')
+const { language } = require('../utils/ux')
 
-let client = null
-
-const getOpenAI = () => {
-    if (!client) {
-        const OpenAI = require('openai')
-        const localEnv = path.resolve(process.cwd(), '.env')
-        const pkgEnv = path.resolve(__dirname, '../.env')
-        require("dotenv").config({
-            path: fs.existsSync(localEnv) ? localEnv : pkgEnv
-        })
-        client = new OpenAI({ apiKey: process.env.API_KEY, baseURL: process.env.BASE_URL })
-    }
-    return client
-}
-
-const askAI = async ({ model, messages, response_format = { type: 'json_object' }, retryCount = 0 }) => {
+const askAI = async ({ model, openAI, messages, response_format = { type: 'json_object' }, retryCount = 0 }) => {
 
     if (retryCount > 3) {
         throw new Error(language(
@@ -28,8 +12,7 @@ const askAI = async ({ model, messages, response_format = { type: 'json_object' 
     }
 
     try {
-        const openai = getOpenAI()
-        const response = await openai.chat.completions.create({
+        const response = await openAI.chat.completions.create({
             model,
             messages,
             top_p: 0.1,
@@ -60,66 +43,66 @@ const askAI = async ({ model, messages, response_format = { type: 'json_object' 
     }
 }
 
-module.exports = {
-    generateMock: async (columns, fileName) => {
-        const config = getConfig()
-        const mockPrompt = require('../prompts/mock.js')
-        const { MOCK_DESIGNER } = require('../prompts/system.js')
-        return askAI({
-            model: config.textModel,
-            messages: [
-                { role: 'system', content: MOCK_DESIGNER },
-                { role: 'user', content: mockPrompt(columns, fileName) }
-            ]
-        })
-    },
-    apiLinker: async (options, bunkerAnchors, realApis) => {
-        const config = getConfig()
-        const { API_DESIGNER } = require('../prompts/system.js')
-        const apiPrompt = require(`../prompts/${options.template}/api-linker.js`)
-        return askAI({
-            model: config.textModel,
-            messages: [
-                { role: 'system', content: API_DESIGNER },
-                { role: 'user', content: apiPrompt(bunkerAnchors, realApis) }
-            ]
-        })
-    },
-    recognizePage: async ({ prompt, filePath, options, taskType = 'page' }) => {
-        const config = getConfig()
-        const { UI_DESIGNER } = require('../prompts/system.js')
-        const sharp = require('sharp')
-        const compressedBuffer = await sharp(filePath)
-            .resize(1280, null, { withoutEnlargement: true })
-            .jpeg({ quality: 80 })
-            .toBuffer()
-        const base64Image = compressedBuffer.toString('base64')
+module.exports = ({ config, openAI, template, sysPrompt, apiPrompt, mockPrompt, linkerPrompt }) => {
 
-        return askAI({
-            model: config.visionModel,
-            messages: [
-                { role: 'system', content: UI_DESIGNER },
-                {
-                    role: 'user',
-                    content: [
-                        { type: 'text', text: prompt },
-                        { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${base64Image}` } }
-                    ]
-                }
-            ],
-            response_format: taskType === 'page' ? { type: 'json_schema', strict: true, json_schema: require(`../schema/${options.template}/page.json`) } : { type: 'json_object' }
-        })
-    },
-    alignResponseFields: async (options, responseStr, resourceStr) => {
-        const config = getConfig()
-        const { API_DESIGNER } = require('../prompts/system.js')
-        const apiPrompt = require(`../prompts/${options.template}/watch-api.js`)
-        return askAI({
-            model: config.textModel,
-            messages: [
-                { role: 'system', content: API_DESIGNER },
-                { role: 'user', content: apiPrompt(responseStr, resourceStr) }
-            ]
-        })
+    const sharp = require('sharp')
+
+    const { textModel, visionModel } = config
+    const { UI_DESIGNER, API_DESIGNER, MOCK_DESIGNER } = sysPrompt
+
+    return {
+        generateMock: async ({ columns, fileName }) => {
+            return askAI({
+                openAI,
+                model: textModel,
+                messages: [
+                    { role: 'system', content: MOCK_DESIGNER },
+                    { role: 'user', content: mockPrompt({ columns, fileName }) }
+                ]
+            })
+        },
+        apiLinker: async ({ bunkerAnchors, realApis }) => {
+            return askAI({
+                openAI,
+                model: textModel,
+                messages: [
+                    { role: 'system', content: API_DESIGNER },
+                    { role: 'user', content: linkerPrompt({ bunkerAnchors, realApis }) }
+                ]
+            })
+        },
+        alignResponseFields: async ({ responseStr, resourceStr }) => {
+            return askAI({
+                openAI,
+                model: textModel,
+                messages: [
+                    { role: 'system', content: API_DESIGNER },
+                    { role: 'user', content: apiPrompt({ responseStr, resourceStr }) }
+                ]
+            })
+        },
+        recognizePage: async ({ prompt, filePath, taskType = 'page' }) => {
+            const compressedBuffer = await sharp(filePath)
+                .resize(1280, null, { withoutEnlargement: true })
+                .jpeg({ quality: 80 })
+                .toBuffer()
+            const base64Image = compressedBuffer.toString('base64')
+
+            return askAI({
+                openAI,
+                model: visionModel,
+                messages: [
+                    { role: 'system', content: UI_DESIGNER },
+                    {
+                        role: 'user',
+                        content: [
+                            { type: 'text', text: prompt },
+                            { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${base64Image}` } }
+                        ]
+                    }
+                ],
+                response_format: taskType === 'page' ? { type: 'json_schema', strict: true, json_schema: require(`../schema/${template}/page.json`) } : { type: 'json_object' }
+            })
+        },
     }
 }

@@ -1,42 +1,45 @@
 const fs = require('fs')
 const path = require('path')
 const chalk = require('chalk')
+const OpenAI = require('openai')
 const Handlebars = require('handlebars')
 const stringify = require('json-stringify-pretty-compact')
 
-Handlebars.registerHelper('raw', options => options.fn())
-Handlebars.registerHelper('stringify', (context, maxLength = 200) => context ? new Handlebars.SafeString(stringify.default(context, { indent: 4, maxLength })) : '[]')
+const contextStringify = ({ context, indent = 4, maxLength = 200 }) => stringify.default(context, { indent, maxLength })
 
-let instance = null // 💡 物理封存的全局实例
+Handlebars.registerHelper('raw', opt => opt.fn())
+Handlebars.registerHelper('stringify', (context, maxLength = 200) => context ? new Handlebars.SafeString(contextStringify({ context, maxLength })) : '[]')
+
+let instance = null
 
 module.exports = {
-    /**
-     * @description 执行中枢神经元初始化
-     */
+
     init: options => {
 
-        const { apiLinker, recognizePage, generateMock, alignResponseFields } = require('../services/llm')
-        const { language, getConfig, unwrapSignal, isQuerySignal, getExistingMenus } = require('../utils/utils')
+        const template = options.template
+        const uxCtx = require('../utils/ux')
+        const coreCtx = require('../utils/core')
+        const infrastructureCtx = require('../utils/infrastructure')
+
+        const { language } = uxCtx
+        const { getConfig, getExistingMenus } = infrastructureCtx
 
         const config = getConfig()
+        const { hbsDir } = config
+
         const menus = getExistingMenus()
-        const template = options.template
         const apiHandler = require('../commands/handlers/api-handler')
         const pageHandler = require('../commands/handlers/page-handler')
         const partHandler = require('../commands/handlers/part-handler')
-        const tplDir = config.hbsDir !== '' ? path.join(process.cwd(), config.hbsDir) : path.join(__dirname, `../../templates/${template}`)
+        const tplDir = hbsDir !== '' ? path.join(process.cwd(), hbsDir) : path.join(__dirname, `../../templates/${template}`)
 
         const compilerPath = path.join(__dirname, `./${template}-compiler.js`)
         if (!fs.existsSync(compilerPath)) {
             console.error(chalk.red(language(`❌ 暂不支持 [${template}] 框架。欢迎提交 Pull Request 贡献。`, `❌ [${template}] framework not supported. Welcome to contribute a Pull Request to help.`)))
             return
         }
-        const { index, resource } = require(compilerPath)
 
-        // 💡 物理扫描：把目录下所有的 .hbs 文件全部识别并自动注册
-        const partialsDir = config.hbsDir !== ''
-            ? path.join(process.cwd(), config.hbsDir, 'handlebars')
-            : path.join(__dirname, `../../templates/${template}/handlebars`)
+        const partialsDir = hbsDir !== '' ? path.join(process.cwd(), hbsDir, 'handlebars') : path.join(__dirname, `../../templates/${template}/handlebars`)
         fs.readdirSync(partialsDir).forEach(file => {
             if (file.endsWith('.hbs')) {
                 const name = path.basename(file, '.hbs') // 去掉后缀拿名字
@@ -45,62 +48,46 @@ module.exports = {
             }
         })
 
-        const cliCtx = {
-            options,
-            template,
-        }
-
-        const llmCtx = {
-            apiLinker,
-            generateMock,
-            recognizePage,
-            alignResponseFields
-        }
-
-        const utilsCtx = {
-            menus,
-            config,
-            language,
-            unwrapSignal,
-            isQuerySignal,
-        }
-
-        const handlerCtx = {
-            apiHandler,
-            pageHandler,
-            partHandler
-        }
-
-        const compileCtx = {
-            index,
-            resource
-        }
-
         const promptCtx = {
+            mockPrompt: require(`../prompts/mock.js`),
+            sysPrompt: require(`../prompts/system.js`),
+            apiPrompt: require(`../prompts/${template}/watch-api.js`),
             pagePrompt: require(`../prompts/${template}/watch-page.js`),
             partPrompt: require(`../prompts/${template}/watch-part.js`),
+            linkerPrompt: require(`../prompts/${template}/api-linker.js`),
         }
 
-        const templateCtx = {
+        const hbsTplCtx = {
             indexTpl: Handlebars.compile(fs.readFileSync(path.join(tplDir, 'index.hbs'), 'utf-8')),
             resourceTpl: Handlebars.compile(fs.readFileSync(path.join(tplDir, 'resource.hbs'), 'utf-8')),
         }
 
+        const pkgEnv = path.resolve(__dirname, '../.env')
+        const localEnv = path.resolve(process.cwd(), '.env')
+        require('dotenv').config({ path: fs.existsSync(localEnv) ? localEnv : pkgEnv })
+        const openAI = new OpenAI({ apiKey: process.env.API_KEY, baseURL: process.env.BASE_URL })
+
+        const cliCtx = { options }
+        const handlerCtx = { apiHandler, pageHandler, partHandler }
+        const finalInfrastructureCtx = { menus, config, ...infrastructureCtx }
+        const llmCtx = require('../services/llm')({ config, openAI, template, ...promptCtx })
+        const compileCtx = require(compilerPath)({ config, contextStringify, ...coreCtx, ...hbsTplCtx })
 
         instance = {
+            openAI,
+            ...uxCtx,
             ...cliCtx,
             ...llmCtx,
-            ...utilsCtx,
+            ...coreCtx,
             ...promptCtx,
+            ...hbsTplCtx,
             ...handlerCtx,
             ...compileCtx,
-            ...templateCtx,
+            contextStringify,
+            ...finalInfrastructureCtx,
         }
         return instance
     },
 
-    /**
-     * @description 全频道信号接入：获取全局上下文
-     */
     get: () => instance
 }

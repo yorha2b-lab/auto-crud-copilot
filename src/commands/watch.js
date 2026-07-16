@@ -1,22 +1,26 @@
-const fs = require('fs')
-const path = require('path')
-const chalk = require('chalk')
-const chokidar = require('chokidar')
-const stringify = require('json-stringify-pretty-compact')
+module.exports = () => {
 
-const watch = () => {
+    const fs = require('fs')
+    const path = require('path')
+    const chalk = require('chalk')
+    const chokidar = require('chokidar')
 
-    const { get } = require('../core/context')
-    const { copyTemplateDir } = require('../utils/utils.js')
-    const { createTaskQueue } = require('../core/task-queue.js')
+    const {
+        options,
+        language,
+        createTaskQueue,
+        contextStringify,
+        menus, config, copyTemplateDir,
+        apiHandler, pageHandler, partHandler,
+    } = require('../core/context').get()
 
-    const { menus, config, options, language, apiHandler, pageHandler, partHandler } = get()
+    const { hbsDir, hooksDir, utilsDir, componentsDir } = config
 
     try {
-        if (config.hbsDir === '') {
-            copyTemplateDir(options, 'hooks', config.hooksDir)
-            copyTemplateDir(options, 'utils', config.utilsDir)
-            copyTemplateDir(options, 'components', config.componentsDir)
+        if (hbsDir === '') {
+            copyTemplateDir(options, 'hooks', hooksDir)
+            copyTemplateDir(options, 'utils', utilsDir)
+            copyTemplateDir(options, 'components', componentsDir)
         }
     } catch (error) {
         console.error(language('❌ 模板构筑失败:', '❌ Template construction failed:'), error)
@@ -31,7 +35,7 @@ const watch = () => {
         )))
         const utilsDir = path.join(process.cwd(), config.utilsDir)
         if (!fs.existsSync(utilsDir)) fs.mkdirSync(utilsDir, { recursive: true })
-        fs.writeFileSync(path.join(utilsDir, 'menus.js'), `export const menus = ${stringify.default(menus, { indent: 4, maxLength: 50 })}`)
+        fs.writeFileSync(path.join(utilsDir, 'menus.js'), `export const menus = ${contextStringify({ context: menus, maxLength: 50 })}`)
         console.log(chalk.gray(language(
             '\n🤖 [System] 未检测到运行中的任务，系统待机中...\n',
             '\n🤖 [System] System is STANDBY.\n'
@@ -65,5 +69,3 @@ const watch = () => {
         }
     })
 }
-
-module.exports = watch

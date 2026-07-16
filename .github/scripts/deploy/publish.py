@@ -10,14 +10,14 @@ def assemble_readme():
     with open('raw_referrers.json', 'r') as f:
         referrers = json.load(f)
 
-    ref_table = "| Referrer | Views | Uniques |\n| :--- | :--- | :--- |\n"
+    ref_table = '| Referrer | Views | Uniques |\n| :--- | :--- | :--- |\n'
     if referrers:
         for r in referrers:
-            ref_table += f"| {r['referrer']} | {r['count']} | {r['uniques']} |\n"
+            ref_table += f'| {r['referrer']} | {r['count']} | {r['uniques']} |\n'
     else:
-        ref_table += "| No Signal | - | - |\n"
+        ref_table += '| No Signal | - | - |\n'
 
-    report = f"""# 🛰️ 地堡终极运行报告 (Sovereign Dashboard v8.5)
+    report = f'''# 🛰️ 地堡终极运行报告 (Sovereign Dashboard v8.5)
 ## 📊 核心战力指标
 - **累计物理克隆**: `{stats['total_clones']}` 次
 - **社群声望**: ⭐ `{stats['stars']}` / 🍴 `{stats['forks']}`
@@ -41,7 +41,7 @@ def assemble_readme():
 {ref_table}
 
 > 📡 物理封存点: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} CST | Glory to Mankind.
-"""
+'''
     with open('README.md', 'w') as f:
         f.write(report)
 
@@ -51,20 +51,20 @@ def git_push():
         stats = json.load(f)
     # 执行物理封存 Git 指令
     try:
-        subprocess.run(["git", "config", "user.name",
-                       "github-actions"], check=True)
-        subprocess.run(["git", "config", "user.email",
-                       "github-actions@github.com"], check=True)
-        subprocess.run(["git", "add", "-A"], check=True)
+        subprocess.run(['git', 'config', 'user.name',
+                       'github-actions'], check=True)
+        subprocess.run(['git', 'config', 'user.email',
+                       'github-actions@github.com'], check=True)
+        subprocess.run(['git', 'add', '-A'], check=True)
         subprocess.run(
-            ["git", "commit", "-m", f"chore: sovereign modular update [total {stats['total_clones']}]"], check=True)
+            ['git', 'commit', '-m', f'chore: sovereign modular update [total {stats['total_clones']}]'], check=True)
         subprocess.run(
-            ["git", "push", "origin", "github-repo-stats", "--force"], check=True)
-        print("✅ Data sealed and pushed to cloud.")
+            ['git', 'push', 'origin', 'github-repo-stats', '--force'], check=True)
+        print('✅ Data sealed and pushed to cloud.')
     except Exception as e:
-        print(f"⚠️ Git push skipped: {e}")
+        print(f'⚠️ Git push skipped: {e}')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     assemble_readme()
     git_push()

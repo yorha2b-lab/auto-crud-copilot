@@ -22,6 +22,6 @@ module.exports = {
     proxyTarget: 'http://id:port',
     responseSuccess: `response?.code === 200`,
     // 指向公司的 Swagger JSON 地址
-    apiDoc: 'http://api.company.com/v2/api-docs',
+    apiDoc: '',
 
 }

@@ -1,20 +1,23 @@
-const fs = require('fs')
-const ora = require('ora')
-const chalk = require('chalk')
-const stringify = require('json-stringify-pretty-compact')
-
 module.exports = async filePath => {
 
-    const { get } = require('../../core/context')
-    const { options, language, partPrompt, recognizePage } = get()
-    const { cleanCode, formatFormItemAndColumns } = require('../../utils/utils')
+    const fs = require('fs')
+    const ora = require('ora')
+    const chalk = require('chalk')
+
+    const {
+        language,
+        partPrompt,
+        recognizePage,
+        contextStringify,
+        cleanCode, formatFormItemAndColumns,
+    } = require('../../core/context').get()
 
     const startTime = Date.now()
 
     const spinner = ora({
         text: chalk.cyan(language(
             `[System] 侦测到局部视觉样本。正在执行“碎片构筑协议”...`,
-            `[System] Partial visual sample detected. Executing "Fragment Construction Protocol"...`
+            `[System] Partial visual sample detected. Executing 'Fragment Construction Protocol'...`
         )),
         color: 'cyan'
     }).start()
@@ -25,13 +28,13 @@ module.exports = async filePath => {
             `🤖 Pod 042: Extracting UI metadata from neural cloud network...\n`
         ))
 
-        const pageConfig = await recognizePage({ prompt: partPrompt, filePath, options, taskType: 'part' })
+        const pageConfig = await recognizePage({ prompt: partPrompt, filePath, taskType: 'part' })
 
         const { formItems, dictBlocks, processedColumns } = formatFormItemAndColumns({ pageConfig })
 
         const result = Object.fromEntries(Object.entries({ formItems, processedColumns }).filter(([key, value]) => value?.length > 0))
 
-        let mainConfigStr = cleanCode(stringify.default(result, { indent: 4, maxLength: 200 }))
+        let mainConfigStr = cleanCode(contextStringify({ context: result }))
 
         let optionsCodeStr = ''
         dictBlocks.forEach(key => {

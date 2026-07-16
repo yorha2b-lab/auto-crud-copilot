@@ -1,4 +1,4 @@
-module.exports = (responseStr, resourceStr) => `
+module.exports = ({ responseStr, resourceStr }) => `
 目标：执行【前端虚拟字段】与【后端真实响应】的物理重组与对账。
 
 ## 1. 核心输入 (Signal Capture)

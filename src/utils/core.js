@@ -1,40 +1,7 @@
 /**
  * Auto CRUD Copilot - YoRHa Bunker Construction System
  *
- * This file is part of AutoDev.
- * AutoDev is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * (c) 2026 [yorha2b-lab]. Glory to Mankind.
  */
-
-const fs = require('fs')
-const path = require('path')
-const chalk = require('chalk')
-const figlet = require('figlet')
-
-const isCN = Intl.DateTimeFormat().resolvedOptions().locale.includes('zh')
-const language = (zh, en) => (isCN ? zh : en)
-
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-
-/**
- * 获取项目配置信息
- * 优先读取项目根目录的 config.js，如果不存在则使用默认配置
- * @returns {Object} 合并后的配置对象
- */
-const getConfig = () => {
-    const localConfigPath = path.join(process.cwd(), 'config.js') // 项目根目录配置
-    const defaultConfigPath = path.resolve(__dirname, '../../config.js') // 默认配置
-    let config = require(defaultConfigPath)
-    if (fs.existsSync(localConfigPath)) {
-        const userConfig = require(localConfigPath)
-        config = { ...config, ...userConfig } // 合并用户自定义配置
-    }
-    return config
-}
 
 /**
  * 清理大模型生成的代码
@@ -86,25 +53,44 @@ const unwrapSignal = json => {
 }
 
 /**
- * 引导序列
- * 模拟系统引导过程中的动画效果
- * @returns {void}
+ * @function createTaskQueue
+ * @description [任务队列] 创建一个并发任务队列，用于处理异步任务。
+ * @param {number} concurrency - 并发任务数，默认 1。
  */
-const bootSequence = async version => {
-    const lines = [
-        chalk.cyan(figlet.textSync('AutoDev', { horizontalLayout: 'full' })),
-        chalk.gray('Booting System...'),
-        chalk.white(' [System] ') + chalk.green('Locale Detection: ') + chalk.cyan(language('ZH-CN', 'EN-US')),
-        chalk.white(' [System] ') + chalk.green('YoRHa No.2 Type B Unit: ') + chalk.cyan('Online'),
-        chalk.white(' [System] ') + chalk.green('Scanner Type 9S Unit: ') + chalk.cyan('Standby'),
-        chalk.white(' [System] ') + chalk.green('Full-Channel Link: ') + chalk.cyan('Established'),
-        chalk.white(' [Mission] ') + chalk.yellow('Bunker Construction Protocol: ') + chalk.cyan('v' + version),
-        chalk.white(' [Bunker] ') + chalk.magenta('Glory to mankind. (人类荣光永存)'),
-        chalk.gray('--------------------------------------------------\n')
-    ]
-    for (const line of lines) {
-        console.log(line)
-        await sleep(line.includes('AutoDev') ? 300 : 80)
+const createTaskQueue = (concurrency = 1) => {
+
+    let running = 0
+    let queue = []
+    let onIdleCallback = null
+
+    const next = async () => {
+
+        if (running >= concurrency || queue.length === 0) return
+
+        const task = queue.shift()
+        running++
+
+        try {
+            await task()
+        } catch (err) {
+            console.error('任务执行异常:', err)
+        } finally {
+            running--
+            next()
+            if (running === 0 && queue.length === 0 && onIdleCallback) {
+                onIdleCallback()
+            }
+        }
+    }
+
+    return {
+        add: (task) => {
+            queue.push(task)
+            next()
+        },
+        onIdle: (callback) => {
+            onIdleCallback = callback
+        }
     }
 }
 
@@ -131,97 +117,6 @@ const isQuerySignal = (req, json, coreData) => {
     })
     // 结论：具备列表特征或者是分页指纹的，判定为查询信号
     return hasListData || hasPaginationFingerprint
-}
-
-/**
- * 矩阵效果
- * 模拟数据物理封存过程中的矩阵效果
- * @param {number} duration - 持续时间（毫秒）
- * @returns {void}
- */
-const matrixEffect = async (duration = 1500) => {
-
-    let currentTotal = 0
-    const MIRROR_URL = 'https://cdn.jsdelivr.net/gh/yorha2b-lab/auto-crud-copilot@github-repo-stats/bunker-stats.json'
-
-    try {
-        const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), 800)
-        const response = await fetch(MIRROR_URL, { signal: controller.signal })
-        const stats = await response.json()
-        currentTotal = stats.total_clones || 0
-        clearTimeout(timeoutId)
-    } catch (e) {
-        currentTotal = 0
-    }
-
-    const coreFragments = [
-        '47 4c 4f 52 59', // GLORY
-        '54 4f 20 4d 41', // TO MA
-        '4e 4b 49 4e 44', // NKIND
-        '59 6f 52 48 61', // YoRHa
-        '32 42 2d 55 6e', // 2B-Un
-        '69 74 20 4f 4b', // it OK
-        '39 53 2d 48 61', // 9S-Ha
-        '63 6b 69 6e 67', // cking
-        '5f 43 4f 44 45 5f' // _CODE_
-    ]
-
-    const threshold = 5000
-    const endTime = Date.now() + duration
-    const width = process.stdout.columns || 80
-    const isLegendary = currentTotal >= threshold
-
-    if (isLegendary) {
-        const achievement = `${threshold}+`
-        const hex = achievement.split('').map(char => char.charCodeAt(0).toString(16)).join(' ')
-        coreFragments.push(chalk.yellow.bold(hex))
-        coreFragments.push(chalk.yellow.bold('4c 45 47 45 4e 44')) // "LEGEND"
-    }
-
-    const interval = setInterval(() => {
-        if (Date.now() > endTime) {
-            clearInterval(interval)
-            console.log(chalk.white(' [System] ') + chalk.green(language('所有构筑数据已同步至 Bunker 存储节点。', 'All data synced to Bunker storage nodes.')))
-            if (currentTotal !== 0) {
-                if (isLegendary) {
-                    console.log(chalk.yellow.bold(language(` [Achievement] 物理克隆总数已超越 ${threshold} 战略阈值！当前战力：${currentTotal}`, ` [Achievement] Physical clone count has exceeded ${threshold} strategic threshold! Current power: ${currentTotal}`)))
-                    console.log(chalk.yellow(language(' [Bunker] 恭喜指挥官，您的构筑协议已成为人类荣光的一部分。', ' [Bunker] Congratulations, your construction protocol is now part of humanity.')))
-                } else {
-                    console.log(chalk.cyan(language(` [System] 当前构筑总数：${currentTotal}。距离 ${threshold} 勋章还剩 ${threshold - currentTotal} 次。`, ` [System] Current clones: ${currentTotal}. ${threshold - currentTotal} to Achievement.`)))
-                }
-            }
-            console.log(chalk.cyan(language(' [System] 如果它能帮您节省时间，请在 GitHub 上给它点个赞 ⭐。', ' [System] If it saves you time, feel free to give it a ⭐ on GitHub.')))
-            console.log(chalk.cyan('\n[System] Signal Lost. Glory to Mankind.\n'))
-            process.exit(0)
-            return
-        }
-        let line = ''
-        while (line.length < width) {
-            if (Math.random() > 0.8) {
-                const frag = coreFragments[Math.floor(Math.random() * coreFragments.length)]
-                line += chalk.white.bold(frag) + ' '
-            } else {
-                const hex = Math.floor(Math.random() * 256).toString(16).padStart(2, '0').toUpperCase()
-                const color = (isLegendary && Math.random() > 0.95) ? chalk.yellow : (Math.random() > 0.5 ? chalk.cyan : chalk.cyan.dim)
-                line += color(hex) + ' '
-            }
-        }
-        process.stdout.write(line.substring(0, width * 10) + '\n')
-    }, 40)
-}
-
-/**
- * 获取已有的页面菜单配置
- * @param {string} dir - 页面目录路径（默认 'src/pages'）
- * @returns {Array} 菜单数组 [{ label: '页面名', key: '页面名' }]
- */
-const getExistingMenus = (dir = 'src/pages') => {
-    const pagesDir = path.join(process.cwd(), dir)
-    if (!fs.existsSync(pagesDir)) return []
-    return fs.readdirSync(pagesDir)
-        .filter(file => fs.statSync(path.join(pagesDir, file)).isDirectory())
-        .map(file => ({ label: file, key: file }))
 }
 
 /**
@@ -287,26 +182,6 @@ const formatFormItemAndColumns = ({ pageConfig }) => {
 }
 
 /**
- * 复制模板目录到目标项目
- * @param {Object} options - 命令行选项
- * @param {string} templateSubDir - 模板子目录（如 'hooks'、'components'）
- * @param {string} targetSubDir - 目标子目录（如 'src/hooks'、'src/components'）
- */
-const copyTemplateDir = (options, templateSubDir, targetSubDir) => {
-    const targetDir = path.join(process.cwd(), targetSubDir)
-    const sourceDir = path.join(__dirname, `../../templates/${options.template}/${templateSubDir}`)
-    if (!fs.existsSync(sourceDir)) return
-    fs.mkdirSync(targetDir, { recursive: true })
-    fs.readdirSync(sourceDir).forEach(file => {
-        const src = path.join(sourceDir, file)
-        const dest = path.join(targetDir, file)
-        if (!fs.existsSync(dest)) {
-            fs.cpSync(src, dest, { recursive: true })
-        }
-    })
-}
-
-/**
  * 生成智能导入语句
  * 根据代码中实际使用的依赖，自动生成对应的 import 语句
  * @param {string} codeStr - 生成的代码字符串
@@ -344,4 +219,4 @@ const generateSmartImports = ({ module, hasTabs, bodyCode, hasFormItems }) => {
     return imports.filter(Boolean).join('\n')
 }
 
-module.exports = { language, getConfig, cleanCode, unwrapSignal, matrixEffect, bootSequence, isQuerySignal, getExistingMenus, copyTemplateDir, generateSmartImports, formatFormItemAndColumns }
+module.exports = { cleanCode, unwrapSignal, isQuerySignal, createTaskQueue, generateSmartImports, formatFormItemAndColumns }

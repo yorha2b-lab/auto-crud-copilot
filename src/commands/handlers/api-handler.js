@@ -1,16 +1,21 @@
-const fs = require('fs')
-const ora = require('ora')
-const path = require('path')
-const chalk = require('chalk')
-
 module.exports = async (filePath, liveResponse = null) => {
 
-    const { get } = require('../../core/context')
-    const { config, options, language, unwrapSignal, alignResponseFields } = get()
+    const fs = require('fs')
+    const ora = require('ora')
+    const path = require('path')
+    const chalk = require('chalk')
+
+    const {
+        unwrapSignal,
+        config, language,
+        alignResponseFields
+    } = require('../../core/context').get()
+
+    const { pagesDir } = config
 
     const startTime = Date.now()
     const fileName = liveResponse?.fileName ?? path.basename(filePath, path.extname(filePath))
-    const resourcePath = path.join(process.cwd(), config.pagesDir, fileName, 'resource.js')
+    const resourcePath = path.join(process.cwd(), pagesDir, fileName, 'resource.js')
 
     const spinner = ora({
         text: chalk.yellow(language(
@@ -57,7 +62,7 @@ module.exports = async (filePath, liveResponse = null) => {
             return Array.from(new Set(keys))
         }
 
-        const result = await alignResponseFields(options, JSON.stringify(sampleData), extractKeys(resourceStr).join(','))
+        const result = await alignResponseFields({ responseStr: JSON.stringify(sampleData), resourceStr: extractKeys(resourceStr).join(',') })
         let changeCount = 0
         const resultMapping = {}
         Object.entries(result).forEach(([oldField, newField]) => {
@@ -81,7 +86,7 @@ module.exports = async (filePath, liveResponse = null) => {
             Object.entries(resultMapping).forEach(([oldField, newField]) => {
                 // 💡 物理校准：计算空格数量，让箭头对齐在第 15 个字符位
                 // 中文字符长度 * 2 是为了抵消它在终端占的双倍宽度
-                const padding = " ".repeat(Math.max(1, 15 - oldField.length * 2))
+                const padding = ' '.repeat(Math.max(1, 15 - oldField.length * 2))
                 console.log(
                     chalk.gray(` │  `) +
                     chalk.yellow(oldField) +

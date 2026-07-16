@@ -30,7 +30,7 @@ import { useTableQuery } from '../hooks/useTableQuery'
  *
  * @example
  * <MyModalTable
- *   title="关联用户片段"
+ *   title='关联用户片段'
  *   api={async params=>await fetchUsers(params)}
  *   setModalForm={setModal} // 💡 借用主页面的表单构筑舱
  *   operate={({ refresh, setModalForm }) => ({ label: '详情', onClick: (rec) => setModalForm(...) })}

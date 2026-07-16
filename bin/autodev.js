@@ -4,8 +4,7 @@ const path = require('path')
 const chalk = require('chalk')
 const pkg = require('../package.json')
 const { program } = require('commander')
-const bunker = require('../src/core/context')
-const { language, matrixEffect, bootSequence } = require('../src/utils/utils.js')
+const { language, matrixEffect, bootSequence } = require('../src/utils/ux')
 
 program
     .version(pkg.version)
@@ -40,7 +39,7 @@ program
             console.log(chalk.green(language('🤖 Pod 042: [报告] config.js 存储完毕。', '🤖 Pod 042: [Report] config.js storage complete.')))
         }
 
-        const bunkerCmd = chalk.yellow('"bunker": "autodev watch"')
+        const bunkerCmd = chalk.yellow(`'bunker': 'autodev watch'`)
         console.log(chalk.cyan(language(
             `📡 Operator 6O: 呼叫 2B, 地堡部署完毕, 为了更快捷地进入战场，建议手动执行 [物理装配]: 将 ${bunkerCmd} 加入您的 package.json scripts 中`,
             `📡 Operator 6O: Calling 2B! Bunker deployment is complete. To expedite your entry into the battlefield, I recommend a manual [Physical Assembly]: Add ${bunkerCmd} to your package.json scripts.`
@@ -52,6 +51,7 @@ program
     .alias('start')
     .description(language('开启全频道联动监控：支持 Page/Part/API 协同构筑', 'Start full-channel linked monitoring: Coordinated Page/Part/API construction'))
     .action(() => {
+        const bunker = require('../src/core/context')
         const result = bunker.init(program.opts())
         if (!result) {
             return
@@ -59,10 +59,11 @@ program
         bootSequence(pkg.version)
         require('../src/commands/watch')()
         const { config } = bunker.get()
-        if (config.apiDoc && config.enableAutoAlignment) {
+        const { apiDoc, needMock, proxyTarget, enableAutoAlignment } = config
+        if (apiDoc && enableAutoAlignment) {
             require('../src/services/api-linker')()
         }
-        if (config.proxyTarget && !config.needMock && config.enableAutoAlignment) {
+        if (proxyTarget && !needMock && enableAutoAlignment) {
             require('../src/services/proxy-tower')()
         }
         process.on('SIGINT', () => {

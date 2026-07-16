@@ -1,23 +1,25 @@
-const fs = require('fs')
-const ora = require('ora')
-const path = require('path')
-const chalk = require('chalk')
-const stringify = require('json-stringify-pretty-compact')
-
 module.exports = async filePath => {
 
-    const { get } = require('../../core/context')
+    const fs = require('fs')
+    const ora = require('ora')
+    const path = require('path')
+    const chalk = require('chalk')
 
     const {
-        config, language, menus, options,
-        pagePrompt, resourceTpl, indexTpl,
-        recognizePage, generateMock, resource, index
-    } = get()
+        language,
+        pagePrompt,
+        menus, config,
+        index, resource,
+        contextStringify,
+        generateMock, recognizePage,
+    } = require('../../core/context').get()
+
+    const { useDemo, pagesDir, needMock } = config
 
     const startTime = Date.now()
     const fileName = path.basename(filePath, path.extname(filePath))
     const mockDir = path.join(process.cwd(), 'mock')
-    const targetDir = path.join(process.cwd(), config.pagesDir, fileName)
+    const targetDir = path.join(process.cwd(), pagesDir, fileName)
 
     const spinner = ora({
         text: chalk.cyan(language(
@@ -41,7 +43,7 @@ module.exports = async filePath => {
         if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true })
 
         let pageConfig
-        if (config.useDemo) {
+        if (useDemo) {
             console.log(chalk.yellow(language(
                 `\n🤖 Pod 042: [报告] 拦截到实弹请求。正在空投标准模拟包: example.json\n`,
                 `\n🤖 Pod 042: [Report] Real-fire request intercepted. Dropping simulation package: example.json\n`
@@ -52,23 +54,23 @@ module.exports = async filePath => {
                 `🤖 Pod 042: 正在上传视觉元数据至司令部进行语义分析...\n`,
                 `🤖 Pod 042: Uploading visual metadata to Command for semantic analysis...\n`
             ))
-            pageConfig = await recognizePage({ prompt: pagePrompt, filePath, options })
+            pageConfig = await recognizePage({ prompt: pagePrompt, filePath })
         }
 
-        fs.writeFileSync(path.join(targetDir, 'resource.js'), resource({ pageConfig, resourceTpl }))
-        fs.writeFileSync(path.join(targetDir, 'index.js'), index({ config, fileName, indexTpl, pageConfig }))
+        fs.writeFileSync(path.join(targetDir, 'resource.js'), resource({ pageConfig }))
+        fs.writeFileSync(path.join(targetDir, 'index.js'), index({ fileName, pageConfig }))
 
         if (!menus.find(m => m.key === fileName)) {
             menus.push({ label: fileName, key: fileName })
         }
 
-        if (config.needMock) {
+        if (needMock) {
             spinner.text = chalk.yellow(language(
                 `🧑‍💻 9S: 正在突破目标防火墙... 执行数据伪装程序 [${fileName}]`,
                 `🧑‍💻 9S: Piercing target firewall... Executing data camouflage [${fileName}]`
             ))
-            const rawContent = await generateMock(pageConfig.table.columns, fileName)
-            fs.writeFileSync(path.join(mockDir, `${fileName}.js`), `export default ${stringify.default(rawContent, { indent: 4, maxLength: 200 })}`)
+            const rawContent = await generateMock({ columns: pageConfig.table.columns, fileName })
+            fs.writeFileSync(path.join(mockDir, `${fileName}.js`), `export default ${contextStringify({ context: rawContent })}`)
             console.log(chalk.green(language(
                 `\n[Success] 9S 报告: Mock 数据生成成功`,
                 `\n[Success] 9S Report: Mock data generation successful.`

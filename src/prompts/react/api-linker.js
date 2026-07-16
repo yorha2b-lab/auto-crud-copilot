@@ -1,4 +1,4 @@
-module.exports = (bunkerAnchors, realApis) => `
+module.exports = ({ bunkerAnchors, realApis }) => `
 # MISSION: Multi-Point API Alignment
 目标：为地堡生成的多个作战动作匹配真实的后端接口。
 

@@ -19,10 +19,10 @@ import { Button, Tree, Radio, Input, Upload, Select, Cascader, Checkbox, DatePic
  *
  * @example
  * // 基本构筑
- * <AliyunOSSUpload path="project/data" url="/api/oss/token" />
+ * <AliyunOSSUpload path='project/data' url='/api/oss/token' />
  *
  * // 高级装配（限制文件类型并开启多选）
- * <AliyunOSSUpload accept=".pdf" multiple={true} path="docs" url="/api/oss/token" />
+ * <AliyunOSSUpload accept='.pdf' multiple={true} path='docs' url='/api/oss/token' />
  */
 const AliyunOSSUpload = ({ value, onChange, ...restProps }) => {
 

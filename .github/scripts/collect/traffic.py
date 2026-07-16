@@ -7,7 +7,7 @@ REPO = os.getenv('REPO')
 TOKEN = os.getenv('STATS_TOKEN')
 HEADERS = {'Authorization': f'token {TOKEN}',
            'Accept': 'application/vnd.github.v3+json'}
-API_BASE = f"https://api.github.com/repos/{REPO}"
+API_BASE = f'https://api.github.com/repos/{REPO}'
 
 
 def fetch_api(url, fallback):
@@ -36,14 +36,14 @@ def merge_ledger(data, ledger_path, col_name):
         ledger_path, index=False)
 
 
-if __name__ == "__main__":
-    print("🤖 Pod 042: Executing Data Mining Protocol...")
+if __name__ == '__main__':
+    print('🤖 Pod 042: Executing Data Mining Protocol...')
 
     # 抓取原始数据
-    clones = fetch_api(f"{API_BASE}/traffic/clones", {"clones": []})
-    views = fetch_api(f"{API_BASE}/traffic/views", {"views": []})
-    repo_info = fetch_api(API_BASE, {"stargazers_count": 0, "forks_count": 0})
-    referrers = fetch_api(f"{API_BASE}/traffic/popular/referrers", [])
+    clones = fetch_api(f'{API_BASE}/traffic/clones', {'clones': []})
+    views = fetch_api(f'{API_BASE}/traffic/views', {'views': []})
+    repo_info = fetch_api(API_BASE, {'stargazers_count': 0, 'forks_count': 0})
+    referrers = fetch_api(f'{API_BASE}/traffic/popular/referrers', [])
 
     # 物理焊接账本
     merge_ledger(clones['clones'], 'ghrs-data/clones_ledger.csv', 'clones')
@@ -57,10 +57,10 @@ if __name__ == "__main__":
     c_df = pd.read_csv('ghrs-data/clones_ledger.csv')
     total_clones = int(c_df['clones'].sum())
     stats = {
-        "total_clones": total_clones,
-        "stars": repo_info['stargazers_count'],
-        "forks": repo_info['forks_count']
+        'total_clones': total_clones,
+        'stars': repo_info['stargazers_count'],
+        'forks': repo_info['forks_count']
     }
     with open('bunker-stats.json', 'w') as f:
         json.dump(stats, f)
-    print(f"✅ Ledger synced. Total Clones: {total_clones}")
+    print(f'✅ Ledger synced. Total Clones: {total_clones}')

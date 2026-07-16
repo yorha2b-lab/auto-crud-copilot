@@ -1,8 +1,3 @@
-const http = require('http')
-const zlib = require('zlib')
-const chalk = require('chalk')
-const httpProxy = require('http-proxy')
-
 /**
  * @function startProxyTower
  * @description [地堡 42153 联合波段] 启动流量拦截塔。
@@ -10,13 +5,23 @@ const httpProxy = require('http-proxy')
  */
 module.exports = () => {
 
-    const { get } = require('../core/context')
-    const { config, language, apiHandler, unwrapSignal, isQuerySignal } = get()
+    const http = require('http')
+    const zlib = require('zlib')
+    const chalk = require('chalk')
+    const httpProxy = require('http-proxy')
+
+    const {
+        config,
+        language,
+        apiHandler,
+        unwrapSignal, isQuerySignal
+    } = require('../core/context').get()
+
+    const { routeMap = {}, proxyTarget } = config
 
     const TOWER_PORT = 42153
     const hackedRegistry = new Map()
     const proxy = httpProxy.createProxyServer({})
-
 
     // 简单的辅助函数：提取 JSON 的所有 Key 作为“指纹”
     const getJsonFingerprint = obj => {
@@ -44,7 +49,7 @@ module.exports = () => {
 
                 const referer = req.headers.referer || ''
                 const urlPath = new URL(referer).pathname
-                const fileName = config.routeMap?.[urlPath] ?? urlPath.split('/').filter(Boolean).at(-1)
+                const fileName = routeMap?.[urlPath] ?? urlPath.split('/').filter(Boolean).at(-1)
 
                 const fingerprint = getJsonFingerprint(unwrapSignal(json)) // 获取数据指纹
                 const lastFingerprint = hackedRegistry.get(fileName)
@@ -69,13 +74,12 @@ module.exports = () => {
     })
 
     const server = http.createServer((req, res) => {
-        const target = config.proxyTarget
-        if (!target) {
+        if (!proxyTarget) {
             // 静默模式：如果不配置 proxyTarget，拦截塔只转发不处理（或报错提示）
             return
         }
         // 转发至真实后端
-        proxy.web(req, res, { target, changeOrigin: true })
+        proxy.web(req, res, { target: proxyTarget, changeOrigin: true })
     })
 
     server.listen(TOWER_PORT, () => {
