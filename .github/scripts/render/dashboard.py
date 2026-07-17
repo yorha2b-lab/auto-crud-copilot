@@ -5,6 +5,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
+
 def peak_recon():
     df = pd.read_csv('ghrs-data/clones_ledger.csv')
     df['date'] = pd.to_datetime(df['date'])
@@ -48,13 +49,14 @@ def peak_recon():
                5 else '#e74c3c' for r in df['ratio']]
     axC.bar(df['date'], df['ratio'], color=colors3, alpha=0.7)
     axC.axhline(y=df['ratio'].mean(), color='#9b59b6',
-                ls='--', label=f'Avg: {df['ratio'].mean():.2f}')
+                ls='--', label=f'Avg: {df["ratio"].mean():.2f}')
     axC.set_title('Clones/Visitor Ratio (High Ratio = CI/Automation)',
                   fontsize=14, fontweight='bold')
     axC.legend()
 
     plt.tight_layout()
     plt.savefig('plots/bunker_peak_recon.png', dpi=100)
+
 
 def intelligence_grid():
     df = pd.read_csv('ghrs-data/clones_ledger.csv')
@@ -84,7 +86,7 @@ def intelligence_grid():
     ax1.fill_between(df['date'], df['clones'],
                      alpha=0.3, color='#2E86AB')
     ax1.axhline(y=df['clones'].mean(), color='red', linestyle='--',
-                alpha=0.7, label=f'Avg: {df['clones'].mean():.0f}')
+                alpha=0.7, label=f'Avg: {df["clones"].mean():.0f}')
     ax1.set_title('Daily Clone Trend', fontsize=12, fontweight='bold')
     ax1.set_ylabel('Clones')
     ax1.legend()
@@ -100,7 +102,7 @@ def intelligence_grid():
     ax2.fill_between(df['date'], df['uniques'],
                      alpha=0.3, color='#A23B72')
     ax2.axhline(y=df['uniques'].mean(), color='red', linestyle='--',
-                alpha=0.7, label=f'Avg: {df['uniques'].mean():.0f}')
+                alpha=0.7, label=f'Avg: {df["uniques"].mean():.0f}')
     ax2.set_title('Daily Unique Commanders',
                   fontsize=12, fontweight='bold')
     ax2.set_ylabel('Unique Visitors')
@@ -121,7 +123,7 @@ def intelligence_grid():
     z = np.polyfit(df['uniques'], df['clones'], 1)
     p = np.poly1d(z)
     ax3.plot(df['uniques'].sort_values(), p(df['uniques'].sort_values(
-    )), 'r--', alpha=0.7, label=f'Trend: y={z[0]:.1f}x+{z[1]:.1f}')
+    )), "r--", alpha=0.7, label=f'Trend: y={z[0]:.1f}x+{z[1]:.1f}')
     ax3.legend()
     ax3.grid(True, alpha=0.3)
 
@@ -131,7 +133,7 @@ def intelligence_grid():
     ax4.hist(df['clones_per_unique'], bins=25,
              color='#F18F01', alpha=0.7, edgecolor='white')
     ax4.axvline(x=df['clones_per_unique'].mean(
-    ), color='red', linestyle='--', label=f'Avg: {df['clones_per_unique'].mean():.2f}')
+    ), color='red', linestyle='--', label=f'Avg: {df["clones_per_unique"].mean():.2f}')
     ax4.set_xlabel('Clones Per Unit')
     ax4.set_ylabel('Days')
     ax4.set_title('Clones Per User Distribution',
@@ -178,6 +180,7 @@ def intelligence_grid():
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
     plt.savefig('plots/bunker_intelligence_grid.png', dpi=100)
 
+
 def load_clean(path, col):
     df = pd.read_csv(path)
     df['date'] = pd.to_datetime(df['date'], errors='coerce')
@@ -218,8 +221,9 @@ def main_dashboard(df_c, df_v):
     plt.tight_layout()
     plt.savefig('plots/bunker_main_v7.png', dpi=120)
 
-if __name__ == '__main__':
-    print('🤖 Pod 042: Rendering Strategic Dashboards...')
+
+if __name__ == "__main__":
+    print("🤖 Pod 042: Rendering Strategic Dashboards...")
     plt.style.use('dark_background')
     os.makedirs('plots', exist_ok=True)
 
@@ -232,4 +236,4 @@ if __name__ == '__main__':
     intelligence_grid()
     main_dashboard(df_c, df_v)
 
-    print('✅ Dashboards rendered.')
+    print("✅ Dashboards rendered.")
