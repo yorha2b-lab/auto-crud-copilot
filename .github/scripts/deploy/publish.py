@@ -13,7 +13,7 @@ def assemble_readme():
     ref_table = '| Referrer | Views | Uniques |\n| :--- | :--- | :--- |\n'
     if referrers:
         for r in referrers:
-            ref_table += f'| {r['referrer']} | {r['count']} | {r['uniques']} |\n'
+            ref_table += f'| {r["referrer"]} | {r["count"]} | {r["uniques"]} |\n'
     else:
         ref_table += '| No Signal | - | - |\n'
 
@@ -57,7 +57,7 @@ def git_push():
                        'github-actions@github.com'], check=True)
         subprocess.run(['git', 'add', '-A'], check=True)
         subprocess.run(
-            ['git', 'commit', '-m', f'chore: sovereign modular update [total {stats['total_clones']}]'], check=True)
+            ['git', 'commit', '-m', f'chore: sovereign modular update [total {stats["total_clones"]}]'], check=True)
         subprocess.run(
             ['git', 'push', 'origin', 'github-repo-stats', '--force'], check=True)
         print('✅ Data sealed and pushed to cloud.')
