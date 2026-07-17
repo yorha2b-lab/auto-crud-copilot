@@ -100,7 +100,7 @@ export const timeRender = ({ time, date, minute }) => {
  * @param {Function} [formatter] - 数据预处理回调
  * @param {Array} columns - 表格列配置，支持 exportRender 优先级
  */
-export const exportDataToExcel = async (url, options, columns, fileName, formatter) => {
+export const exportDataToExcel = async ({ url, options, columns, fileName, formatter }) => {
     /* const response = await request(url, options)
     const result = formatter ? formatter(response) : (response?.data ?? [])
     if (result?.length > 0) {

@@ -22,10 +22,10 @@ module.exports = {
         const infrastructureCtx = require('../utils/infrastructure')
 
         const { language } = uxCtx
-        const { getConfig, getExistingMenus } = infrastructureCtx
+        const { getConfig, getExistingMenus, copyTemplateDir } = infrastructureCtx
 
         const config = getConfig()
-        const { hbsDir } = config
+        const { hbsDir, hooksDir, utilsDir, componentsDir } = config
 
         const menus = getExistingMenus()
         const apiHandler = require('../commands/handlers/api-handler')
@@ -37,6 +37,16 @@ module.exports = {
         if (!fs.existsSync(compilerPath)) {
             console.error(chalk.red(language(`❌ 暂不支持 [${template}] 框架。欢迎提交 Pull Request 贡献。`, `❌ [${template}] framework not supported. Welcome to contribute a Pull Request to help.`)))
             return
+        }
+
+        try {
+            if (hbsDir === '') {
+                copyTemplateDir(options, 'hooks', hooksDir)
+                copyTemplateDir(options, 'utils', utilsDir)
+                copyTemplateDir(options, 'components', componentsDir)
+            }
+        } catch (error) {
+            console.error(language('❌ 模板构筑失败:', '❌ Template construction failed:'), error)
         }
 
         const partialsDir = hbsDir !== '' ? path.join(process.cwd(), hbsDir, 'handlebars') : path.join(__dirname, `../../templates/${template}/handlebars`)

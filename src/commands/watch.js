@@ -6,25 +6,12 @@ module.exports = () => {
     const chokidar = require('chokidar')
 
     const {
-        options,
         language,
+        menus, config,
         createTaskQueue,
         contextStringify,
-        menus, config, copyTemplateDir,
         apiHandler, pageHandler, partHandler,
     } = require('../core/context').get()
-
-    const { hbsDir, hooksDir, utilsDir, componentsDir } = config
-
-    try {
-        if (hbsDir === '') {
-            copyTemplateDir(options, 'hooks', hooksDir)
-            copyTemplateDir(options, 'utils', utilsDir)
-            copyTemplateDir(options, 'components', componentsDir)
-        }
-    } catch (error) {
-        console.error(language('❌ 模板构筑失败:', '❌ Template construction failed:'), error)
-    }
 
     const queue = createTaskQueue(2)
 
@@ -54,18 +41,17 @@ module.exports = () => {
         '📡 Operator 6O: Calling 2B, all-channel linked monitoring is ready!'
     )))
 
+    const routes = [
+        { match: 'response', handler: apiHandler },
+        { match: 'screenShot', handler: pageHandler },
+        { match: 'screenPart', handler: partHandler },
+    ]
+
     watcher.on('add', filePath => {
-
         const absolutePath = path.resolve(filePath)
-
-        if (absolutePath.includes('screenShot')) {
-            queue.add(() => pageHandler(filePath))
-        }
-        else if (absolutePath.includes('screenPart')) {
-            queue.add(() => partHandler(filePath))
-        }
-        else if (absolutePath.includes('response')) {
-            queue.add(() => apiHandler(filePath))
+        const route = routes.find(r => absolutePath.includes(r.match))
+        if (route) {
+            queue.add(() => route.handler(filePath))
         }
     })
 }
