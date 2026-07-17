@@ -26,7 +26,7 @@ def peak_recon():
                   fontsize=14, fontweight='bold')
 
     peak_clone_idx = df['clones'].idxmax()
-    axA.annotate(f'LEGEND PEAK: {df['clones'].max()}',
+    axA.annotate(f'LEGEND PEAK: {df["clones"].max()}',
                  xy=(df.loc[peak_clone_idx, 'date'],
                      df.loc[peak_clone_idx, 'clones']),
                  xytext=(10, 20), textcoords='offset points',
