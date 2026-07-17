@@ -4,13 +4,13 @@ module.exports = async filePath => {
     const ora = require('ora')
     const chalk = require('chalk')
 
-    const {
-        language,
-        partPrompt,
-        recognizePage,
-        contextStringify,
-        cleanCode, formatFormItemAndColumns,
-    } = require('../../core/context').get()
+    const { ux, llm, core, prompts, infrastructure } = require('../bootstrap').get()
+
+    const { language } = ux
+    const { partPrompt } = prompts
+    const { recognizePage } = llm
+    const { contextStringify } = infrastructure
+    const { cleanCode, formatFormItemAndColumns } = core
 
     const startTime = Date.now()
 

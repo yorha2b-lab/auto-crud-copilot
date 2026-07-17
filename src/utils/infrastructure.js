@@ -10,6 +10,7 @@
 const fs = require('fs')
 const path = require('path')
 const { Segment, useDefault } = require('segmentit')
+const stringify = require('json-stringify-pretty-compact')
 const segmentit = useDefault(new Segment())
 
 /**
@@ -87,7 +88,7 @@ const getLocalScore = (api, pageKeywords, moduleName) => {
  */
 const copyTemplateDir = (options, templateSubDir, targetSubDir) => {
     const targetDir = path.join(process.cwd(), targetSubDir)
-    const sourceDir = path.join(__dirname, `../../templates/${options.template}/${templateSubDir}`)
+    const sourceDir = path.join(__dirname, `../framework/${options.template}/${templateSubDir}`)
     if (!fs.existsSync(sourceDir)) return
     fs.mkdirSync(targetDir, { recursive: true })
     fs.readdirSync(sourceDir).forEach(file => {
@@ -99,4 +100,6 @@ const copyTemplateDir = (options, templateSubDir, targetSubDir) => {
     })
 }
 
-module.exports = { getConfig, getLocalScore, getExistingMenus, copyTemplateDir, getSemanticKeywords }
+const contextStringify = ({ context, indent = 4, maxLength = 200 }) => stringify.default(context, { indent, maxLength })
+
+module.exports = { getConfig, getLocalScore, getExistingMenus, copyTemplateDir, contextStringify, getSemanticKeywords }

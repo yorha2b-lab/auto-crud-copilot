@@ -51,20 +51,20 @@ program
     .alias('start')
     .description(language('开启全频道联动监控：支持 Page/Part/API 协同构筑', 'Start full-channel linked monitoring: Coordinated Page/Part/API construction'))
     .action(() => {
-        const bunker = require('../src/core/context')
+        const bunker = require('../src/bootstrap')
         const result = bunker.init(program.opts())
         if (!result) {
             return
         }
         bootSequence(pkg.version)
         require('../src/commands/watch')()
-        const { config } = bunker.get()
+        const { config } = result.infrastructure
         const { apiDoc, needMock, proxyTarget, enableAutoAlignment } = config
         if (apiDoc && enableAutoAlignment) {
-            require('../src/services/api-linker')()
+            require('../src/labs/linker')()
         }
         if (proxyTarget && !needMock && enableAutoAlignment) {
-            require('../src/services/proxy-tower')()
+            require('../src/labs/tower')()
         }
         process.on('SIGINT', () => {
             console.log('\n')

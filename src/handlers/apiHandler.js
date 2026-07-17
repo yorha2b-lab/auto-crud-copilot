@@ -5,14 +5,14 @@ module.exports = async (filePath, liveResponse = null) => {
     const path = require('path')
     const chalk = require('chalk')
 
-    const {
-        unwrapSignal,
-        config, language,
-        alignResponseFields
-    } = require('../../core/context').get()
+    const { ux, llm, core, infrastructure } = require('../bootstrap').get()
+
+    const { language } = ux
+    const { unwrapSignal } = core
+    const { config } = infrastructure
+    const { alignResponseFields } = llm
 
     const { pagesDir } = config
-
     const startTime = Date.now()
     const fileName = liveResponse?.fileName ?? path.basename(filePath, path.extname(filePath))
     const resourcePath = path.join(process.cwd(), pagesDir, fileName, 'resource.js')

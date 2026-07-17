@@ -4,12 +4,11 @@ module.exports = async () => {
     const path = require('path')
     const chalk = require('chalk')
 
-    const {
-        config,
-        language,
-        apiLinker,
-        getLocalScore, getSemanticKeywords,
-    } = require('../core/context').get()
+    const { ux, llm, infrastructure } = require('../bootstrap').get()
+
+    const { language } = ux
+    const { apiLinker } = llm
+    const { config, getLocalScore, getSemanticKeywords, } = infrastructure
 
     const { apiDoc, pagesDir } = config
     if (!apiDoc) return

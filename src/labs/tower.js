@@ -10,13 +10,12 @@ module.exports = () => {
     const chalk = require('chalk')
     const httpProxy = require('http-proxy')
 
-    const {
-        config,
-        language,
-        apiHandler,
-        unwrapSignal, isQuerySignal
-    } = require('../core/context').get()
+    const { ux, core, handlers, infrastructure } = require('../bootstrap').get()
 
+    const { language } = ux
+    const { apiHandler } = handlers
+    const { config } = infrastructure
+    const { unwrapSignal, isQuerySignal } = core
     const { routeMap = {}, proxyTarget } = config
 
     const TOWER_PORT = 42153

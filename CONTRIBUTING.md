@@ -75,24 +75,6 @@ cp .env.example .env
 # 编辑 .env 文件，填入您的API密钥
 ```
 
-### 项目结构
-
-```
-auto-crud-copilot/
-├── bin/                 # 可执行文件
-├── src/
-│   ├── commands/        # 命令实现
-│   ├── core/           # 核心逻辑
-│   ├── prompts/        # AI提示词
-│   ├── services/       # 服务层
-│   └── utils/          # 工具函数
-├── templates/          # 代码模板
-│   ├── react/
-│   ├── vue/
-│   └── angular/
-└── config.js           # 配置文件
-```
-
 - 提交信息遵循[Conventional Commits](https://www.conventionalcommits.org/zh-hans/v1.0.0/)规范
 
 ### 测试

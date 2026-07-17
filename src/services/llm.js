@@ -43,12 +43,12 @@ const askAI = async ({ model, openAI, messages, response_format = { type: 'json_
     }
 }
 
-module.exports = ({ config, openAI, template, sysPrompt, apiPrompt, mockPrompt, linkerPrompt }) => {
+module.exports = ({ config, openAI, template, systemPrompt, apiPrompt, mockPrompt, linkerPrompt }) => {
 
     const sharp = require('sharp')
 
     const { textModel, visionModel } = config
-    const { UI_DESIGNER, API_DESIGNER, MOCK_DESIGNER } = sysPrompt
+    const { UI_DESIGNER, API_DESIGNER, MOCK_DESIGNER } = systemPrompt
 
     return {
         generateMock: async ({ columns, fileName }) => {
@@ -101,7 +101,7 @@ module.exports = ({ config, openAI, template, sysPrompt, apiPrompt, mockPrompt, 
                         ]
                     }
                 ],
-                response_format: taskType === 'page' ? { type: 'json_schema', strict: true, json_schema: require(`../schema/${template}/page.json`) } : { type: 'json_object' }
+                response_format: taskType === 'page' ? { type: 'json_schema', strict: true, json_schema: require(`../framework/${template}/schema/page.json`) } : { type: 'json_object' }
             })
         },
     }

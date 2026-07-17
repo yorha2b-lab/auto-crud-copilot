@@ -5,14 +5,13 @@ module.exports = async filePath => {
     const path = require('path')
     const chalk = require('chalk')
 
-    const {
-        language,
-        pagePrompt,
-        menus, config,
-        index, resource,
-        contextStringify,
-        generateMock, recognizePage,
-    } = require('../../core/context').get()
+    const { ux, llm, prompts, generator, infrastructure } = require('../bootstrap').get()
+
+    const { language } = ux
+    const { pagePrompt } = prompts
+    const { index, resource } = generator
+    const { generateMock, recognizePage } = llm
+    const { menus, config, contextStringify } = infrastructure
 
     const { useDemo, pagesDir, needMock } = config
 
@@ -48,7 +47,7 @@ module.exports = async filePath => {
                 `\n🤖 Pod 042: [报告] 拦截到实弹请求。正在空投标准模拟包: example.json\n`,
                 `\n🤖 Pod 042: [Report] Real-fire request intercepted. Dropping simulation package: example.json\n`
             )))
-            pageConfig = require('../../../example/example.json')
+            pageConfig = require('../../example/example.json')
         } else {
             spinner.text = chalk.cyan(language(
                 `🤖 Pod 042: 正在上传视觉元数据至司令部进行语义分析...\n`,

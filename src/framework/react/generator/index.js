@@ -1,4 +1,4 @@
-module.exports = ({ config, contextStringify, indexTpl, resourceTpl, formatFormItemAndColumns, cleanCode, generateSmartImports }) => {
+module.exports = ({ config, indexTpl, cleanCode, resourceTpl, contextStringify, generateSmartImports, formatFormItemAndColumns, }) => {
 
     const { needMock, responseSuccess } = config
 

@@ -8,7 +8,7 @@ module.exports = `
 3. 必须严格遵守以下字段规范。
 
 ## 1. 表格 (Table)
-- 结构: { columns: [{ title: '列名', dataIndex: '列名英文名词', type: '' }] }
+- 结构: { columns: [{ title: '列名', dataIndex: '***englishName***', type: '' }] }
 - ⚠️ 字段白名单: [title, dataIndex, sorter, render, filters, onFilter]
 - **注意**: type为text时必须省略type属性。
 - 禁止输出:

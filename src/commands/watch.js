@@ -5,13 +5,12 @@ module.exports = () => {
     const chalk = require('chalk')
     const chokidar = require('chokidar')
 
-    const {
-        language,
-        menus, config,
-        createTaskQueue,
-        contextStringify,
-        apiHandler, pageHandler, partHandler,
-    } = require('../core/context').get()
+    const { ux, core, handlers, infrastructure } = require('../bootstrap').get()
+
+    const { language } = ux
+    const { createTaskQueue } = core
+    const { apiHandler, pageHandler, partHandler } = handlers
+    const { menus, config, contextStringify } = infrastructure
 
     const queue = createTaskQueue(2)
 
