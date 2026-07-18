@@ -1,17 +1,13 @@
 const fs = require('fs')
 const path = require('path')
 
-module.exports = async () => {
+module.exports = async ({ llm, core, yorha, dialog, config }) => {
 
-    const { ux, llm, yorha, dialogs, infrastructure } = require('../bootstrap').get()
-
-    const { local } = ux
     const { apiLinker } = llm
-    const dialog = dialogs[local]
     const { pod153, commander } = yorha
-    const { config, getLocalScore, getSemanticKeywords, } = infrastructure
-
     const { apiDoc, pagesDir } = config
+    const { getLocalScore, getSemanticKeywords } = core
+
     if (!apiDoc) return
 
     pod153.report(dialog.pod153.autonomousAddressing, 'magenta')
@@ -94,7 +90,7 @@ module.exports = async () => {
                         fs.writeFileSync(indexPath, indexCode)
                         pod153.report(dialog.pod153.signalSynchronized(Object.keys(result).length))
                         // 💡 战术免责补丁：采用橙黄色高亮，提醒指挥官保持警惕
-                        commander.log(dialog.bunker.disclaimer, 'yellow')
+                        commander.report(dialog.bunker.disclaimer, 'yellow')
                     }
                 }
             }

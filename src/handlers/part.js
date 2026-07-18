@@ -5,14 +5,12 @@ module.exports = {
     async handle(filePath) {
 
         const chalk = require('chalk')
-        const { ux, llm, core, yorha, dialogs, prompts, infrastructure } = require('../bootstrap').get()
+        const { llm, core, yorha, dialog, prompts, foundation } = require('../bootstrap').get()
 
-        const { local } = ux
         const { pod042 } = yorha
-        const dialog = dialogs[local]
         const { recognizePage } = llm
-        const { partPrompt } = prompts
-        const { contextStringify } = infrastructure
+        const { part: prompt } = prompts
+        const { contextStringify } = foundation
         const { cleanCode, formatFormItemAndColumns } = core
 
         const startTime = Date.now()
@@ -22,7 +20,7 @@ module.exports = {
         try {
             pod042.update(spinner, dialog.pod042.extractingUiMetadata)
 
-            const pageConfig = await recognizePage({ prompt: partPrompt, filePath, taskType: 'part' })
+            const pageConfig = await recognizePage({ prompt, filePath, taskType: 'part' })
 
             const { formItems, dictBlocks, processedColumns } = formatFormItemAndColumns({ pageConfig })
 

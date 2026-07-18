@@ -31,6 +31,7 @@ module.exports = {
         bridgeProtocolComplete: (count, time) => `Semantic bridge protocol complete. Corrected ${count} field deviations. Elapsed: ${time}s`,
     },
     bunker: {
+        exit: 'Signal Lost',
         envCopy: '.env storage complete',
         envCheck: '.env already exists',
         systemStandby: 'System is STANDBY',
@@ -38,7 +39,10 @@ module.exports = {
         configCopy: 'config.js storage complete',
         argDesc: 'Specify frontend framework template',
         desc: 'AI-powered frontend CRUD code generator',
+        dataSynced: 'All data synced to Bunker storage nodes',
         initDesc: 'Initialize Bunker construction environment',
+        star: 'If it saves you time, feel free to give it a ⭐ on GitHub',
+        copyTemplateError: virus => `Template construction failed: ${virus}`,
         towerOnline: port => `Signal Intercept Tower Online [Band: ${port}]`,
         linkSevered: 'Link Severed: Check network status or Black Box resonance',
         systemOffline: 'Disconnecting Neural Link, Executing Physical Assembly...',
@@ -46,8 +50,11 @@ module.exports = {
         watchDesc: 'Start full-channel linked monitoring: Coordinated Page/Part/API construction',
         towerConnected: port => `Command: Please point your local proxy target to http://localhost:${port}`,
         disclaimer: 'Match Result Reference Only. Not Final Decision. Each Unit should adjust based on battlefield conditions',
+        frameworkNotSupported: template => `[${template}] framework not supported. Welcome to contribute a Pull Request to help`,
         networkInstability: count => `Neural Network instability detected. Attempting to re-establish link... (Retry #${count})`,
-        initComplete: cmd => `Bunker deployment is complete. To expedite your entry into the battlefield, I recommend a manual [Physical Assembly]: Add ${cmd} to your package.json scripts.`
+        strategicThreshold: (target, current) => `Physical clone count has exceeded ${target} strategic threshold! Current power: ${current}`,
+        initComplete: cmd => `Bunker deployment is complete. To expedite your entry into the battlefield, I recommend a manual [Physical Assembly]: Add ${cmd} to your package.json scripts.`,
+        isLegendary: (unlockAchievement, current, target) => unlockAchievement ? 'Congratulations, your construction protocol is now part of humanity' : `Current clones: ${current}. ${target - current} to Achievement`,
     },
     operator6O: {
         call2B: 'Calling 2B, all-channel linked monitoring is ready!'

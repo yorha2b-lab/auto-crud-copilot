@@ -1,56 +1,54 @@
 const fs = require('fs')
 const path = require('path')
-const chalk = require('chalk')
 
 let instance = null
 
 module.exports = {
 
-    init: (options, dialogs) => {
+    init: ({ template }, dialog) => {
 
-        const template = options.template
-        const ux = require('../utils/ux')
+        const yorha = require('./yorha')()
 
         const generatorPath = path.join(__dirname, `../framework/${template}/generator`)
         if (!fs.existsSync(generatorPath)) {
-            console.log(chalk.red(ux.local === 'ZH-CN' ? `暂不支持 [${template}] 框架。欢迎提交 Pull Request 贡献。` : `[${template}] framework not supported. Welcome to contribute a Pull Request to help.`))
+            yorha.commander.report(dialog.bunker.frameworkNotSupported(template), 'red')
             return
         }
 
-        const infrastructure = require('../utils/infrastructure')
+        const foundation = require('../utils/foundation')
+        const config = foundation.getConfig()
 
-        const yorha = require('./yorha')()
-        const openAI = require('./openai')()
-        const core = require('../utils/core')
-        const handlers = require('./handlers')()
-        const config = infrastructure.getConfig()
-        const menus = infrastructure.getExistingMenus()
-        const prompts = require('./prompts')({ template })
-        const handlebars = require('./handlebars')({ config, template, ...infrastructure })
+        const accessPoint = {
+            yorha,
+            config,
+            dialog,
+            template,
+            foundation,
+            openAI: require('./openai')(),
+            core: require('../utils/core'),
+            menus: foundation.getExistingMenus(),
+            handlebars: require('./handlebar')({ config, template, ...foundation }),
+            handlers: require('./registry')({ dir: path.join(__dirname, '../handlers') }),
+            prompts: require('./registry')({ dir: path.join(__dirname, `../framework/${template}/prompts`) }),
+        }
 
-        const accessPoint = { ux, yorha, openAI, config, dialogs, options, template, ...core, ...prompts, ...handlebars, ...infrastructure }
-
-        require('./infrastructure')(accessPoint)
+        require('./foundation')(accessPoint)
         const llm = require('../services/llm')(accessPoint)
         const generator = require(generatorPath)(accessPoint)
+        const labs = require('./labs')({ llm, ...accessPoint })
 
 
-        instance = {
-            ux,
-            llm,
-            core,
-            yorha,
-            openAI,
-            prompts,
-            dialogs,
-            handlers,
-            generator,
-            handlebars,
-            cli: options,
-            infrastructure: { menus, config, ...infrastructure },
-        }
+        instance = { llm, labs, generator, ...accessPoint }
         return instance
     },
 
-    get: () => instance
+    get: () => instance,
+
+    reboot() {
+        const { template, dialog } = instance
+        delete require.cache[require.resolve(path.join(process.cwd(), 'config.js'))]
+        instance.labs?.shutdown?.()
+        instance = null
+        return this.init({ template }, dialog)
+    }
 }

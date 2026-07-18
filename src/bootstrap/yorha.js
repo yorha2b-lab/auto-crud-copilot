@@ -11,9 +11,6 @@ module.exports = () => {
         fail(spinner, text) {
             spinner.fail(chalk.red(`\n${name} ${text}`))
         },
-        log(text, color = 'gray') {
-            console.log(chalk[color](`\n${name} ${text}`))
-        },
         report(text, color = 'yellow') {
             console.log(chalk[color](`\n${name} ${text}`))
         },

@@ -6,7 +6,7 @@ const pkg = require('../package.json')
 const { program } = require('commander')
 const { local, matrixEffect, bootSequence } = require('../src/utils/ux')
 
-const dialogs = require('../src/bootstrap/dialogs')()
+const dialogs = require('../src/bootstrap/registry')({ dir: path.join(__dirname, '../src/dialogs') })
 const dialog = dialogs[local]
 
 program
@@ -19,29 +19,25 @@ program
     .command('init')
     .description(dialog.bunker.initDesc)
     .action(() => {
-        const tplConfig = path.resolve(__dirname, '../config.js')
-        const tplEnv = path.resolve(__dirname, '../.env.example')
-        const targetEnv = path.join(process.cwd(), '.env')
-        const targetConfig = path.join(process.cwd(), 'config.js')
-
-        fs.mkdirSync(path.join(process.cwd(), 'response'), { recursive: true })
-        fs.mkdirSync(path.join(process.cwd(), 'screenShot'), { recursive: true })
-        fs.mkdirSync(path.join(process.cwd(), 'screenPart'), { recursive: true })
-
-        if (fs.existsSync(targetEnv)) {
-            console.log(chalk.yellow(dialog.bunker.envCheck))
-        } else {
-            fs.copyFileSync(tplEnv, targetEnv)
-            console.log(chalk.green(dialog.bunker.envCopy))
+        const battlefield = {
+            dirs: ['response', 'screenShot', 'screenPart'],
+            files: [
+                { from: '.env.example', to: '.env', exist: 'envCheck', success: 'envCopy' },
+                { from: 'config.js', to: 'config.js', exist: 'configCheck', success: 'configCopy' }
+            ]
         }
-
-        if (fs.existsSync(targetConfig)) {
-            console.log(chalk.yellow(dialog.bunker.configCheck))
-        } else {
-            fs.copyFileSync(tplConfig, targetConfig)
-            console.log(chalk.green(dialog.bunker.configCopy))
+        const installer = {
+            dirs: dir => fs.mkdirSync(path.join(process.cwd(), dir), { recursive: true }),
+            files: ({ from, to, exist, success }) => {
+                const target = path.join(process.cwd(), to)
+                if (fs.existsSync(target)) {
+                    return console.log(chalk.yellow(dialog.bunker[exist]))
+                }
+                fs.copyFileSync(path.resolve(__dirname, `../${from}`), target)
+                console.log(chalk.green(dialog.bunker[success]))
+            }
         }
-
+        Object.entries(battlefield).forEach(([type, items]) => items.forEach(installer[type]))
         const bunkerCmd = chalk.yellow(`'bunker': 'autodev watch'`)
         console.log(chalk.cyan(dialog.bunker.initComplete(bunkerCmd)))
     })
@@ -52,27 +48,15 @@ program
     .description(dialog.bunker.watchDesc)
     .action(async () => {
         const bunker = require('../src/bootstrap')
-        const result = bunker.init(program.opts(), dialogs)
+        const result = bunker.init(program.opts(), dialog)
         if (!result) {
             return
         }
-        const { commander } = result.yorha
-        const { config } = result.infrastructure
-        const { apiDoc, needMock, proxyTarget, enableAutoAlignment } = config
-
-        const bootTower = proxyTarget && !needMock && enableAutoAlignment
-
-        await bootSequence({ dialog, version: pkg.version, bootTower, commander })
+        await bootSequence(pkg.version)
         require('../src/commands/watch')()
-        if (bootTower) {
-            require('../src/labs/tower')()
-        }
-        if (apiDoc && enableAutoAlignment) {
-            require('../src/labs/linker')()
-        }
         process.on('SIGINT', () => {
-            commander.log(dialog.bunker.systemOffline)
-            matrixEffect(500)
+            result.yorha.commander.report(dialog.bunker.systemOffline, 'gray')
+            matrixEffect(500, dialog)
         })
     })
 

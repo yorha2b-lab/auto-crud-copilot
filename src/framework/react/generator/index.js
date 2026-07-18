@@ -1,6 +1,9 @@
-module.exports = ({ config, indexTpl, cleanCode, resourceTpl, contextStringify, generateSmartImports, formatFormItemAndColumns, }) => {
+module.exports = ({ core, config, handlebars, foundation }) => {
 
+    const { contextStringify } = foundation
+    const { indexTpl, resourceTpl } = handlebars
     const { needMock, responseSuccess } = config
+    const { cleanCode, generateSmartImports, formatFormItemAndColumns } = core
 
     return {
         index: ({ fileName, pageConfig }) => {

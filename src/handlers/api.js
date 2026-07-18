@@ -6,16 +6,13 @@ module.exports = {
     async handle(filePath, liveResponse = null) {
 
         const chalk = require('chalk')
-        const { ux, llm, core, yorha, dialogs, infrastructure } = require('../bootstrap').get()
-
-        const { local } = ux
-        const dialog = dialogs[local]
-        const { unwrapSignal } = core
-        const { nineS, pod153 } = yorha
-        const { config } = infrastructure
-        const { alignResponseFields } = llm
+        const { llm, core, yorha, dialog, config } = require('../bootstrap').get()
 
         const { pagesDir } = config
+        const { unwrapSignal } = core
+        const { nineS, pod153 } = yorha
+        const { alignResponseFields } = llm
+
         const startTime = Date.now()
         const fileName = liveResponse?.fileName ?? path.basename(filePath, path.extname(filePath))
         const resourcePath = path.join(process.cwd(), pagesDir, fileName, 'resource.js')

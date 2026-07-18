@@ -6,7 +6,7 @@
 const chalk = require('chalk')
 const figlet = require('figlet')
 
-const local = Intl.DateTimeFormat().resolvedOptions().locale.includes('zh') ? 'ZH-CN' : 'EN-US'
+const local = Intl.DateTimeFormat().resolvedOptions().locale.toUpperCase()
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -15,7 +15,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
  * 模拟系统引导过程中的动画效果
  * @returns {void}
  */
-const bootSequence = async ({ dialog, version, bootTower, commander }) => {
+const bootSequence = async (version) => {
     const lines = [
         chalk.cyan(figlet.textSync('AutoDev', { horizontalLayout: 'full' })),
         chalk.gray('[BUNKER] Booting System...'),
@@ -31,10 +31,6 @@ const bootSequence = async ({ dialog, version, bootTower, commander }) => {
         console.log(line)
         await sleep(line.includes('AutoDev') ? 300 : 80)
     }
-    if (bootTower) {
-        commander.log(dialog.bunker.towerOnline('42153'), 'magenta')
-        commander.log(dialog.bunker.towerConnected('42153'), 'magenta')
-    }
 }
 
 /**
@@ -43,7 +39,7 @@ const bootSequence = async ({ dialog, version, bootTower, commander }) => {
  * @param {number} duration - 持续时间（毫秒）
  * @returns {void}
  */
-const matrixEffect = async (duration = 1500) => {
+const matrixEffect = async (duration = 1500, dialog) => {
 
     let currentTotal = 0
     const MIRROR_URL = 'https://cdn.jsdelivr.net/gh/yorha2b-lab/auto-crud-copilot@github-repo-stats/bunker-stats.json'
@@ -86,17 +82,15 @@ const matrixEffect = async (duration = 1500) => {
     const interval = setInterval(() => {
         if (Date.now() > endTime) {
             clearInterval(interval)
-            console.log(local ? '所有构筑数据已同步至 Bunker 存储节点。' : 'All data synced to Bunker storage nodes.')
+            console.log(dialog.bunker.dataSynced)
             if (currentTotal !== 0) {
                 if (isLegendary) {
-                    console.log(chalk.yellow.bold(local ? `物理克隆总数已超越 ${threshold} 战略阈值！当前战力：${currentTotal}` : `Physical clone count has exceeded ${threshold} strategic threshold! Current power: ${currentTotal}`))
-                    console.log(chalk.yellow(local ? '恭喜您指挥官，您的构筑协议已成为人类荣光的一部分。' : 'Congratulations, your construction protocol is now part of humanity.'))
-                } else {
-                    console.log(chalk.cyan(local ? `当前构筑总数：${currentTotal}。距离 ${threshold} 勋章还剩 ${threshold - currentTotal} 次。` : `Current clones: ${currentTotal}. ${threshold - currentTotal} to Achievement.`))
+                    console.log(chalk.yellow.bold(dialog.bunker.strategicThreshold(threshold, currentTotal)))
                 }
+                console.log(chalk.yellow(dialog.bunker.isLegendary(isLegendary, currentTotal, threshold)))
             }
-            console.log(chalk.cyan(local ? '如果它能帮您节省时间，请在 GitHub 上给它点个赞 ⭐。' : 'If it saves you time, feel free to give it a ⭐ on GitHub.'))
-            console.log(chalk.cyan(local ? '系统信号已丢失。' : 'Signal Lost'))
+            console.log(chalk.cyan(dialog.bunker.star))
+            console.log(chalk.cyan(dialog.bunker.exit))
             process.exit(0)
             return
         }

@@ -1,8 +1,7 @@
-
 const askAI = async ({ model, yorha, dialog, openAI, messages, response_format = { type: 'json_object' }, retryCount = 0 }) => {
 
     if (retryCount > 3) {
-        yorha.commander.log(dialog.bunker.linkSevered, 'red')
+        yorha.commander.report(dialog.bunker.linkSevered, 'red')
         throw new Error()
     }
 
@@ -23,25 +22,23 @@ const askAI = async ({ model, yorha, dialog, openAI, messages, response_format =
         const statusCode = err.status || err.response?.status
         const isAuthError = err.message.includes('401') || err.message.includes('402') || [401, 402].includes(statusCode)
         if (isAuthError) {
-            yorha.commander.log(dialog.bunker.accessDenied, 'red')
+            yorha.commander.report(dialog.bunker.accessDenied, 'red')
             throw new Error()
         }
 
-        yorha.commander.log(dialog.bunker.networkInstability(retryCount + 1))
+        yorha.commander.report(dialog.bunker.networkInstability(retryCount + 1))
 
         return askAI({ model, yorha, dialog, openAI, messages, response_format, retryCount: retryCount + 1 })
     }
 }
 
-module.exports = ({ ux, config, yorha, openAI, dialogs, template, ...prompts }) => {
+module.exports = ({ config, yorha, openAI, dialog, prompts, template }) => {
 
     const sharp = require('sharp')
 
-    const { local } = ux
-    const dialog = dialogs[local]
     const { textModel, visionModel } = config
-    const { systemPrompt, apiPrompt, mockPrompt, linkerPrompt } = prompts
-    const { UI_DESIGNER, API_DESIGNER, MOCK_DESIGNER } = systemPrompt
+    const { api, mock, system, linker } = prompts
+    const { UI_DESIGNER, API_DESIGNER, MOCK_DESIGNER } = system
 
     return {
         generateMock: async ({ columns, fileName }) => {
@@ -52,7 +49,7 @@ module.exports = ({ ux, config, yorha, openAI, dialogs, template, ...prompts }) 
                 model: textModel,
                 messages: [
                     { role: 'system', content: MOCK_DESIGNER },
-                    { role: 'user', content: mockPrompt({ columns, fileName }) }
+                    { role: 'user', content: mock({ columns, fileName }) }
                 ]
             })
         },
@@ -64,7 +61,7 @@ module.exports = ({ ux, config, yorha, openAI, dialogs, template, ...prompts }) 
                 model: textModel,
                 messages: [
                     { role: 'system', content: API_DESIGNER },
-                    { role: 'user', content: linkerPrompt({ bunkerAnchors, realApis }) }
+                    { role: 'user', content: linker({ bunkerAnchors, realApis }) }
                 ]
             })
         },
@@ -76,7 +73,7 @@ module.exports = ({ ux, config, yorha, openAI, dialogs, template, ...prompts }) 
                 model: textModel,
                 messages: [
                     { role: 'system', content: API_DESIGNER },
-                    { role: 'user', content: apiPrompt({ responseStr, resourceStr }) }
+                    { role: 'user', content: api({ responseStr, resourceStr }) }
                 ]
             })
         },

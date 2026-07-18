@@ -5,17 +5,15 @@ module.exports = {
     watch: 'screenShot',
     async handle(filePath) {
 
-        const { ux, llm, yorha, dialogs, prompts, generator, infrastructure } = require('../bootstrap').get()
+        const { llm, menus, yorha, dialog, config, prompts, generator, foundation } = require('../bootstrap').get()
 
-        const { local } = ux
-        const dialog = dialogs[local]
-        const { pagePrompt } = prompts
+        const { page } = prompts
         const { nineS, pod042 } = yorha
         const { index, resource } = generator
+        const { contextStringify } = foundation
         const { generateMock, recognizePage } = llm
-        const { menus, config, contextStringify } = infrastructure
-
         const { useDemo, pagesDir, needMock } = config
+
 
         const startTime = Date.now()
         const fileName = path.basename(filePath, path.extname(filePath))
@@ -39,7 +37,7 @@ module.exports = {
                 pageConfig = require('../../example/example.json')
             } else {
                 pod042.update(spinner, dialog.pod042.uploadVisualMetadata)
-                pageConfig = await recognizePage({ prompt: pagePrompt, filePath })
+                pageConfig = await recognizePage({ prompt: page(fileName), filePath })
             }
 
             fs.writeFileSync(path.join(targetDir, 'resource.js'), resource({ pageConfig }))

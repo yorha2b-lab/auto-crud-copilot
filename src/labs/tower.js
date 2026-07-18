@@ -3,18 +3,13 @@
  * @description [地堡 42153 联合波段] 启动流量拦截塔。
  * 独立运行于后台，监听 42153 端口，物理截获联调过程中的 JSON 信号并触发语义对齐。
  */
-module.exports = () => {
+module.exports = ({ core, yorha, dialog, config, handlers }) => {
 
     const http = require('http')
     const zlib = require('zlib')
     const httpProxy = require('http-proxy')
 
-    const { ux, core, yorha, dialogs, handlers, infrastructure } = require('../bootstrap').get()
-
-    const { local } = ux
-    const { pod153 } = yorha
-    const dialog = dialogs[local]
-    const { config } = infrastructure
+    const { pod153, commander } = yorha
     const { unwrapSignal, isQuerySignal } = core
     const { routeMap = {}, proxyTarget } = config
 
@@ -78,5 +73,10 @@ module.exports = () => {
         proxy.web(req, res, { target: proxyTarget, changeOrigin: true })
     })
 
-    server.listen(TOWER_PORT, () => {})
+    server.listen(TOWER_PORT, () => {
+        commander.report(dialog.bunker.towerOnline('42153'), 'magenta')
+        commander.report(dialog.bunker.towerConnected('42153'), 'magenta')
+    })
+
+    return server
 }

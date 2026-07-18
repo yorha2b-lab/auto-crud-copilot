@@ -2,7 +2,8 @@
  * Auto CRUD Copilot - YoRHa Bunker Construction System
  *
  */
-
+const { Segment, useDefault } = require('segmentit')
+const segmentit = useDefault(new Segment())
 /**
  * 清理大模型生成的代码
  * 大模型输出的标准 JSON 无法携带 render: (text) => <Tag> 等箭头函数。
@@ -120,6 +121,23 @@ const isQuerySignal = (req, json, coreData) => {
 }
 
 /**
+ * @function getSemanticKeywords
+ * @description [语义精炼厂 2.0] 使用 segmentit 引擎进行物理切片。
+ */
+const getSemanticKeywords = text => {
+    // 💡 物理脱水：确保输入为纯净字符串
+    const content = Array.isArray(text) ? text.join(' ') : (text || '')
+    // 💡 执行分词
+    const result = segmentit.doSegment(content, {
+        simple: true, // 开启简易模式，提升吞吐效率
+        stripPunctuation: true // 物理过滤掉所有的标点符号
+    })
+    // 💡 提取词条并执行“基因筛选”
+    return Array.from(new Set(result.filter(word => word.length >= 2 && !/^[0-9]+$/.test(word))))
+}
+
+
+/**
  * @function formatFormItemAndColumns
  * @description [地堡逻辑转录引擎] 执行核心的语义对齐与代码物理注入协议。
  * 该函数负责将 AI 识别出的视觉类型标签（money/date/enum等）转化为标准的 React 渲染逻辑，
@@ -141,7 +159,7 @@ const formatFormItemAndColumns = ({ pageConfig }) => {
         index: '(_, record, index) => index + 1',
         tag: `text => <Tag color='magenta'>{text}</Tag>`,
         badge: `text => <Badge status='success' text={text} />`,
-        enum: dataIndex => `text => ${dataIndex}Options.find(item => item.value === text)?.label??text`,
+        enum: dataIndex => `text => ${dataIndex}Options.find(item => item.value === text)?.label ?? text`,
     }
 
     const columns = pageConfig.table?.columns ?? pageConfig?.columns ?? []
@@ -182,6 +200,28 @@ const formatFormItemAndColumns = ({ pageConfig }) => {
 }
 
 /**
+ * @function getLocalScore
+ * @description [战力评估协议] 计算语义重合度。
+ */
+const getLocalScore = (api, pageKeywords, moduleName) => {
+    let score = 0
+    const path = api.path.toLowerCase()
+    const desc = api.desc.toLowerCase()
+    const mod = moduleName.toLowerCase()
+
+    // 💡 权重 A：路径直接包含模块名 (暴击加分 +50)
+    if (path.includes(mod)) score += 50
+
+    // 💡 权重 B：描述包含模块核心词 (中量加分 +10)
+    pageKeywords.forEach(word => {
+        if (desc.includes(word.toLowerCase())) score += 10
+        if (path.includes(word.toLowerCase())) score += 5
+    })
+
+    return score
+}
+
+/**
  * 生成智能导入语句
  * 根据代码中实际使用的依赖，自动生成对应的 import 语句
  * @param {string} codeStr - 生成的代码字符串
@@ -219,4 +259,4 @@ const generateSmartImports = ({ module, hasTabs, bodyCode, hasFormItems }) => {
     return imports.filter(Boolean).join('\n')
 }
 
-module.exports = { cleanCode, unwrapSignal, isQuerySignal, createTaskQueue, generateSmartImports, formatFormItemAndColumns }
+module.exports = { cleanCode, unwrapSignal, isQuerySignal, getLocalScore, createTaskQueue, getSemanticKeywords, generateSmartImports, formatFormItemAndColumns }
