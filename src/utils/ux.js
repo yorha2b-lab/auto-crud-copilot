@@ -6,8 +6,7 @@
 const chalk = require('chalk')
 const figlet = require('figlet')
 
-const isCN = Intl.DateTimeFormat().resolvedOptions().locale.includes('zh')
-const language = (zh, en) => (isCN ? zh : en)
+const local = Intl.DateTimeFormat().resolvedOptions().locale.includes('zh') ? 'ZH-CN' : 'EN-US'
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -16,21 +15,25 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
  * 模拟系统引导过程中的动画效果
  * @returns {void}
  */
-const bootSequence = async version => {
+const bootSequence = async ({ dialog, version, bootTower, commander }) => {
     const lines = [
         chalk.cyan(figlet.textSync('AutoDev', { horizontalLayout: 'full' })),
-        chalk.gray('Booting System...'),
-        chalk.white(' [System] ') + chalk.green('Locale Detection: ') + chalk.cyan(language('ZH-CN', 'EN-US')),
-        chalk.white(' [System] ') + chalk.green('YoRHa No.2 Type B Unit: ') + chalk.cyan('Online'),
-        chalk.white(' [System] ') + chalk.green('Scanner Type 9S Unit: ') + chalk.cyan('Standby'),
-        chalk.white(' [System] ') + chalk.green('Full-Channel Link: ') + chalk.cyan('Established'),
-        chalk.white(' [Mission] ') + chalk.yellow('Bunker Construction Protocol: ') + chalk.cyan('v' + version),
-        chalk.white(' [Bunker] ') + chalk.magenta('Glory to mankind. (人类荣光永存)'),
-        chalk.gray('--------------------------------------------------\n')
+        chalk.gray('[BUNKER] Booting System...'),
+        chalk.white('[BUNKER] ') + chalk.green('Locale Detection: ') + chalk.cyan(local),
+        chalk.white('[BUNKER] ') + chalk.green('YoRHa No.2 Type B Unit: ') + chalk.cyan('Online'),
+        chalk.white('[BUNKER] ') + chalk.green('Scanner Type 9S Unit: ') + chalk.cyan('Standby'),
+        chalk.white('[BUNKER] ') + chalk.green('Full-Channel Link: ') + chalk.cyan('Established'),
+        chalk.white('[BUNKER] ') + chalk.yellow('Construction Protocol: ') + chalk.cyan('v' + version),
+        chalk.white('[BUNKER] ') + chalk.magenta('Glory to mankind. (人类荣光永存)'),
+        chalk.gray('--------------------------------------------------')
     ]
     for (const line of lines) {
         console.log(line)
         await sleep(line.includes('AutoDev') ? 300 : 80)
+    }
+    if (bootTower) {
+        commander.log(dialog.bunker.towerOnline('42153'), 'magenta')
+        commander.log(dialog.bunker.towerConnected('42153'), 'magenta')
     }
 }
 
@@ -83,17 +86,17 @@ const matrixEffect = async (duration = 1500) => {
     const interval = setInterval(() => {
         if (Date.now() > endTime) {
             clearInterval(interval)
-            console.log(chalk.white(' [System] ') + chalk.green(language('所有构筑数据已同步至 Bunker 存储节点。', 'All data synced to Bunker storage nodes.')))
+            console.log(local ? '所有构筑数据已同步至 Bunker 存储节点。' : 'All data synced to Bunker storage nodes.')
             if (currentTotal !== 0) {
                 if (isLegendary) {
-                    console.log(chalk.yellow.bold(language(` [Achievement] 物理克隆总数已超越 ${threshold} 战略阈值！当前战力：${currentTotal}`, ` [Achievement] Physical clone count has exceeded ${threshold} strategic threshold! Current power: ${currentTotal}`)))
-                    console.log(chalk.yellow(language(' [Bunker] 恭喜指挥官，您的构筑协议已成为人类荣光的一部分。', ' [Bunker] Congratulations, your construction protocol is now part of humanity.')))
+                    console.log(chalk.yellow.bold(local ? `物理克隆总数已超越 ${threshold} 战略阈值！当前战力：${currentTotal}` : `Physical clone count has exceeded ${threshold} strategic threshold! Current power: ${currentTotal}`))
+                    console.log(chalk.yellow(local ? '恭喜您指挥官，您的构筑协议已成为人类荣光的一部分。' : 'Congratulations, your construction protocol is now part of humanity.'))
                 } else {
-                    console.log(chalk.cyan(language(` [System] 当前构筑总数：${currentTotal}。距离 ${threshold} 勋章还剩 ${threshold - currentTotal} 次。`, ` [System] Current clones: ${currentTotal}. ${threshold - currentTotal} to Achievement.`)))
+                    console.log(chalk.cyan(local ? `当前构筑总数：${currentTotal}。距离 ${threshold} 勋章还剩 ${threshold - currentTotal} 次。` : `Current clones: ${currentTotal}. ${threshold - currentTotal} to Achievement.`))
                 }
             }
-            console.log(chalk.cyan(language(' [System] 如果它能帮您节省时间，请在 GitHub 上给它点个赞 ⭐。', ' [System] If it saves you time, feel free to give it a ⭐ on GitHub.')))
-            console.log(chalk.cyan('\n[System] Signal Lost. Glory to Mankind.\n'))
+            console.log(chalk.cyan(local ? '如果它能帮您节省时间，请在 GitHub 上给它点个赞 ⭐。' : 'If it saves you time, feel free to give it a ⭐ on GitHub.'))
+            console.log(chalk.cyan(local ? '系统信号已丢失。' : 'Signal Lost'))
             process.exit(0)
             return
         }
@@ -112,4 +115,4 @@ const matrixEffect = async (duration = 1500) => {
     }, 40)
 }
 
-module.exports = { language, matrixEffect, bootSequence }
+module.exports = { local, matrixEffect, bootSequence }

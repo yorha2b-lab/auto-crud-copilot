@@ -1,22 +1,20 @@
+const fs = require('fs')
+const path = require('path')
+
 module.exports = async () => {
 
-    const fs = require('fs')
-    const path = require('path')
-    const chalk = require('chalk')
+    const { ux, llm, yorha, dialogs, infrastructure } = require('../bootstrap').get()
 
-    const { ux, llm, infrastructure } = require('../bootstrap').get()
-
-    const { language } = ux
+    const { local } = ux
     const { apiLinker } = llm
+    const dialog = dialogs[local]
+    const { pod153, commander } = yorha
     const { config, getLocalScore, getSemanticKeywords, } = infrastructure
 
     const { apiDoc, pagesDir } = config
     if (!apiDoc) return
 
-    console.log(chalk.cyan(language(
-        `\n🤖 Pod 153: 启动‘全频道自动寻址协议 [语义扫描版]’...`,
-        `\n🤖 Pod 153: Initiating 'Full-Channel Autonomous Addressing Protocol [Semantic Scan]'...`
-    )))
+    pod153.report(dialog.pod153.autonomousAddressing, 'magenta')
 
     try {
         // 1. 抓取情报
@@ -63,12 +61,7 @@ module.exports = async () => {
                         .slice(0, 20) // 💡 拓宽至前 20 名，给 AI 更多的判别空间
 
                     const finalCandidates = candidates.map(item => `${item.method} ${item.path} ${item.desc}`).join('\n')
-
-                    console.log(chalk.yellow(language(
-                        ` 🛰️  Inactive module: [${fileName}]. Requesting 9S for precise alignment...`,
-                        ` 🛰️  发现未通电模块 [${fileName}]，请求 9S 执行高精度对账...`
-                    )))
-
+                    pod153.report(dialog.pod153.inactiveModule(fileName), 'yellow')
                     // 3. 驱动 9S 最终裁决
                     const result = await apiLinker({ bunkerAnchors, realApis: finalCandidates })
 
@@ -99,23 +92,14 @@ module.exports = async () => {
                             indexCode = indexCode.replaceAll(`/api/${anchor}`, `/api${cleanPath}`)
                         })
                         fs.writeFileSync(indexPath, indexCode)
-                        console.log(chalk.green(language(
-                            `✅ 信号同步完成，${Object.keys(result).length} 个节点已通电。`,
-                            `✅ Signal Synchronized: ${Object.keys(result).length} nodes energized.`
-                        )))
+                        pod153.report(dialog.pod153.signalSynchronized(Object.keys(result).length))
                         // 💡 战术免责补丁：采用橙黄色高亮，提醒指挥官保持警惕
-                        console.log(chalk.yellow(language(
-                            `⚠️ 匹配结果仅供参考，不构成最终决策，各机体需根据实际情况进行调整。`,
-                            `⚠️ Match Result Reference Only. Not Final Decision. Each Unit should adjust based on battlefield conditions.`
-                        )))
+                        commander.log(dialog.bunker.disclaimer, 'yellow')
                     }
                 }
             }
         }
     } catch (e) {
-        console.error(chalk.red(language(
-            `\n❌ Pod 153: 信号链路故障: ${e.message}\n`,
-            `\n❌ Pod 153: Signal Link Fault: ${e.message}\n`
-        )))
+        pod153.report(dialog.pod153.signalLinkFault(e.message), 'red')
     }
 }

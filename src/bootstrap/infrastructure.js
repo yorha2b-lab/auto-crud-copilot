@@ -1,6 +1,7 @@
-module.exports = ({ ux, config, options, copyTemplateDir }) => {
+module.exports = ({ ux, config, yorha, options, copyTemplateDir }) => {
 
-    const { language } = ux
+    const { local } = ux
+    const { commander } = yorha
     const { hbsDir, hooksDir, utilsDir, componentsDir } = config
 
     try {
@@ -10,6 +11,6 @@ module.exports = ({ ux, config, options, copyTemplateDir }) => {
             copyTemplateDir(options, 'components', componentsDir)
         }
     } catch (error) {
-        console.error(language('❌ 模板构筑失败:', '❌ Template construction failed:'), error)
+        commander.log(local === 'ZH-CN' ? `模板构筑失败: ${error}` : `Template construction failed: ${error}`, 'red')
     }
 }

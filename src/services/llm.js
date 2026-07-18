@@ -1,14 +1,9 @@
 
-const chalk = require('chalk')
-const { language } = require('../utils/ux')
-
-const askAI = async ({ model, openAI, messages, response_format = { type: 'json_object' }, retryCount = 0 }) => {
+const askAI = async ({ model, yorha, dialog, openAI, messages, response_format = { type: 'json_object' }, retryCount = 0 }) => {
 
     if (retryCount > 3) {
-        throw new Error(language(
-            'YoRHa 司令部连接中断：请检查网络状态或黑盒共鸣情况。',
-            'YoRHa Command Link Severed: Check network status or Black Box resonance.'
-        ))
+        yorha.commander.log(dialog.bunker.linkSevered, 'red')
+        throw new Error()
     }
 
     try {
@@ -28,32 +23,32 @@ const askAI = async ({ model, openAI, messages, response_format = { type: 'json_
         const statusCode = err.status || err.response?.status
         const isAuthError = err.message.includes('401') || err.message.includes('402') || [401, 402].includes(statusCode)
         if (isAuthError) {
-            throw new Error(language(
-                '[系统警告] YoRHa 司令部拒绝访问：API Key 无效或额度耗尽，请检查！',
-                '[SYSTEM ALERT] YoRHa Command Center Access Denied: Invalid API Key or quota exhausted!'
-            ))
+            yorha.commander.log(dialog.bunker.accessDenied, 'red')
+            throw new Error()
         }
 
-        console.warn(chalk.yellow(language(
-            `[系统警告] 神经云网络连接不稳，正在尝试重新链接... (第 ${retryCount + 1} 次重试)`,
-            `[SYSTEM ALERT] Neural Network instability detected. Attempting to re-establish link... (Retry #${retryCount + 1})`
-        )), err.message)
+        yorha.commander.log(dialog.bunker.networkInstability(retryCount + 1))
 
-        return askAI({ model, messages, response_format, retryCount: retryCount + 1 })
+        return askAI({ model, yorha, dialog, openAI, messages, response_format, retryCount: retryCount + 1 })
     }
 }
 
-module.exports = ({ config, openAI, template, systemPrompt, apiPrompt, mockPrompt, linkerPrompt }) => {
+module.exports = ({ ux, config, yorha, openAI, dialogs, template, ...prompts }) => {
 
     const sharp = require('sharp')
 
+    const { local } = ux
+    const dialog = dialogs[local]
     const { textModel, visionModel } = config
+    const { systemPrompt, apiPrompt, mockPrompt, linkerPrompt } = prompts
     const { UI_DESIGNER, API_DESIGNER, MOCK_DESIGNER } = systemPrompt
 
     return {
         generateMock: async ({ columns, fileName }) => {
             return askAI({
+                yorha,
                 openAI,
+                dialog,
                 model: textModel,
                 messages: [
                     { role: 'system', content: MOCK_DESIGNER },
@@ -63,7 +58,9 @@ module.exports = ({ config, openAI, template, systemPrompt, apiPrompt, mockPromp
         },
         apiLinker: async ({ bunkerAnchors, realApis }) => {
             return askAI({
+                yorha,
                 openAI,
+                dialog,
                 model: textModel,
                 messages: [
                     { role: 'system', content: API_DESIGNER },
@@ -73,7 +70,9 @@ module.exports = ({ config, openAI, template, systemPrompt, apiPrompt, mockPromp
         },
         alignResponseFields: async ({ responseStr, resourceStr }) => {
             return askAI({
+                yorha,
                 openAI,
+                dialog,
                 model: textModel,
                 messages: [
                     { role: 'system', content: API_DESIGNER },
@@ -89,7 +88,9 @@ module.exports = ({ config, openAI, template, systemPrompt, apiPrompt, mockPromp
             const base64Image = compressedBuffer.toString('base64')
 
             return askAI({
+                yorha,
                 openAI,
+                dialog,
                 model: visionModel,
                 messages: [
                     { role: 'system', content: UI_DESIGNER },

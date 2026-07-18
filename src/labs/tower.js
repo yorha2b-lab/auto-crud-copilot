@@ -7,13 +7,13 @@ module.exports = () => {
 
     const http = require('http')
     const zlib = require('zlib')
-    const chalk = require('chalk')
     const httpProxy = require('http-proxy')
 
-    const { ux, core, handlers, infrastructure } = require('../bootstrap').get()
+    const { ux, core, yorha, dialogs, handlers, infrastructure } = require('../bootstrap').get()
 
-    const { language } = ux
-    const { apiHandler } = handlers
+    const { local } = ux
+    const { pod153 } = yorha
+    const dialog = dialogs[local]
     const { config } = infrastructure
     const { unwrapSignal, isQuerySignal } = core
     const { routeMap = {}, proxyTarget } = config
@@ -58,16 +58,13 @@ module.exports = () => {
                     return
                 }
 
-                console.log(chalk.cyan(language(
-                    `\n📡 Pod 153: 截获运行时信号 [${fileName}]。执行自动对齐协议...`,
-                    `\n📡 Pod 153: Captured runtime signal [${fileName}]. Executing semantic alignment protocol...`
-                )))
+                pod153.report(dialog.pod153.capturedRuntimeSignal(fileName))
                 // 💡 直接调用 api-handler 物理更新 resource.js
-                await apiHandler(null, { fileName, data: json })
+                await handlers.api.handle(null, { fileName, data: json })
                 hackedRegistry.set(fileName, fingerprint)
             } catch (e) {
-                console.log(e)
                 // 非 JSON 信号，保持静默
+                console.log(e)
             }
         })
     })
@@ -81,14 +78,5 @@ module.exports = () => {
         proxy.web(req, res, { target: proxyTarget, changeOrigin: true })
     })
 
-    server.listen(TOWER_PORT, () => {
-        console.log(chalk.magenta(language(
-            `✨ YoRHa 联合基站：信号拦截塔已在线 [波段: ${TOWER_PORT}]`,
-            `✨ YoRHa Joint Station: Signal Intercept Tower Online [Band: ${TOWER_PORT}]`
-        )))
-        console.log(chalk.gray(language(
-            `💡 指令：请将您的代理目标指向 http://localhost:${TOWER_PORT}`,
-            `💡 Command: Please point your local proxy target to http://localhost:${TOWER_PORT}`
-        )))
-    })
+    server.listen(TOWER_PORT, () => {})
 }

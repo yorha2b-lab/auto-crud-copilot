@@ -1,0 +1,55 @@
+module.exports = {
+    nineS: {
+        dataCamouflageComplete: 'Mock data generation successful',
+        scanningField: 'Scanning field differences... Bridging semantic gaps',
+        dataCamouflage: fileName => `Piercing target firewall... Executing data camouflage [${fileName}]`,
+    },
+    pod042: {
+        queueEmpty: 'Queue empty. Syncing Menu configuration to Bunker...',
+        extractingUiMetadata: 'Extracting UI metadata from neural cloud network...',
+        simulate: 'Real-fire request intercepted. Dropping simulation package: example.json',
+        uploadVisualMetadata: 'Uploading visual metadata to Command for semantic analysis...',
+        partialConstruction: time => `Report: Partial construction achieved. Elapsed: ${time}s`,
+        constructionAborted: virus => `Construction aborted. Logic virus or timeout detected: ${virus}`,
+        visualPartCaptured: `Partial visual sample detected. Executing 'Fragment Construction Protocol'...`,
+        intercept: fileName => `Module [${fileName}] already exists. Construction skipped to prevent overwrite.`,
+        partialRecommendation: '│ Recommendation: Please manually assemble the above code block into your target file',
+        partialConstructionAborted: virus => `[Warning] Fragment construction failed. Logic interference detected: ${virus}`,
+        assemblyComplete: (fileName, time) => `Protocol complete. Physical assembly of [${fileName}] achieved. Elapsed: ${time}s`,
+        visualCaptured: fileName => `Visual sensor captured: [${fileName}]. Allocating Bunker resources for physical construction...`,
+    },
+    pod153: {
+        signalLinkFault: virus => `Signal Link Fault: ${virus}`,
+        signalSynchronized: count => `Signal Synchronized: ${count} nodes energized`,
+        formatError: 'Data format is not standard JSON, will try to align by character',
+        alignmentFailed: virus => `Alignment failed. Encountered powerful API firewall: ${virus}`,
+        autonomousAddressing: `Initiating 'Full-Channel Autonomous Addressing Protocol [Semantic Scan]'...`,
+        inactiveModule: fileName => `Inactive module: [${fileName}]. Requesting 9S for precise alignment...`,
+        reconEncryptedData: fileName => `Encrypted data source [${fileName}] detected. Initiating semantic alignment...`,
+        capturedRuntimeSignal: fileName => `Captured runtime signal [${fileName}]. Executing semantic alignment protocol...`,
+        unknownModule: fileName => `Module [${fileName}] resource not found in Bunker database. Please execute visual construction first`,
+        bridgeProtocolComplete: (count, time) => `Semantic bridge protocol complete. Corrected ${count} field deviations. Elapsed: ${time}s`,
+    },
+    bunker: {
+        envCopy: '.env storage complete',
+        envCheck: '.env already exists',
+        systemStandby: 'System is STANDBY',
+        configCheck: 'config.js already exists',
+        configCopy: 'config.js storage complete',
+        argDesc: 'Specify frontend framework template',
+        desc: 'AI-powered frontend CRUD code generator',
+        initDesc: 'Initialize Bunker construction environment',
+        towerOnline: port => `Signal Intercept Tower Online [Band: ${port}]`,
+        linkSevered: 'Link Severed: Check network status or Black Box resonance',
+        systemOffline: 'Disconnecting Neural Link, Executing Physical Assembly...',
+        accessDenied: 'YoRHa Command Center Access Denied: Invalid API Key or quota exhausted!',
+        watchDesc: 'Start full-channel linked monitoring: Coordinated Page/Part/API construction',
+        towerConnected: port => `Command: Please point your local proxy target to http://localhost:${port}`,
+        disclaimer: 'Match Result Reference Only. Not Final Decision. Each Unit should adjust based on battlefield conditions',
+        networkInstability: count => `Neural Network instability detected. Attempting to re-establish link... (Retry #${count})`,
+        initComplete: cmd => `Bunker deployment is complete. To expedite your entry into the battlefield, I recommend a manual [Physical Assembly]: Add ${cmd} to your package.json scripts.`
+    },
+    operator6O: {
+        call2B: 'Calling 2B, all-channel linked monitoring is ready!'
+    }
+}
