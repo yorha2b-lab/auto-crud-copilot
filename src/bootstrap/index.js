@@ -42,7 +42,16 @@ module.exports = {
         return instance
     },
 
-    get: () => instance,
+    get: () => {
+        return new Proxy({}, {
+            get(target, prop) {
+                if (!instance) {
+                    throw new Error()
+                }
+                return instance[prop]
+            }
+        })
+    },
 
     reboot() {
         const { template, dialog } = instance

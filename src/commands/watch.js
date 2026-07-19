@@ -5,20 +5,16 @@ module.exports = () => {
     const chokidar = require('chokidar')
 
     const bootstrap = require('../bootstrap')
-    const { core, menus, yorha, config, dialog, handlers, foundation } = bootstrap.get()
+    const ctx = bootstrap.get()
 
-    const { createTaskQueue } = core
-    const { contextStringify } = foundation
-    const { pod042, commander, operator6O } = yorha
-
-    const queue = createTaskQueue(2)
+    const queue = ctx.core.createTaskQueue(2)
 
     queue.onIdle(() => {
-        pod042.report(dialog.pod042.queueEmpty)
-        const utilsDir = path.join(process.cwd(), config.utilsDir)
+        ctx.yorha.pod042.report(ctx.dialog.pod042.queueEmpty)
+        const utilsDir = path.join(process.cwd(), ctx.config.utilsDir)
         if (!fs.existsSync(utilsDir)) fs.mkdirSync(utilsDir, { recursive: true })
-        fs.writeFileSync(path.join(utilsDir, 'menus.js'), `export const menus = ${contextStringify({ context: menus, maxLength: 50 })}`)
-        commander.report(dialog.bunker.systemStandby, 'gray')
+        fs.writeFileSync(path.join(utilsDir, 'menus.js'), `export const menus = ${ctx.foundation.contextStringify({ context: ctx.menus, maxLength: 50 })}`)
+        ctx.yorha.commander.report(ctx.dialog.bunker.systemStandby, 'gray')
     })
 
     const options = {
@@ -31,9 +27,9 @@ module.exports = () => {
     const fileWatcher = chokidar.watch(['./config.js'], options)
     const dirWatcher = chokidar.watch(['./screenShot', './screenPart', './response'], options)
 
-    operator6O.report(dialog.operator6O.call2B)
+    ctx.yorha.operator6O.report(ctx.dialog.operator6O.call2B)
 
-    const routes = Object.values(handlers)
+    const routes = Object.values(ctx.handlers)
 
     dirWatcher.on('add', filePath => {
         const absolutePath = path.resolve(filePath)
