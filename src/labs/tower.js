@@ -74,8 +74,8 @@ module.exports = ({ core, yorha, dialog, config, handlers }) => {
     })
 
     server.listen(TOWER_PORT, () => {
-        commander.report(dialog.bunker.towerOnline('42153'), 'magenta')
-        commander.report(dialog.bunker.towerConnected('42153'), 'magenta')
+        commander.report(dialog.bunker.towerOnline(TOWER_PORT), 'magenta')
+        commander.report(dialog.bunker.towerConnected(TOWER_PORT), 'magenta')
     })
 
     return server
