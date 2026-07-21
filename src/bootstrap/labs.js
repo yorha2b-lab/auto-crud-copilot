@@ -1,21 +1,16 @@
-let tower
-
 module.exports = accessPoint => {
+
+    const labs = {}
 
     const { apiDoc, needMock, proxyTarget, enableAutoAlignment } = accessPoint.config
 
     if (!needMock && proxyTarget && enableAutoAlignment) {
-        tower = require('../labs/tower')(accessPoint)
+        labs.tower = require('../labs/tower')(accessPoint)
     }
 
     if (apiDoc && enableAutoAlignment) {
-        require('../labs/linker')(accessPoint)
+        labs.council = require('../labs/council')(accessPoint)
     }
 
-    return {
-        shutdown() {
-            tower?.close()
-        }
-
-    }
+    return labs
 }

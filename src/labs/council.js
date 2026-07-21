@@ -1,11 +1,12 @@
 const fs = require('fs')
 const path = require('path')
 
-module.exports = async ({ llm, core, yorha, dialog, config }) => {
+module.exports = async ({ llm, core, yorha, dialog, config, foundation }) => {
 
-    const { apiLinker } = llm
+    const { apiParser } = llm
     const { pod153, commander } = yorha
     const { apiDoc, pagesDir } = config
+    const { contextStringify } = foundation
     const { getLocalScore, getSemanticKeywords } = core
 
     if (!apiDoc) return
@@ -27,6 +28,7 @@ module.exports = async ({ llm, core, yorha, dialog, config }) => {
         // 2. 战场侦察
         const pages = path.join(process.cwd(), pagesDir)
         const files = fs.readdirSync(pages)
+        const enumParamsMap = {}
 
         for (const fileName of files) {
             const indexPath = path.join(pages, fileName, 'index.js')
@@ -34,6 +36,7 @@ module.exports = async ({ llm, core, yorha, dialog, config }) => {
 
             if (fs.existsSync(indexPath) && fs.existsSync(resourcePath)) {
                 let indexCode = fs.readFileSync(indexPath, 'utf-8')
+                let resourceCode = fs.readFileSync(resourcePath, 'utf-8')
 
                 // 💡 锁定待通电锚点
                 if (indexCode.includes('BUNKER_API_ANCHOR')) {
@@ -59,15 +62,13 @@ module.exports = async ({ llm, core, yorha, dialog, config }) => {
                     const finalCandidates = candidates.map(item => `${item.method} ${item.path} ${item.desc}`).join('\n')
                     pod153.report(dialog.pod153.inactiveModule(fileName), 'yellow')
                     // 3. 驱动 9S 最终裁决
-                    const result = await apiLinker({ bunkerAnchors, realApis: finalCandidates })
+                    const result = await apiParser({ bunkerAnchors, realApis: finalCandidates })
 
                     if (result) {
                         // 💡 执行物理更替
                         Object.entries(result).forEach(([anchor, fullSignal]) => {
                             // 💡 1. 信号解压
-                            const parts = fullSignal.split(' ')
-                            const realMethod = parts[0].toUpperCase()
-                            const realPath = parts[1]
+                            const [realMethod, realPath] = fullSignal.split(' ')
 
                             // 💡 2. 路径清洗：确保路径拼接时不产生双斜杠 //
                             // 逻辑：如果 realPath 以 / 开头，咱们拼接时就得小心
@@ -82,11 +83,21 @@ module.exports = async ({ llm, core, yorha, dialog, config }) => {
 
                             // 💡 4. 执行“全频道通电”
                             // $1 现在包含了 request('/api 这一串
-                            indexCode = indexCode.replace(requestRegex, `$1${cleanPath}$2${realMethod}$4`)
+                            indexCode = indexCode.replace(requestRegex, `$1${cleanPath}$2${realMethod.toUpperCase()}$4`)
                             // 💡 5. 兜底替换（针对没有 method 配置的简易请求）
                             // 同样保留 /api/ 前缀
                             indexCode = indexCode.replaceAll(`/api/${anchor}`, `/api${cleanPath}`)
                         })
+
+                        const [pagesMethod, pagesApi] = result?.['BUNKER_API_ANCHOR_pages']?.split(' ')
+                        const definitions = (apiData.paths[pagesApi]?.[pagesMethod] ?? apiData.paths[pagesApi]?.[pagesMethod.toLowerCase()])?.parameters?.flatMap(item => Object.values(item.schema)?.flatMap(def => def.split('/').at(-1))) || []
+                        const parameters = apiData.definitions?.[definitions[0]]?.properties ?? {}
+                        const enumParams = Object.entries(parameters)?.filter(([_, value]) => value.hasOwnProperty('enum')) || []
+                        enumParamsMap[fileName] = contextStringify({
+                            maxLength: 100,
+                            context: Object.fromEntries(enumParams.map(([key, value]) => [`${key}Options`, value.enum?.map(opt => ({ label: opt, value: opt }))])),
+                        })
+
                         fs.writeFileSync(indexPath, indexCode)
                         pod153.report(dialog.pod153.signalSynchronized(Object.keys(result).length))
                         // 💡 战术免责补丁：采用橙黄色高亮，提醒指挥官保持警惕
@@ -95,6 +106,8 @@ module.exports = async ({ llm, core, yorha, dialog, config }) => {
                 }
             }
         }
+
+        return enumParamsMap
     } catch (e) {
         pod153.report(dialog.pod153.signalLinkFault(e.message), 'red')
     }

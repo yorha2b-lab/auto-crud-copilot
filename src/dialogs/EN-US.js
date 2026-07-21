@@ -48,6 +48,7 @@ module.exports = {
         systemOffline: 'Disconnecting Neural Link, Executing Physical Assembly...',
         accessDenied: 'YoRHa Command Center Access Denied: Invalid API Key or quota exhausted!',
         watchDesc: 'Start full-channel linked monitoring: Coordinated Page/Part/API construction',
+        copyEnum: `│ Backend Enums detected \n│ Weld the code below into the module's resource center`,
         towerConnected: port => `Command: Please point your local proxy target to http://localhost:${port}`,
         disclaimer: 'Match Result Reference Only. Not Final Decision. Each Unit should adjust based on battlefield conditions',
         frameworkNotSupported: template => `[${template}] framework not supported. Welcome to contribute a Pull Request to help`,

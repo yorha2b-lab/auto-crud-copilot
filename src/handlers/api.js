@@ -6,16 +6,17 @@ module.exports = {
     async handle(filePath, liveResponse = null) {
 
         const chalk = require('chalk')
-        const { llm, core, yorha, dialog, config } = require('../bootstrap').get()
+        const { llm, core, labs, yorha, dialog, config } = require('../bootstrap').get()
 
         const { pagesDir } = config
-        const { unwrapSignal } = core
         const { nineS, pod153 } = yorha
         const { alignResponseFields } = llm
+        const { cleanCode, unwrapSignal } = core
 
         const startTime = Date.now()
         const fileName = liveResponse?.fileName ?? path.basename(filePath, path.extname(filePath))
         const resourcePath = path.join(process.cwd(), pagesDir, fileName, 'resource.js')
+        const enumParams = (await labs?.council)?.[fileName] ?? ''
 
         const spinner = pod153.start(dialog.pod153.reconEncryptedData(fileName))
 
@@ -42,7 +43,7 @@ module.exports = {
                 while ((match = regex.exec(str)) !== null) {
                     keys.push(match[2])
                 }
-                return Array.from(new Set(keys))
+                return Array.from(new Set(keys.filter(key => key !== 'index')))
             }
 
             const sampleData = coreArray && coreArray.length > 0 ? [coreArray[0]] : rawJson
@@ -76,6 +77,13 @@ module.exports = {
                     )
                 })
                 console.log(chalk.magenta(`└────────────────────────────────────────────────────┘`))
+            }
+
+            if (enumParams) {
+                console.log(chalk.magenta(`\n┌──────── [ YoRHa Physical Assembly: Enum Genomes ] ────────┐`))
+                console.log(chalk.gray(dialog.bunker.copyEnum))
+                console.log(chalk.white(cleanCode(enumParams)))
+                console.log(chalk.magenta(`├───────────────────────────────────────────────────────────┘`))
             }
 
             if (fs.existsSync(filePath)) {

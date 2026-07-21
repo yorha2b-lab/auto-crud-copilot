@@ -50,6 +50,7 @@ module.exports = {
         accessDenied: '司令部拒绝访问：API Key 无效或额度耗尽，请检查！',
         disclaimer: '匹配结果仅供参考，不构成最终决策，各机体需根据实际情况进行调整',
         towerConnected: port => `指令：请将您的代理目标指向 http://localhost:${port}`,
+        copyEnum: '│ 侦察到后端原始基因(Enum) \n│ 建议：将下方代码片段物理焊接到该模块的资源中心',
         networkInstability: count => `神经云网络连接不稳，正在尝试重新链接... (第 ${count} 次重试)`,
         frameworkNotSupported: template => `暂不支持 [${template}] 框架。欢迎提交 Pull Request 贡献`,
         strategicThreshold: (target, current) => `物理克隆总数已超越 ${target} 战略阈值！当前战力：${current}`,

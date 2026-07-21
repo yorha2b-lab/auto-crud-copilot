@@ -37,7 +37,7 @@ module.exports = ({ config, yorha, openAI, dialog, prompts, template }) => {
     const sharp = require('sharp')
 
     const { textModel, visionModel } = config
-    const { api, mock, system, linker } = prompts
+    const { api, mock, system, council } = prompts
     const { UI_DESIGNER, API_DESIGNER, MOCK_DESIGNER } = system
 
     return {
@@ -53,7 +53,7 @@ module.exports = ({ config, yorha, openAI, dialog, prompts, template }) => {
                 ]
             })
         },
-        apiLinker: async ({ bunkerAnchors, realApis }) => {
+        apiParser: async ({ bunkerAnchors, realApis }) => {
             return askAI({
                 yorha,
                 openAI,
@@ -61,7 +61,7 @@ module.exports = ({ config, yorha, openAI, dialog, prompts, template }) => {
                 model: textModel,
                 messages: [
                     { role: 'system', content: API_DESIGNER },
-                    { role: 'user', content: linker({ bunkerAnchors, realApis }) }
+                    { role: 'user', content: council({ bunkerAnchors, realApis }) }
                 ]
             })
         },
