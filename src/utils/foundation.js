@@ -11,7 +11,6 @@ const fs = require('fs')
 const path = require('path')
 const stringify = require('json-stringify-pretty-compact')
 
-
 /**
  * 获取项目配置信息
  * 优先读取项目根目录的 config.js，如果不存在则使用默认配置
@@ -63,4 +62,6 @@ const copyTemplateDir = (template, templateSubDir, targetSubDir) => {
 
 const contextStringify = ({ context, indent = 4, maxLength = 200 }) => stringify.default(context, { indent, maxLength })
 
-module.exports = { getConfig, getExistingMenus, copyTemplateDir, contextStringify }
+const discover = dir => Object.fromEntries(fs.readdirSync(dir).filter(file => file.endsWith('.js')).map(file => [path.basename(file, '.js'), require(path.join(dir, file))]))
+
+module.exports = { discover, getConfig, getExistingMenus, copyTemplateDir, contextStringify }

@@ -27,9 +27,9 @@ module.exports = {
             openAI: require('./openai')(),
             core: require('../utils/core'),
             menus: foundation.getExistingMenus(),
+            handlers: foundation.discover(path.join(__dirname, '../handlers')),
             handlebars: require('./handlebar')({ config, template, ...foundation }),
-            handlers: require('./registry')({ dir: path.join(__dirname, '../handlers') }),
-            prompts: require('./registry')({ dir: path.join(__dirname, `../framework/${template}/prompts`) }),
+            prompts: foundation.discover(path.join(__dirname, `../framework/${template}/prompts`)),
         }
 
         require('./foundation')(accessPoint)

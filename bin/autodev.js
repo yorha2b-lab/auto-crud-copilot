@@ -4,9 +4,11 @@ const path = require('path')
 const chalk = require('chalk')
 const pkg = require('../package.json')
 const { program } = require('commander')
+
+const { discover } = require('../src/utils/foundation')
 const { local, matrixEffect, bootSequence } = require('../src/utils/ux')
 
-const dialogs = require('../src/bootstrap/registry')({ dir: path.join(__dirname, '../src/dialogs') })
+const dialogs = discover(path.join(__dirname, '../src/dialogs'))
 const dialog = dialogs[local] ?? dialogs['EN-US']
 
 program
