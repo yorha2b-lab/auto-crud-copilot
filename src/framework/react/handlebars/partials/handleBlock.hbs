@@ -38,9 +38,9 @@ const onTabChange = key => {
 {{#if hasExpandable}}
 const onExpand = async (expanded, record) => {
     if (expanded) {
-        setExpandedRowKeys(prev=>[...prev, record.key])
+        setExpandedRowKeys(prev=>[...prev, record[rowKey])
     } else {
-        setExpandedRowKeys(prev=>prev.filter(item => item !== record.key))
+        setExpandedRowKeys(prev=>prev.filter(item => item !== record[rowKey]))
     }
 }
 
