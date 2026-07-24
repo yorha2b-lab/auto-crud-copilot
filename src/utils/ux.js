@@ -90,7 +90,7 @@ const matrixEffect = async (duration = 1500, dialog) => {
                 console.log(chalk.yellow(dialog.bunker.isLegendary(isLegendary, currentTotal, threshold)))
             }
             console.log(chalk.cyan(dialog.bunker.star))
-            console.log(chalk.cyan(dialog.bunker.exit))
+            console.log(chalk.gray(dialog.bunker.exit))
             process.exit(0)
             return
         }
