@@ -31,7 +31,7 @@ module.exports = {
         bridgeProtocolComplete: (count, time) => `语义桥接协议执行完毕。已物理修正 ${count} 处字段偏差。耗时: ${time}s`,
     },
     bunker: {
-        exit: '系统信号已丢失',
+        exit: '系统信号已丢失...',
         envCopy: '.env 存储完毕',
         argDesc: '指定前端框架模板',
         systemStandby: '系统待机中...',

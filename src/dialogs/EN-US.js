@@ -31,9 +31,9 @@ module.exports = {
         bridgeProtocolComplete: (count, time) => `Semantic bridge protocol complete. Corrected ${count} field deviations. Elapsed: ${time}s`,
     },
     bunker: {
-        exit: 'Signal Lost',
-        envCopy: '.env storage complete',
+        exit: 'Signal Lost...',
         envCheck: '.env already exists',
+        envCopy: '.env storage complete',
         systemStandby: 'System is STANDBY',
         configCheck: 'config.js already exists',
         configCopy: 'config.js storage complete',
