@@ -8,6 +8,7 @@ module.exports = () => {
     const ctx = bootstrap.get()
 
     const queue = ctx.core.createTaskQueue(2)
+    const routes = Object.values(ctx.handlers)
 
     queue.onIdle(() => {
         ctx.yorha.pod042.report(ctx.dialog.pod042.queueEmpty)
@@ -25,11 +26,9 @@ module.exports = () => {
     }
 
     const fileWatcher = chokidar.watch(['./config.js'], options)
-    const dirWatcher = chokidar.watch(['./screenShot', './screenPart', './response'], options)
+    const dirWatcher = chokidar.watch(routes.map(route => `${route.watch}`), options)
 
     ctx.yorha.operator6O.report(ctx.dialog.operator6O.call2B)
-
-    const routes = Object.values(ctx.handlers)
 
     dirWatcher.on('add', filePath => {
         const absolutePath = path.resolve(filePath)

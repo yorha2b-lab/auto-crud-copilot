@@ -20,7 +20,7 @@ program
     .description(dialog.bunker.initDesc)
     .action(() => {
         const battlefield = {
-            dirs: ['response', 'screenShot', 'screenPart'],
+            dirs: [],
             files: [
                 { from: '.env.example', to: '.env', exist: 'envCheck', success: 'envCopy' },
                 { from: 'config.js', to: 'config.js', exist: 'configCheck', success: 'configCopy' }
