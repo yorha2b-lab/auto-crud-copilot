@@ -7,7 +7,7 @@ const { program } = require('commander')
 const { local, matrixEffect, bootSequence } = require('../src/utils/ux')
 
 const dialogs = require('../src/bootstrap/registry')({ dir: path.join(__dirname, '../src/dialogs') })
-const dialog = dialogs[local]
+const dialog = dialogs[local] ?? dialogs['EN-US']
 
 program
     .version(pkg.version)
