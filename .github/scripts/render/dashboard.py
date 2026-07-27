@@ -181,13 +181,22 @@ def intelligence_grid():
     plt.savefig('plots/bunker_intelligence_grid.png', dpi=100)
 
 
-def load_clean(path, col):
+def load_clean(path, col_name):
     df = pd.read_csv(path)
     df['date'] = pd.to_datetime(df['date'], errors='coerce')
     df = df.dropna(subset=['date']).copy()
-    df[col] = pd.to_numeric(df[col.lower()], errors='coerce').fillna(0)
-    df['uniques'] = pd.to_numeric(df['uniques'], errors='coerce').fillna(0)
-    return df[['date', col, 'uniques']]
+
+    # 物理强转数字
+    df[col_name] = pd.to_numeric(
+        df[col_name.lower()], errors='coerce').fillna(0)
+
+    # 💡 核心修正：直接在这里把 uniques 重命名为 [类别]_Uniques
+    # 这样合并后，列名就是固定的 'Clones_Uniques' 和 'Views_Uniques'
+    new_unique_name = f"{col_name}_Uniques"
+    df[new_unique_name] = pd.to_numeric(
+        df['uniques'], errors='coerce').fillna(0)
+
+    return df[['date', col_name, new_unique_name]]
 
 
 def main_dashboard(df_c, df_v):
@@ -199,8 +208,12 @@ def main_dashboard(df_c, df_v):
         df['uniques_y'].replace(0, 1)  # uniques_y 是访客数
 
     # 💡 2. 核心算法注入：计算“信号纯度” (Purity)
-    # 逻辑：结合克隆/访客比与单日爆发能级，算出这波信号里“含肉量”有多少
-    # 1.0 为纯净人类信号，趋近 0 为机械生命体大规模入侵
+    df['cumulative'] = df['Clones'].cumsum()
+
+    # 计算“信号纯度”：克隆数 / 访客数
+    df['ratio'] = df['Clones'] / df['Views_Uniques'].replace(0, 1)
+
+    # 算法：(比例/10 * 0.6) + (总量/500 * 0.4)
     df['bot_prob'] = (df['ratio'] / 10).clip(upper=1) * 0.6 + \
         (df['Clones'] / 500).clip(upper=1) * 0.4
     df['purity'] = (1.0 - df['bot_prob']) * 100
