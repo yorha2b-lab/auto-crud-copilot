@@ -20,7 +20,7 @@ module.exports = {
         try {
             pod042.update(spinner, dialog.pod042.extractingUiMetadata)
 
-            const pageConfig = await recognizePage({ prompt, filePath, taskType: 'part' })
+            const pageConfig = await recognizePage({ prompt, filePath })
 
             const { formItems, dictBlocks, processedColumns } = formatFormItemAndColumns({ pageConfig })
 

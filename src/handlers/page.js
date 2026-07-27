@@ -5,7 +5,7 @@ module.exports = {
     watch: 'screenShot',
     async handle(filePath) {
 
-        const { llm, menus, yorha, dialog, config, prompts, generator, foundation } = require('../bootstrap').get()
+        const { llm, menus, yorha, dialog, config, prompts, template, generator, foundation } = require('../bootstrap').get()
 
         const { page } = prompts
         const { nineS, pod042 } = yorha
@@ -37,7 +37,7 @@ module.exports = {
                 pageConfig = require('../../example/example.json')
             } else {
                 pod042.update(spinner, dialog.pod042.uploadVisualMetadata)
-                pageConfig = await recognizePage({ prompt: page(fileName), filePath })
+                pageConfig = await recognizePage({ prompt: page(fileName), filePath, schema: require(`../framework/${template}/schema/page.json`) })
             }
 
             fs.writeFileSync(path.join(targetDir, 'resource.js'), resource({ pageConfig }))
@@ -62,6 +62,9 @@ module.exports = {
             }
 
         } catch (error) {
+            if (fs.existsSync(targetDir)) {
+                fs.rmSync(targetDir, { recursive: true, force: true })
+            }
             pod042.fail(spinner, dialog.pod042.constructionAborted(error))
         }
     }

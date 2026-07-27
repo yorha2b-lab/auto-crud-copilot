@@ -32,7 +32,7 @@ const askAI = async ({ model, yorha, dialog, openAI, messages, response_format =
     }
 }
 
-module.exports = ({ config, yorha, openAI, dialog, prompts, template }) => {
+module.exports = ({ config, yorha, openAI, dialog, prompts }) => {
 
     const sharp = require('sharp')
 
@@ -65,19 +65,7 @@ module.exports = ({ config, yorha, openAI, dialog, prompts, template }) => {
                 ]
             })
         },
-        alignResponseFields: async ({ responseStr, resourceStr }) => {
-            return askAI({
-                yorha,
-                openAI,
-                dialog,
-                model: textModel,
-                messages: [
-                    { role: 'system', content: API_DESIGNER },
-                    { role: 'user', content: api({ responseStr, resourceStr }) }
-                ]
-            })
-        },
-        recognizePage: async ({ prompt, filePath, taskType = 'page' }) => {
+        recognizePage: async ({ prompt, filePath, schema }) => {
             const compressedBuffer = await sharp(filePath)
                 .resize(1280, null, { withoutEnlargement: true })
                 .jpeg({ quality: 80 })
@@ -99,7 +87,19 @@ module.exports = ({ config, yorha, openAI, dialog, prompts, template }) => {
                         ]
                     }
                 ],
-                response_format: taskType === 'page' ? { type: 'json_schema', strict: true, json_schema: require(`../framework/${template}/schema/page.json`) } : { type: 'json_object' }
+                response_format: schema ? { strict: true, type: 'json_schema', json_schema: schema } : { type: 'json_object' }
+            })
+        },
+        alignResponseFields: async ({ responseStr, resourceStr }) => {
+            return askAI({
+                yorha,
+                openAI,
+                dialog,
+                model: textModel,
+                messages: [
+                    { role: 'system', content: API_DESIGNER },
+                    { role: 'user', content: api({ responseStr, resourceStr }) }
+                ]
             })
         },
     }
