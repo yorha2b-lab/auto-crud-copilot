@@ -205,7 +205,7 @@ def main_dashboard(df_c, df_v):
         0).sort_values('date')
     df['cumulative'] = df['Clones'].cumsum()
     df['ratio'] = df['Clones'] / \
-        df['uniques_y'].replace(0, 1)  # uniques_y 是访客数
+        df['Views_Uniques'].replace(0, 1)
 
     # 💡 2. 核心算法注入：计算“信号纯度” (Purity)
     df['cumulative'] = df['Clones'].cumsum()
