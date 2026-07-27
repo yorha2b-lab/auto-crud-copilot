@@ -1,40 +1,72 @@
+import os
 import pandas as pd
-import seaborn as sns
 import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.cluster import DBSCAN
+from sklearn.preprocessing import StandardScaler
 
 
-def plot_commander_profiles():
-    print('🤖 Pod 042: 正在绘制‘指挥官军衔分布图’...')
-    df_c = pd.read_csv('ghrs-data/clones_ledger.csv')
-    df_c['intensity'] = df_c['clones'] / df_c['uniques'].replace(0, 1)
+def execute_commander_clustering():
+    print('🤖 Pod 042: 启动‘全频道指挥官特征聚类协议’...')
 
-    # 定义军衔逻辑
-    def get_rank(row):
-        if row['intensity'] > 5:
-            return 'Industrial (CI/CD)'
-        if row['intensity'] > 1.5:
-            return 'Veteran (Hardcore)'
-        return 'Recruit (Fresh)'
+    if not os.path.exists('ghrs-data/clones_ledger.csv'):
+        return
 
-    df_c['rank'] = df_c.apply(get_rank, axis=1)
-    rank_counts = df_c['rank'].value_counts()
+    # 1. 提取原始基因（数据）
+    df = pd.read_csv('ghrs-data/clones_ledger.csv')
+    # 计算能级指标：总量(Volume) vs 强度(Intensity)
+    df['volume'] = df['clones']
+    df['intensity'] = df['clones'] / df['uniques'].replace(0, 1)
 
-    # 💡 绘图：战力梯度图
+    # 2. 物理标准化：消除量级偏差
+    features = ['volume', 'intensity']
+    X = StandardScaler().fit_transform(df[features])
+
+    # 3. 驱动 DBSCAN 执行黑客级聚类
+    # eps: 搜索半径，min_samples: 构成集群的最小样本数
+    db = DBSCAN(eps=0.5, min_samples=3).fit(X)
+    df['cluster'] = db.labels_
+
+    # 💡 逻辑映射：根据聚类结果自动定义军衔
+    # -1 通常是离群点（那些 859 次、360 次的奇迹时刻）
+    def map_rank(c_id):
+        if c_id == -1:
+            return 'Legendary (Anomalies)'
+        if c_id == 0:
+            return 'Hardcore Veteran'
+        return f'Tactical Unit {c_id}'
+
+    df['rank'] = df['cluster'].map(map_rank)
+    rank_counts = df['rank'].value_counts()
+
+    # --- 绘图：地堡级双维度大屏 ---
     plt.style.use('dark_background')
-    plt.figure(figsize=(10, 6))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 7))
 
-    # 用 seaborn 画出更有质感的柱状图
-    ax = sns.barplot(x=rank_counts.index,
-                     y=rank_counts.values, palette='viridis')
+    # 左图：战力梯度柱状图 (保留你喜欢的 BarPlot)
+    sns.barplot(x=rank_counts.index, y=rank_counts.values,
+                palette='magma', ax=ax1)
+    ax1.set_title('Commander Hierarchy Distribution',
+                  color='#33cc33', fontsize=14)
+    ax1.set_ylabel('Days Recorded')
 
-    plt.title('Commander Hierarchy Distribution', color='#0066ff', fontsize=14)
-    plt.ylabel('Node Count', color='#888')
-    plt.grid(axis='y', color='#333', linestyle='--', alpha=0.5)
+    # 右图：【黑科技】特征分布散点图 (展示聚类真相)
+    scatter = ax2.scatter(df['volume'], df['intensity'], c=df['cluster'],
+                          cmap='viridis', s=df['clones']/2, alpha=0.6, edgecolors='w')
+    ax2.set_title('Cluster Map: Volume vs Intensity',
+                  color='#0066ff', fontsize=14)
+    ax2.set_xlabel('Total Daily Clones')
+    ax2.set_ylabel('Clones Per User (Intensity)')
+
+    # 加上网格
+    ax1.grid(axis='y', alpha=0.1)
+    ax2.grid(alpha=0.1)
 
     plt.tight_layout()
-    plt.savefig('plots/commander_profiles.png', dpi=100)
-    print('✅ 军衔分布图封存成功。')
+    os.makedirs('plots', exist_ok=True)
+    plt.savefig('plots/commander_profiles.png', dpi=120)
+    print(f"✅ 聚类审计达成。识别到 {len(rank_counts)} 个战斗序列。")
 
 
-if __name__ == '__main__':
-    plot_commander_profiles()
+if __name__ == "__main__":
+    execute_commander_clustering()

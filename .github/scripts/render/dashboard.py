@@ -191,33 +191,64 @@ def load_clean(path, col):
 
 
 def main_dashboard(df_c, df_v):
+    # 💡 1. 数据融合与脱水
     df = pd.merge(df_c, df_v, on='date', how='outer').fillna(
         0).sort_values('date')
     df['cumulative'] = df['Clones'].cumsum()
-    df['ratio'] = df['Clones'] / df['uniques'].replace(0, 1)
-    df['clones_ma7'] = df['Clones'].rolling(window=7, min_periods=1).mean()
+    df['ratio'] = df['Clones'] / \
+        df['uniques_y'].replace(0, 1)  # uniques_y 是访客数
 
-    fig1 = plt.figure(figsize=(12, 10))
-    gs1 = fig1.add_gridspec(3, 1)
+    # 💡 2. 核心算法注入：计算“信号纯度” (Purity)
+    # 逻辑：结合克隆/访客比与单日爆发能级，算出这波信号里“含肉量”有多少
+    # 1.0 为纯净人类信号，趋近 0 为机械生命体大规模入侵
+    df['bot_prob'] = (df['ratio'] / 10).clip(upper=1) * 0.6 + \
+        (df['Clones'] / 500).clip(upper=1) * 0.4
+    df['purity'] = (1.0 - df['bot_prob']) * 100
+
+    # 💡 3. 画布物理扩容：由 3 行 1 列 升级为 4 行 1 列
+    fig1 = plt.figure(figsize=(12, 14))  # 增加高度以容纳四个雷达
+    gs1 = fig1.add_gridspec(4, 1)
+
+    # --- 子图 1: 实时侦察 (Views vs Clones) ---
     ax1 = fig1.add_subplot(gs1[0])
     ax1.plot(df['date'].tail(30), df['Views'].tail(
         30), alpha=0.5, ls='--', label='Views (Web)')
     ax1.plot(df['date'].tail(30), df['Clones'].tail(30),
              color='#33cc33', lw=2, label='Clones (Terminal)')
     ax1.set_title(
-        'Strategic Recon: Views vs Clones (Last 30D)', color='#33cc33')
+        'Strategic Recon: Web Visitors vs Terminal Commandos (30D)', color='#33cc33')
     ax1.legend(loc='upper left', frameon=True, fontsize='small')
+
+    # --- 子图 2: 累计荣光 (Growth) ---
     ax2 = fig1.add_subplot(gs1[1])
-    ax2.fill_between(df['date'], df['cumulative'],
-                     color='#0066ff', alpha=0.2)
+    ax2.fill_between(df['date'], df['cumulative'], color='#0066ff', alpha=0.2)
     ax2.plot(df['date'], df['cumulative'], color='#0066ff', lw=3)
     ax2.set_title('Bunker Glory: Total Cumulative Growth', color='#0066ff')
-    ax3 = fig1.add_subplot(gs1[2])
-    pivot = df.assign(week=df['date'].dt.isocalendar().week, day=df['date'].dt.day_name()).pivot_table(index='day', columns='week',
-                                                                                                       values='Clones', aggfunc='sum').fillna(0).reindex(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
+
+    # --- 💡 子图 3 [核心新增]: 信号纯度审计 (Signal Purity) ---
+    ax_p = fig1.add_subplot(gs1[2])
+    # 使用渐变紫色，代表地堡的“骇入感知”
+    ax_p.fill_between(df['date'].tail(45), df['purity'].tail(
+        45), color='#ff00ff', alpha=0.1)
+    ax_p.plot(df['date'].tail(45), df['purity'].tail(45),
+              color='#ff00ff', lw=1.5, label='Signal Purity %')
+    ax_p.set_ylim(0, 105)  # 留点空白放标题
+    ax_p.axhline(y=50, color='#444', linestyle=':', alpha=0.5)  # 50% 警戒线
+    ax_p.set_title(
+        'Neural Cloud Integrity: Human Signal Purity Audit (%)', color='#ff00ff')
+    ax_p.legend(loc='lower left', fontsize='x-small')
+
+    # --- 子图 4: 作战热力图 (Heatmap) ---
+    ax3 = fig1.add_subplot(gs1[3])
+    pivot = df.assign(week=df['date'].dt.isocalendar().week, day=df['date'].dt.day_name()).pivot_table(
+        index='day', columns='week', values='Clones', aggfunc='sum'
+    ).fillna(0).reindex(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
+
     sns.heatmap(pivot, cmap='Greens', ax=ax3,
                 cbar=False, lw=2, linecolor='#1a1a1a')
-    ax3.set_title('Deployment Matrix: All-Time Activity', color='#33cc33')
+    ax3.set_title(
+        'Global Deployment Heatmap: Strategic Activity Matrix', color='#33cc33')
+
     plt.tight_layout()
     plt.savefig('plots/bunker_main_v7.png', dpi=120)
 

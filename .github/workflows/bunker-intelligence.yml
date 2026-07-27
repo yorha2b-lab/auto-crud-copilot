@@ -35,7 +35,7 @@ jobs:
           python-version: '3.10'
 
       - name: Install Dependencies
-        run: pip install matplotlib pandas seaborn scipy numpy requests
+        run: pip install matplotlib pandas seaborn scipy numpy requests scikit-learn
 
       # 💡 步骤 3：运行脚本，注意现在的相对路径！
       # 我们在当前根目录运行，调用 scripts_repo 里的脚本，去处理 data_repo 里的数据
