@@ -14,9 +14,7 @@
 ![Peak Recon](./plots/bunker_peak_recon.png)
 
 ### 🧠 4. 深度情报审计 (Intelligence Intelligence)
-| 成分分析 (Meat vs Machine) | 战力梯度 (Hierarchy) |
-| :---: | :---: |
-| ![Bot](./plots/bot_composition.png) | ![Cluster](./plots/commander_profiles.png) |
+![Fusion](./plots/bunker_intelligence_fusion.png)
 
 #### 🛰️ 流量来源实时追踪
 | Referrer | Views | Uniques |
@@ -24,4 +22,4 @@
 | github.com | 4 | 1 |
 
 
-> 📡 物理封存点: 2026-07-27 01:16:36 CST | Glory to Mankind.
+> 📡 物理封存点: 2026-07-27 01:34:57 CST | Glory to Mankind.
