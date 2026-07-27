@@ -48,8 +48,7 @@ jobs:
         run: |
           cd data_repo
           # 执行“肉机比”扫描与“军衔”聚类分析
-          python ../scripts_repo/.github/scripts/analyze/bot_detect.py
-          python ../scripts_repo/.github/scripts/analyze/cluster.py
+          python ../scripts_repo/.github/scripts/analyze/deep_intelligence.py
 
       - name: '📈 Step 3: Visualization Rendering'
         run: |
