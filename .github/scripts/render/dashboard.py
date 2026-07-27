@@ -3,149 +3,131 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 from scipy.interpolate import make_interp_spline
 
+# 💡 地堡核心平滑引擎：不再依赖日期计算，改用物理索引映射
 
-def plot_smooth_line(ax, x, y, color, label, fill=True):
-    """
-    💡 视觉柔化核心：执行信号插值，返回平滑后的坐标轴供后续标注使用
-    """
-    if len(x) < 4:
-        ax.plot(x, y, color=color, lw=2, label=label, marker='o', markersize=3)
-        if fill:
-            ax.fill_between(x, y, color=color, alpha=0.15)
-        return np.arange(len(x)), y
 
-    # 1. 物理脱水：日期转序号
-    x_numeric = np.linspace(0, len(x) - 1, len(x))
-    x_new = np.linspace(0, len(x) - 1, 300)
-
-    # 2. 三次样条插值
-    spl = make_interp_spline(x_numeric, y, k=3)
-    y_smooth = spl(x_new)
-
-    # 3. 绘制平滑信号
+def draw_smooth(ax, y_data, color, label, fill=True):
+    if len(y_data) < 4:
+        ax.plot(y_data, color=color, lw=2, label=label, marker='o')
+        return
+    x_raw = np.arange(len(y_data))
+    x_smooth = np.linspace(0, len(y_data)-1, 300)
+    spl = make_interp_spline(x_raw, y_data, k=3)
+    y_smooth = spl(x_smooth)
     if fill:
-        ax.fill_between(x_new, y_smooth, color=color, alpha=0.15)
-    ax.plot(x_new, y_smooth, color=color, lw=2.5, label=label)
-
-    return x_new, y_smooth
+        ax.fill_between(x_smooth, y_smooth, color=color, alpha=0.15)
+    ax.plot(x_smooth, y_smooth, color=color, lw=2.5, label=label)
 
 
 def peak_recon(df):
-    print('🤖 Pod 153: 执行“高峰侦察平滑协议”...')
-    fig3, axes = plt.subplots(3, 1, figsize=(16, 14))
+    print('🤖 Pod 153: 执行“高峰侦察协议”...')
+    fig, axes = plt.subplots(3, 1, figsize=(16, 14))
+    plt.style.use('dark_background')
 
-    # 3.1 核心双轴平滑图
-    axA = axes[0]
-    xn, yn = plot_smooth_line(
-        axA, df['date'], df['Clones'], '#3498db', 'Clones')
-    axA_twin = axA.twinx()
-    plot_smooth_line(
-        axA_twin, df['date'], df['Unique_Visitors'], '#e74c3c', 'Visitors', fill=False)
+    # A. 核心平滑图
+    ax = axes[0]
+    draw_smooth(ax, df['Clones'].values, '#3498db', 'Clones')
+    ax_t = ax.twinx()
+    draw_smooth(ax_t, df['Clones_Uniques'].values,
+                '#e74c3c', 'Commanders', fill=False)
 
-    # 标注峰值 (在插值空间定位)
-    peak_val = df['Clones'].max()
-    peak_idx = df['Clones'].idxmax()
-    peak_pos = np.where(df.index == peak_idx)[0][0]
-    axA.annotate(f'LEGEND PEAK: {peak_val}', xy=(peak_pos, peak_val), xytext=(20, 20),
-                 textcoords='offset points', arrowprops=dict(arrowstyle='->', color='yellow'),
-                 color='yellow', fontweight='bold')
+    # 峰值标注 (物理定位)
+    p_val = df['Clones'].max()
+    p_idx = np.where(df['Clones'] == p_val)[0][0]
+    ax.annotate(f'PEAK: {p_val}', xy=(p_idx, p_val), xytext=(20, 20),
+                textcoords='offset points', arrowprops=dict(arrowstyle='->', color='yellow'),
+                color='yellow', fontweight='bold')
 
-    axA.set_title('Bunker Signal Intensity (Smooth Peak Mode)',
-                  fontsize=14, color='#33cc33')
-    axA.set_xticks(np.arange(len(df)))
-    axA.set_xticklabels([d.strftime('%m-%d')
-                        for d in df['date']], rotation=45, alpha=0.5)
+    ax.set_title('Bunker Signal Intensity (Smooth Mode)', color='#33cc33')
+    ax.set_xticks(np.arange(len(df)))
+    ax.set_xticklabels([d.strftime('%m-%d')
+                       for d in df['date']], rotation=45, alpha=0.5)
 
-    # 3.2 每周汇总 (保持柱状图稳定)
-    axB = axes[1]
-    weekly_agg = df.assign(W=df['date'].dt.strftime(
-        '%Y-W%W')).groupby('W')[['Clones', 'Unique_Visitors']].sum().tail(12)
-    weekly_agg.plot(kind='bar', ax=axB, alpha=0.7,
-                    color=['#3498db', '#e74c3c'])
-    axB.set_title('Weekly Operational Summary', color='#888')
+    # B. 每周汇总 (保持原始粗犷美感)
+    df['W'] = df['date'].dt.strftime('%Y-W%W')
+    weekly = df.groupby('W')[['Clones', 'Clones_Uniques']].sum().tail(12)
+    weekly.plot(kind='bar', ax=axes[1],
+                alpha=0.7, color=['#3498db', '#e74c3c'])
 
-    # 3.3 比例分析
-    axC = axes[2]
-    colors = ['#2ecc71' if r < 3 else '#f39c12' if r <
-              5 else '#e74c3c' for r in df['ratio']]
-    axC.bar(np.arange(len(df)), df['ratio'], color=colors, alpha=0.6)
-    axC.set_xticks(np.arange(len(df)))
-    axC.set_xticklabels([d.strftime('%m-%d')
-                        for d in df['date']], rotation=45, alpha=0.5)
-    axC.set_title('Clones/Visitor Ratio Analysis', color='#888')
+    # C. 比值分析
+    axes[2].bar(np.arange(len(df)), df['ratio'], color='#ff9900', alpha=0.6)
+    axes[2].set_xticks(np.arange(len(df)))
+    axes[2].set_xticklabels([d.strftime('%m-%d')
+                            for d in df['date']], rotation=45, alpha=0.5)
 
     plt.tight_layout()
-    plt.savefig('plots/bunker_peak_recon.png', dpi=120)
+    plt.savefig('plots/bunker_peak_recon.png', dpi=100)
 
 
 def intelligence_grid(df):
-    print('🤖 Pod 042: 执行“情报矩阵平滑协议”...')
-    fig2, axes = plt.subplots(3, 2, figsize=(16, 14))
-    fig2.suptitle('Bunker Strategic Analytics - Intelligence Grid',
-                  color='#33cc33', fontsize=20)
-
+    print('🤖 Pod 042: 执行“情报大屏协议”...')
+    fig, axes = plt.subplots(3, 2, figsize=(16, 14))
     df30 = df.tail(30).copy()
 
-    # 1 & 2: 趋势平滑图
-    plot_smooth_line(axes[0, 0], df30['date'],
-                     df30['Clones'], '#2E86AB', 'Clones')
-    plot_smooth_line(axes[0, 1], df30['date'],
-                     df30['Unique_Visitors'], '#A23B72', 'Visitors')
+    # 1 & 2: 趋势
+    draw_smooth(axes[0, 0], df30['Clones'].values, '#2E86AB', 'Clones')
+    draw_smooth(axes[0, 1], df30['Clones_Uniques'].values,
+                '#A23B72', 'Commanders')
 
-    # 3. 相关性散点 (不可平滑)
-    sns.regplot(data=df, x='Unique_Visitors', y='Clones',
-                ax=axes[1, 0], color='#0066ff', scatter_kws={'alpha': 0.4})
+    # 3. 散点 (AI 聚类真相)
+    sns.regplot(data=df, x='Views', y='Clones', ax=axes[1, 0], color='#0066ff')
 
-    # 4. 人均分布
-    sns.histplot(df['ratio'], bins=20, ax=axes[1, 1],
-                 color='#F18F01', kde=True)
+    # 4. 分布
+    sns.histplot(df['ratio'], bins=15, ax=axes[1, 1],
+                 kde=True, color='#F18F01')
 
-    # 5. 每周吞吐
-    weekly = df.assign(W=df['date'].dt.strftime('%W')).groupby('W')[
-        'Clones'].sum().tail(12)
-    weekly.plot(kind='bar', ax=axes[2, 0], color='#2E86AB', alpha=0.6)
+    # 5. 每周
+    df.groupby(df['date'].dt.strftime('%W'))['Clones'].sum().tail(
+        10).plot(kind='bar', ax=axes[2, 0], color='#2E86AB')
 
-    # 6. 7日均线 (MA 已经是平滑的了，直接画)
-    axes[2, 1].plot(df['date'], df['clones_ma7'], color='#33cc33', lw=2)
-    axes[2, 1].xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
+    # 6. 7日线
+    axes[2, 1].plot(np.arange(len(df)), df['clones_ma7'],
+                    color='#33cc33', lw=2)
 
-    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    # 💡 统一 X 轴标签补丁
+    for i in [0]:
+        for j in [0, 1]:
+            axes[i, j].set_xticks(np.arange(len(df30)))
+            axes[i, j].set_xticklabels(
+                [d.strftime('%m-%d') for d in df30['date']], rotation=45, fontsize=7)
+
+    plt.tight_layout()
     plt.savefig('plots/bunker_intelligence_grid.png', dpi=100)
 
 
 def main_dashboard(df):
-    print('🤖 Pod 042: 执行“主指挥大屏平滑协议”...')
+    print('🤖 Pod 042: 执行“母舰指挥看板协议”...')
     df30 = df.tail(30).copy()
+    fig = plt.figure(figsize=(12, 16))
+    gs = fig.add_gridspec(4, 1)
 
-    fig1 = plt.figure(figsize=(12, 14))
-    gs1 = fig1.add_gridspec(4, 1)
+    # 子图 1: 实时 (Smooth)
+    ax1 = fig.add_subplot(gs[0])
+    draw_smooth(ax1, df30['Clones'].values, '#33cc33', 'Clones')
+    draw_smooth(ax1, df30['Views'].values, '#ffffff', 'Views', fill=False)
+    ax1.set_xticks(np.arange(len(df30)))
+    ax1.set_xticklabels([d.strftime('%m-%d')
+                        for d in df30['date']], rotation=45, fontsize=8)
+    ax1.legend()
 
-    # 子图 1: 实时侦察 (Smooth)
-    ax1 = fig1.add_subplot(gs1[0])
-    plot_smooth_line(ax1, df30['date'], df30['Clones'], '#33cc33', 'Clones')
-    plot_smooth_line(ax1, df30['date'], df30['Views'],
-                     '#ffffff', 'Views', fill=False)
-    ax1.legend(loc='upper left', fontsize='x-small')
+    # 子图 2: 累计 (Smooth)
+    ax2 = fig.add_subplot(gs[1])
+    draw_smooth(ax2, df['cumulative'].values, '#0066ff', 'Total')
+    ax2.set_title('Bunker Glory: Total Accumulation', color='#0066ff')
 
-    # 子图 2: 累计荣光 (Smooth)
-    ax2 = fig1.add_subplot(gs1[1])
-    plot_smooth_line(ax2, df['date'], df['cumulative'], '#0066ff', 'Total')
-
-    # 子图 3: 信号纯度 (Smooth)
-    ax_p = fig1.add_subplot(gs1[2])
-    df45 = df.tail(45).copy()
-    plot_smooth_line(ax_p, df45['date'], df45['purity'], '#ff00ff', 'Purity')
-    ax_p.set_ylim(0, 110)
+    # 子图 3: 纯度 (Smooth)
+    ax3 = fig.add_subplot(gs[2])
+    df45 = df.tail(45)
+    draw_smooth(ax3, df45['purity'].values, '#ff00ff', 'Purity')
+    ax3.set_ylim(0, 105)
 
     # 子图 4: 热力图
-    ax3 = fig1.add_subplot(gs1[3])
+    ax4 = fig.add_subplot(gs[3])
     pivot = df.assign(week=df['date'].dt.isocalendar().week, day=df['date'].dt.day_name()).pivot_table(index='day', columns='week',
                                                                                                        values='Clones', aggfunc='sum').fillna(0).reindex(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
-    sns.heatmap(pivot, cmap='Greens', ax=ax3,
-                cbar=False, lw=2, linecolor='#1a1a1a')
+    sns.heatmap(pivot, cmap='Greens', ax=ax4, cbar=False, lw=1)
 
     plt.tight_layout()
     plt.savefig('plots/bunker_main_v7.png', dpi=120)
@@ -167,17 +149,17 @@ if __name__ == "__main__":
     os.makedirs('plots', exist_ok=True)
     df_c = load_hard_clean('ghrs-data/clones_ledger.csv', 'Clones')
     df_v = load_hard_clean('ghrs-data/views_ledger.csv', 'Views')
+    # 对齐
     df = pd.merge(df_c[['date', 'Clones', 'Clones_Uniques']], df_v[[
                   'date', 'Views', 'Views_Uniques']], on='date', how='outer').fillna(0).sort_values('date')
-    df['Unique_Visitors'] = df['Views_Uniques']
-    df['cumulative'] = df['Clones'].cumsum()
     df['ratio'] = df['Clones'] / df['Views_Uniques'].replace(0, 1)
+    df['cumulative'] = df['Clones'].cumsum()
     df['bot_prob'] = (df['ratio'] / 10).clip(upper=1) * 0.6 + \
         (df['Clones'] / 500).clip(upper=1) * 0.4
     df['purity'] = (1.0 - df['bot_prob']) * 100
-    df['clones_ma7'] = df['Clones'].rolling(window=7, min_periods=1).mean()
+    df['clones_ma7'] = df['Clones'].rolling(7, min_periods=1).mean()
 
     peak_recon(df)
     intelligence_grid(df)
     main_dashboard(df)
-    print("✅ All Signal Channels Restored & Smoothed.")
+    print("✅ All Systems Operational. Vision Corrected.")
