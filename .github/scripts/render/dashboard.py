@@ -3,163 +3,280 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from scipy.interpolate import make_interp_spline
+import matplotlib.dates as mdates
 
-# 💡 地堡核心平滑引擎：不再依赖日期计算，改用物理索引映射
+def peak_recon():
+    df = pd.read_csv('ghrs-data/clones_ledger.csv')
+    df['date'] = pd.to_datetime(df['date'])
+    df = df.sort_values('date').reset_index(drop=True)
+    fig3, axes3 = plt.subplots(3, 1, figsize=(16, 14))
+    # 3.1 时间序列图
+    axA = axes3[0]
+    axA.fill_between(df['date'], df['clones'],
+                     alpha=0.3, color='#3498db', label='Clones')
+    axA.plot(df['date'], df['clones'], color='#3498db', linewidth=1.2)
+    axA_twin = axA.twinx()
+    axA_twin.plot(df['date'], df['uniques'],
+                  color='#e74c3c', linewidth=1.2, label='Visitors')
+    axA_twin.fill_between(
+        df['date'], df['uniques'], alpha=0.15, color='#e74c3c')
+    axA.set_ylabel('Clones', color='#3498db', fontsize=12)
+    axA_twin.set_ylabel('Visitors', color='#e74c3c', fontsize=12)
+    axA.set_title('Bunker Signal Intensity (Peak Detection Mode)',
+                  fontsize=14, fontweight='bold')
 
+    peak_clone_idx = df['clones'].idxmax()
+    axA.annotate(f'LEGEND PEAK: {df["clones"].max()}',
+                 xy=(df.loc[peak_clone_idx, 'date'],
+                     df.loc[peak_clone_idx, 'clones']),
+                 xytext=(10, 20), textcoords='offset points',
+                 arrowprops=dict(arrowstyle='->', color='yellow'),
+                 fontsize=10, color='yellow', fontweight='bold')
 
-def draw_smooth(ax, y_data, color, label, fill=True):
-    if len(y_data) < 4:
-        ax.plot(y_data, color=color, lw=2, label=label, marker='o')
-        return
-    x_raw = np.arange(len(y_data))
-    x_smooth = np.linspace(0, len(y_data)-1, 300)
-    spl = make_interp_spline(x_raw, y_data, k=3)
-    y_smooth = spl(x_smooth)
-    if fill:
-        ax.fill_between(x_smooth, y_smooth, color=color, alpha=0.15)
-    ax.plot(x_smooth, y_smooth, color=color, lw=2.5, label=label)
+    # 3.2 每周汇总
+    axB = axes3[1]
+    weekly_agg = df.assign(W=df['date'].dt.strftime(
+        '%Y-W%W')).groupby('W')[['clones', 'uniques']].sum().tail(12)
+    weekly_agg.plot(kind='bar', ax=axB, alpha=0.8)
+    axB.set_title('Weekly Operational Summary',
+                  fontsize=14, fontweight='bold')
 
-
-def peak_recon(df):
-    print('🤖 Pod 153: 执行“高峰侦察协议”...')
-    fig, axes = plt.subplots(3, 1, figsize=(16, 14))
-    plt.style.use('dark_background')
-
-    # A. 核心平滑图
-    ax = axes[0]
-    draw_smooth(ax, df['Clones'].values, '#3498db', 'Clones')
-    ax_t = ax.twinx()
-    draw_smooth(ax_t, df['Clones_Uniques'].values,
-                '#e74c3c', 'Commanders', fill=False)
-
-    # 峰值标注 (物理定位)
-    p_val = df['Clones'].max()
-    p_idx = np.where(df['Clones'] == p_val)[0][0]
-    ax.annotate(f'PEAK: {p_val}', xy=(p_idx, p_val), xytext=(20, 20),
-                textcoords='offset points', arrowprops=dict(arrowstyle='->', color='yellow'),
-                color='yellow', fontweight='bold')
-
-    ax.set_title('Bunker Signal Intensity (Smooth Mode)', color='#33cc33')
-    ax.set_xticks(np.arange(len(df)))
-    ax.set_xticklabels([d.strftime('%m-%d')
-                       for d in df['date']], rotation=45, alpha=0.5)
-
-    # B. 每周汇总 (保持原始粗犷美感)
-    df['W'] = df['date'].dt.strftime('%Y-W%W')
-    weekly = df.groupby('W')[['Clones', 'Clones_Uniques']].sum().tail(12)
-    weekly.plot(kind='bar', ax=axes[1],
-                alpha=0.7, color=['#3498db', '#e74c3c'])
-
-    # C. 比值分析
-    axes[2].bar(np.arange(len(df)), df['ratio'], color='#ff9900', alpha=0.6)
-    axes[2].set_xticks(np.arange(len(df)))
-    axes[2].set_xticklabels([d.strftime('%m-%d')
-                            for d in df['date']], rotation=45, alpha=0.5)
+    # 3.3 比值分析
+    axC = axes3[2]
+    df['ratio'] = df['clones'] / df['uniques'].replace(0, 1)
+    colors3 = ['#2ecc71' if r < 3 else '#f39c12' if r <
+               5 else '#e74c3c' for r in df['ratio']]
+    axC.bar(df['date'], df['ratio'], color=colors3, alpha=0.7)
+    axC.axhline(y=df['ratio'].mean(), color='#9b59b6',
+                ls='--', label=f'Avg: {df["ratio"].mean():.2f}')
+    axC.set_title('Clones/Visitor Ratio (High Ratio = CI/Automation)',
+                  fontsize=14, fontweight='bold')
+    axC.legend()
 
     plt.tight_layout()
     plt.savefig('plots/bunker_peak_recon.png', dpi=100)
 
 
-def intelligence_grid(df):
-    print('🤖 Pod 042: 执行“情报大屏协议”...')
-    fig, axes = plt.subplots(3, 2, figsize=(16, 14))
-    df30 = df.tail(30).copy()
+def intelligence_grid():
+    df = pd.read_csv('ghrs-data/clones_ledger.csv')
+    df['date'] = pd.to_datetime(df['date'])
+    df = df.sort_values('date').reset_index(drop=True)
+    df['week'] = df['date'].dt.isocalendar().week
+    df['year'] = df['date'].dt.isocalendar().year
+    df['week_key'] = df['year'].astype(
+        str) + '-W' + df['week'].astype(str).str.zfill(2)
+    weekly = df.groupby('week_key').agg({
+        'clones': 'sum',
+        'uniques': 'sum',
+        'date': ['min', 'max']
+    }).reset_index()
+    weekly.columns = ['week', 'clones',
+                      'uniques', 'start_date', 'end_date']
+    weekly = weekly.sort_values('start_date').reset_index(drop=True)
 
-    # 1 & 2: 趋势
-    draw_smooth(axes[0, 0], df30['Clones'].values, '#2E86AB', 'Clones')
-    draw_smooth(axes[0, 1], df30['Clones_Uniques'].values,
-                '#A23B72', 'Commanders')
+    fig2, axes = plt.subplots(3, 2, figsize=(16, 14))
+    fig2.suptitle('Bunker Strategic Analytics - Intelligence Grid',
+                  color='#33cc33', fontsize=20)
 
-    # 3. 散点 (AI 聚类真相)
-    sns.regplot(data=df, x='Views', y='Clones', ax=axes[1, 0], color='#0066ff')
+    # 1. Daily Clone Trend
+    ax1 = axes[0, 0]
+    ax1.plot(df['date'], df['clones'],
+             color='#2E86AB', linewidth=1.5, alpha=0.8)
+    ax1.fill_between(df['date'], df['clones'],
+                     alpha=0.3, color='#2E86AB')
+    ax1.axhline(y=df['clones'].mean(), color='red', linestyle='--',
+                alpha=0.7, label=f'Avg: {df["clones"].mean():.0f}')
+    ax1.set_title('Daily Clone Trend', fontsize=12, fontweight='bold')
+    ax1.set_ylabel('Clones')
+    ax1.legend()
+    ax1.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
+    ax1.xaxis.set_major_locator(mdates.WeekdayLocator(interval=2))
+    ax1.tick_params(axis='x', rotation=45)
+    ax1.grid(True, alpha=0.3)
 
-    # 4. 分布
-    sns.histplot(df['ratio'], bins=15, ax=axes[1, 1],
-                 kde=True, color='#F18F01')
+    # 2. Daily Unique Visitor Trend
+    ax2 = axes[0, 1]
+    ax2.plot(df['date'], df['uniques'],
+             color='#A23B72', linewidth=1.5, alpha=0.8)
+    ax2.fill_between(df['date'], df['uniques'],
+                     alpha=0.3, color='#A23B72')
+    ax2.axhline(y=df['uniques'].mean(), color='red', linestyle='--',
+                alpha=0.7, label=f'Avg: {df["uniques"].mean():.0f}')
+    ax2.set_title('Daily Unique Commanders',
+                  fontsize=12, fontweight='bold')
+    ax2.set_ylabel('Unique Visitors')
+    ax2.legend()
+    ax2.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
+    ax2.xaxis.set_major_locator(mdates.WeekdayLocator(interval=2))
+    ax2.tick_params(axis='x', rotation=45)
+    ax2.grid(True, alpha=0.3)
 
-    # 5. 每周
-    df.groupby(df['date'].dt.strftime('%W'))['Clones'].sum().tail(
-        10).plot(kind='bar', ax=axes[2, 0], color='#2E86AB')
+    # 3. Clones vs Visitors Scatter
+    ax3 = axes[1, 0]
+    ax3.scatter(df['uniques'], df['clones'], alpha=0.6,
+                c=df['date'].map(mdates.date2num), cmap='viridis', s=50)
+    ax3.set_xlabel('Unique Visitors')
+    ax3.set_ylabel('Clones')
+    ax3.set_title('Clones vs Visitors (Color=Time)',
+                  fontsize=12, fontweight='bold')
+    z = np.polyfit(df['uniques'], df['clones'], 1)
+    p = np.poly1d(z)
+    ax3.plot(df['uniques'].sort_values(), p(df['uniques'].sort_values(
+    )), "r--", alpha=0.7, label=f'Trend: y={z[0]:.1f}x+{z[1]:.1f}')
+    ax3.legend()
+    ax3.grid(True, alpha=0.3)
 
-    # 6. 7日线
-    axes[2, 1].plot(np.arange(len(df)), df['clones_ma7'],
-                    color='#33cc33', lw=2)
+    # 4. Clones Per User Distribution
+    ax4 = axes[1, 1]
+    df['clones_per_unique'] = df['clones'] / df['uniques'].replace(0, 1)
+    ax4.hist(df['clones_per_unique'], bins=25,
+             color='#F18F01', alpha=0.7, edgecolor='white')
+    ax4.axvline(x=df['clones_per_unique'].mean(
+    ), color='red', linestyle='--', label=f'Avg: {df["clones_per_unique"].mean():.2f}')
+    ax4.set_xlabel('Clones Per Unit')
+    ax4.set_ylabel('Days')
+    ax4.set_title('Clones Per User Distribution',
+                  fontsize=12, fontweight='bold')
+    ax4.legend()
+    ax4.grid(True, alpha=0.3)
 
-    # 💡 统一 X 轴标签补丁
-    for i in [0]:
-        for j in [0, 1]:
-            axes[i, j].set_xticks(np.arange(len(df30)))
-            axes[i, j].set_xticklabels(
-                [d.strftime('%m-%d') for d in df30['date']], rotation=45, fontsize=7)
+    # 5. Weekly Throughput
+    ax5 = axes[2, 0]
+    weekly_sorted = weekly.sort_values('start_date').tail(12)
+    colors = ['#2E86AB' if c < 300 else '#F18F01' if c <
+              600 else '#E63946' for c in weekly_sorted['clones']]
+    bars = ax5.bar(range(len(weekly_sorted)),
+                   weekly_sorted['clones'], color=colors, alpha=0.8, edgecolor='white')
+    ax5.set_xticks(range(len(weekly_sorted)))
+    ax5.set_xticklabels(weekly_sorted['week'].str[-2:], rotation=45)
+    ax5.set_xlabel('Week Index')
+    ax5.set_ylabel('Total Clones')
+    ax5.set_title('Weekly Throughput (Last 12 Weeks)',
+                  fontsize=12, fontweight='bold')
+    ax5.grid(True, alpha=0.3, axis='y')
+    for bar, val in zip(bars, weekly_sorted['clones']):
+        ax5.text(bar.get_x() + bar.get_width()/2, bar.get_height() +
+                 10, str(val), ha='center', va='bottom', fontsize=8)
 
-    plt.tight_layout()
+    # 6. 7-Day Moving Average
+    ax6 = axes[2, 1]
+    df['clones_ma7'] = df['clones'].rolling(
+        window=7, min_periods=1).mean()
+    df['uniques_ma7'] = df['uniques'].rolling(
+        window=7, min_periods=1).mean()
+    ax6.plot(df['date'], df['clones_ma7'], color='#2E86AB',
+             linewidth=2, label='Clones 7D MA')
+    ax6.plot(df['date'], df['uniques_ma7'], color='#A23B72',
+             linewidth=2, label='Visitors 7D MA')
+    ax6.set_title('7-Day Moving Average Trend',
+                  fontsize=12, fontweight='bold')
+    ax6.set_ylabel('Frequency')
+    ax6.legend()
+    ax6.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
+    ax6.xaxis.set_major_locator(mdates.WeekdayLocator(interval=2))
+    ax6.tick_params(axis='x', rotation=45)
+    ax6.grid(True, alpha=0.3)
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
     plt.savefig('plots/bunker_intelligence_grid.png', dpi=100)
 
 
-def main_dashboard(df):
-    print('🤖 Pod 042: 执行“母舰指挥看板协议”...')
-    df30 = df.tail(30).copy()
-    fig = plt.figure(figsize=(12, 16))
-    gs = fig.add_gridspec(4, 1)
+def load_clean(path, col_name):
+    df = pd.read_csv(path)
+    df['date'] = pd.to_datetime(df['date'], errors='coerce')
+    df = df.dropna(subset=['date']).copy()
 
-    # 子图 1: 实时 (Smooth)
-    ax1 = fig.add_subplot(gs[0])
-    draw_smooth(ax1, df30['Clones'].values, '#33cc33', 'Clones')
-    draw_smooth(ax1, df30['Views'].values, '#ffffff', 'Views', fill=False)
-    ax1.set_xticks(np.arange(len(df30)))
-    ax1.set_xticklabels([d.strftime('%m-%d')
-                        for d in df30['date']], rotation=45, fontsize=8)
-    ax1.legend()
+    # 物理强转数字
+    df[col_name] = pd.to_numeric(
+        df[col_name.lower()], errors='coerce').fillna(0)
 
-    # 子图 2: 累计 (Smooth)
-    ax2 = fig.add_subplot(gs[1])
-    draw_smooth(ax2, df['cumulative'].values, '#0066ff', 'Total')
-    ax2.set_title('Bunker Glory: Total Accumulation', color='#0066ff')
+    # 💡 核心修正：直接在这里把 uniques 重命名为 [类别]_Uniques
+    # 这样合并后，列名就是固定的 'Clones_Uniques' 和 'Views_Uniques'
+    new_unique_name = f"{col_name}_Uniques"
+    df[new_unique_name] = pd.to_numeric(
+        df['uniques'], errors='coerce').fillna(0)
 
-    # 子图 3: 纯度 (Smooth)
-    ax3 = fig.add_subplot(gs[2])
-    df45 = df.tail(45)
-    draw_smooth(ax3, df45['purity'].values, '#ff00ff', 'Purity')
-    ax3.set_ylim(0, 105)
+    return df[['date', col_name, new_unique_name]]
 
-    # 子图 4: 热力图
-    ax4 = fig.add_subplot(gs[3])
-    pivot = df.assign(week=df['date'].dt.isocalendar().week, day=df['date'].dt.day_name()).pivot_table(index='day', columns='week',
-                                                                                                       values='Clones', aggfunc='sum').fillna(0).reindex(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
-    sns.heatmap(pivot, cmap='Greens', ax=ax4, cbar=False, lw=1)
+
+def main_dashboard(df_c, df_v):
+    # 💡 1. 数据融合与脱水
+    df = pd.merge(df_c, df_v, on='date', how='outer').fillna(
+        0).sort_values('date')
+    df['cumulative'] = df['Clones'].cumsum()
+    df['ratio'] = df['Clones'] / \
+        df['Views_Uniques'].replace(0, 1)
+
+    # 💡 2. 核心算法注入：计算“信号纯度” (Purity)
+    df['cumulative'] = df['Clones'].cumsum()
+
+    # 计算“信号纯度”：克隆数 / 访客数
+    df['ratio'] = df['Clones'] / df['Views_Uniques'].replace(0, 1)
+
+    # 算法：(比例/10 * 0.6) + (总量/500 * 0.4)
+    df['bot_prob'] = (df['ratio'] / 10).clip(upper=1) * 0.6 + \
+        (df['Clones'] / 500).clip(upper=1) * 0.4
+    df['purity'] = (1.0 - df['bot_prob']) * 100
+
+    # 💡 3. 画布物理扩容：由 3 行 1 列 升级为 4 行 1 列
+    fig1 = plt.figure(figsize=(12, 14))  # 增加高度以容纳四个雷达
+    gs1 = fig1.add_gridspec(4, 1)
+
+    # --- 子图 1: 实时侦察 (Views vs Clones) ---
+    ax1 = fig1.add_subplot(gs1[0])
+    ax1.plot(df['date'].tail(30), df['Views'].tail(
+        30), alpha=0.5, ls='--', label='Views (Web)')
+    ax1.plot(df['date'].tail(30), df['Clones'].tail(30),
+             color='#33cc33', lw=2, label='Clones (Terminal)')
+    ax1.set_title(
+        'Strategic Recon: Web Visitors vs Terminal Commandos (30D)', color='#33cc33')
+    ax1.legend(loc='upper left', frameon=True, fontsize='small')
+
+    # --- 子图 2: 累计荣光 (Growth) ---
+    ax2 = fig1.add_subplot(gs1[1])
+    ax2.fill_between(df['date'], df['cumulative'], color='#0066ff', alpha=0.2)
+    ax2.plot(df['date'], df['cumulative'], color='#0066ff', lw=3)
+    ax2.set_title('Bunker Glory: Total Cumulative Growth', color='#0066ff')
+
+    # --- 💡 子图 3 [核心新增]: 信号纯度审计 (Signal Purity) ---
+    ax_p = fig1.add_subplot(gs1[2])
+    # 使用渐变紫色，代表地堡的“骇入感知”
+    ax_p.fill_between(df['date'].tail(45), df['purity'].tail(
+        45), color='#ff00ff', alpha=0.1)
+    ax_p.plot(df['date'].tail(45), df['purity'].tail(45),
+              color='#ff00ff', lw=1.5, label='Signal Purity %')
+    ax_p.set_ylim(0, 105)  # 留点空白放标题
+    ax_p.axhline(y=50, color='#444', linestyle=':', alpha=0.5)  # 50% 警戒线
+    ax_p.set_title(
+        'Neural Cloud Integrity: Human Signal Purity Audit (%)', color='#ff00ff')
+    ax_p.legend(loc='lower left', fontsize='x-small')
+
+    # --- 子图 4: 作战热力图 (Heatmap) ---
+    ax3 = fig1.add_subplot(gs1[3])
+    pivot = df.assign(week=df['date'].dt.isocalendar().week, day=df['date'].dt.day_name()).pivot_table(
+        index='day', columns='week', values='Clones', aggfunc='sum'
+    ).fillna(0).reindex(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
+
+    sns.heatmap(pivot, cmap='Greens', ax=ax3,
+                cbar=False, lw=2, linecolor='#1a1a1a')
+    ax3.set_title(
+        'Global Deployment Heatmap: Strategic Activity Matrix', color='#33cc33')
 
     plt.tight_layout()
     plt.savefig('plots/bunker_main_v7.png', dpi=120)
 
 
-def load_hard_clean(path, col_name):
-    df = pd.read_csv(path)
-    df['date'] = pd.to_datetime(df['date'], errors='coerce')
-    df = df.dropna(subset=['date']).copy()
-    df[col_name] = pd.to_numeric(
-        df[col_name.lower()], errors='coerce').fillna(0)
-    df[f"{col_name}_Uniques"] = pd.to_numeric(
-        df['uniques'], errors='coerce').fillna(0)
-    return df
-
-
 if __name__ == "__main__":
+    print("🤖 Pod 042: Rendering Strategic Dashboards...")
     plt.style.use('dark_background')
     os.makedirs('plots', exist_ok=True)
-    df_c = load_hard_clean('ghrs-data/clones_ledger.csv', 'Clones')
-    df_v = load_hard_clean('ghrs-data/views_ledger.csv', 'Views')
-    # 对齐
-    df = pd.merge(df_c[['date', 'Clones', 'Clones_Uniques']], df_v[[
-                  'date', 'Views', 'Views_Uniques']], on='date', how='outer').fillna(0).sort_values('date')
-    df['ratio'] = df['Clones'] / df['Views_Uniques'].replace(0, 1)
-    df['cumulative'] = df['Clones'].cumsum()
-    df['bot_prob'] = (df['ratio'] / 10).clip(upper=1) * 0.6 + \
-        (df['Clones'] / 500).clip(upper=1) * 0.4
-    df['purity'] = (1.0 - df['bot_prob']) * 100
-    df['clones_ma7'] = df['Clones'].rolling(7, min_periods=1).mean()
 
-    peak_recon(df)
-    intelligence_grid(df)
-    main_dashboard(df)
-    print("✅ All Systems Operational. Vision Corrected.")
+    # 数据准备
+    df_c = load_clean('ghrs-data/clones_ledger.csv', 'Clones')
+    df_v = load_clean('ghrs-data/views_ledger.csv',
+                      'Views').rename(columns={'uniques': 'uv'})
+
+    peak_recon()
+    intelligence_grid()
+    main_dashboard(df_c, df_v)
+
+    print("✅ Dashboards rendered.")
