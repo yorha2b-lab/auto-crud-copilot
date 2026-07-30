@@ -3,15 +3,15 @@
  * @description [地堡 42153 联合波段] 启动流量拦截塔。
  * 独立运行于后台，监听 42153 端口，物理截获联调过程中的 JSON 信号并触发语义对齐。
  */
-module.exports = ({ core, yorha, dialog, config, handlers }) => {
+module.exports = ({ utils, yorha, dialog, handlers }) => {
 
     const http = require('http')
     const zlib = require('zlib')
     const httpProxy = require('http-proxy')
 
     const { pod153, commander } = yorha
-    const { unwrapSignal, isQuerySignal } = core
-    const { routeMap = {}, proxyTarget } = config
+    const { unwrapSignal, isQuerySignal } = utils.semantic
+    const { routeMap = {}, proxyTarget } = utils.foundation.getConfig()
 
     const TOWER_PORT = 42153
     const hackedRegistry = new Map()
@@ -45,7 +45,7 @@ module.exports = ({ core, yorha, dialog, config, handlers }) => {
                 const urlPath = new URL(referer).pathname
                 const fileName = routeMap?.[urlPath] ?? urlPath.split('/').filter(Boolean).at(-1)
 
-                const fingerprint = getJsonFingerprint(unwrapSignal(json)) // 获取数据指纹
+                const fingerprint = getJsonFingerprint(coreData) // 获取数据指纹
                 const lastFingerprint = hackedRegistry.get(fileName)
 
                 // 如果指纹没变，说明字段结构是一样的，无需再次骇入

@@ -5,9 +5,11 @@ let instance = null
 
 module.exports = {
 
-    init: ({ template }, dialog) => {
+    init: async ({ template }, dialog, version, local) => {
 
-        const yorha = require('./yorha')()
+        const recruiter = require('../kernel/recruiter')
+        const utils = recruiter(path.join(__dirname, '../utils'))
+        const yorha = utils.ux.yorha()
 
         const generatorPath = path.join(__dirname, `../framework/${template}/generator`)
         if (!fs.existsSync(generatorPath)) {
@@ -15,27 +17,24 @@ module.exports = {
             return
         }
 
-        const foundation = require('../utils/foundation')
-        const config = foundation.getConfig()
-
         const accessPoint = {
+            utils,
             yorha,
-            config,
             dialog,
             template,
-            foundation,
-            openAI: require('./openai')(),
-            core: require('../utils/core'),
-            menus: foundation.getExistingMenus(),
-            handlers: foundation.discover(path.join(__dirname, '../handlers')),
-            handlebars: require('./handlebar')({ config, template, ...foundation }),
-            prompts: foundation.discover(path.join(__dirname, `../framework/${template}/prompts`)),
+            openAI: require('../ai/openai')(),
+            engine: require('../kernel/engine')({ utils, template }),
+            handlers: recruiter(path.join(__dirname, '../handlers')),
+            prompts: recruiter(path.join(__dirname, `../framework/${template}/prompts`)),
         }
 
-        require('./foundation')(accessPoint)
-        const llm = require('../services/llm')(accessPoint)
+        if (version) {
+            await utils.ux.bootSequence(version, local)
+        }
+        require('../kernel/deployment')(accessPoint)
+        const llm = require('../ai')(accessPoint)
         const generator = require(generatorPath)(accessPoint)
-        const labs = require('./labs')({ llm, ...accessPoint })
+        const labs = require('../labs')({ llm, ...accessPoint })
 
 
         instance = { llm, labs, generator, ...accessPoint }
@@ -55,7 +54,7 @@ module.exports = {
 
     reboot() {
         const { template, dialog } = instance
-        delete require.cache[require.resolve(path.join(process.cwd(), 'config.js'))]
+        delete require.cache[require.resolve(path.join(process.cwd(), 'bunker', 'config.js'))]
         instance.labs?.tower?.close()
         instance = null
         return this.init({ template }, dialog)

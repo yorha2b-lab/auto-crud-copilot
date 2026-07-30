@@ -1,21 +1,45 @@
-/**
- * (c) 2026 [yorha2b-lab]. Glory to Mankind.
- *
- */
-
+const ora = require('ora')
 const chalk = require('chalk')
 const figlet = require('figlet')
 
-const local = Intl.DateTimeFormat().resolvedOptions().locale.toUpperCase()
-
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
-/**
- * 引导序列
- * 模拟系统引导过程中的动画效果
- * @returns {void}
- */
-const bootSequence = async (version) => {
+const yorha = () => {
+
+    const createMember = ({ name }) => ({
+        start(text) {
+            const spinner = ora({ text: chalk.cyan(`${name} ${text}\n`) }).start()
+            return spinner
+        },
+        fail(spinner, text) {
+            spinner.fail(chalk.red(`${name} ${text}\n`))
+        },
+        report(text, color = 'yellow') {
+            console.log(chalk[color](`${name} ${text}\n`))
+        },
+        update(spinner, text) {
+            spinner.text = chalk.cyan(`${name} ${text}\n`)
+        },
+        warning(spinner, text) {
+            spinner.warn(chalk.yellow(`${name} ${text}\n`))
+        },
+        success(spinner, text) {
+            spinner.succeed(chalk.green(`${name} ${text}\n`))
+        },
+    })
+
+    return {
+        nineS: createMember({ name: '[YoRHa::9S]' }),
+        commander: createMember({ name: '[BUNKER]' }),
+        pod042: createMember({ name: '[YoRHa::Pod042]' }),
+        pod153: createMember({ name: '[YoRHa::Pod153]' }),
+        operator6O: createMember({ name: '[YoRHa::6O]' }),
+    }
+
+}
+
+const bootSequence = async (version, local) => {
+
     const lines = [
         chalk.cyan(figlet.textSync('AutoDev', { horizontalLayout: 'full' })),
         chalk.gray('[BUNKER] Booting System...'),
@@ -27,18 +51,13 @@ const bootSequence = async (version) => {
         chalk.white('[BUNKER] ') + chalk.magenta('Glory to mankind. (人类荣光永存)'),
         chalk.gray('--------------------------------------------------')
     ]
+
     for (const line of lines) {
         console.log(line)
         await sleep(line.includes('AutoDev') ? 300 : 80)
     }
 }
 
-/**
- * 矩阵效果
- * 模拟数据物理封存过程中的矩阵效果
- * @param {number} duration - 持续时间（毫秒）
- * @returns {void}
- */
 const matrixEffect = async (duration = 1500, dialog) => {
 
     let currentTotal = 0
@@ -109,4 +128,8 @@ const matrixEffect = async (duration = 1500, dialog) => {
     }, 40)
 }
 
-module.exports = { local, matrixEffect, bootSequence }
+module.exports = {
+    yorha,
+    bootSequence,
+    matrixEffect
+}

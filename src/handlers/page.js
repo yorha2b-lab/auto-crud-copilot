@@ -5,17 +5,18 @@ module.exports = {
     watch: 'screenShot',
     async handle(filePath) {
 
-        const { llm, menus, yorha, dialog, config, prompts, template, generator, foundation } = require('../bootstrap').get()
+        const { llm, utils, yorha, dialog, prompts, template, generator } = require('../bootstrap').get()
 
         const { page } = prompts
         const { nineS, pod042 } = yorha
         const { index, resource } = generator
-        const { contextStringify } = foundation
         const { generateMock, recognizePage } = llm
-        const { useDemo, pagesDir, needMock } = config
+        const { contextStringify } = utils.generator
+        const { useDemo, pagesDir, needMock } = utils.foundation.getConfig()
 
 
         const startTime = Date.now()
+        const menus = utils.foundation.getExistingMenus(pagesDir)
         const fileName = path.basename(filePath, path.extname(filePath))
         const mockDir = path.join(process.cwd(), 'mock')
         const targetDir = path.join(process.cwd(), pagesDir, fileName)

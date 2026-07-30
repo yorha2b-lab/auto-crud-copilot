@@ -1,13 +1,13 @@
 const fs = require('fs')
 const path = require('path')
 
-module.exports = async ({ llm, core, yorha, dialog, config, foundation }) => {
+module.exports = async ({ llm, utils, yorha, dialog }) => {
 
     const { apiParser } = llm
     const { pod153, commander } = yorha
-    const { apiDoc, pagesDir } = config
-    const { contextStringify } = foundation
-    const { getLocalScore, getSemanticKeywords } = core
+    const { contextStringify } = utils.generator
+    const { apiDoc, pagesDir } = utils.foundation.getConfig()
+    const { getLocalScore, getSemanticKeywords } = utils.semantic
 
     if (!apiDoc) return
 
@@ -36,7 +36,6 @@ module.exports = async ({ llm, core, yorha, dialog, config, foundation }) => {
 
             if (fs.existsSync(indexPath) && fs.existsSync(resourcePath)) {
                 let indexCode = fs.readFileSync(indexPath, 'utf-8')
-                let resourceCode = fs.readFileSync(resourcePath, 'utf-8')
 
                 // 💡 锁定待通电锚点
                 if (indexCode.includes('BUNKER_API_ANCHOR')) {

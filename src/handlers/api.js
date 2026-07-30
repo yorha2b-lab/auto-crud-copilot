@@ -6,12 +6,13 @@ module.exports = {
     async handle(filePath, liveResponse = null) {
 
         const chalk = require('chalk')
-        const { llm, core, labs, yorha, dialog, config } = require('../bootstrap').get()
+        const { llm, utils, labs, yorha, dialog } = require('../bootstrap').get()
 
-        const { pagesDir } = config
         const { nineS, pod153 } = yorha
         const { alignResponseFields } = llm
-        const { cleanCode, unwrapSignal } = core
+        const { cleanCode } = utils.generator
+        const { unwrapSignal } = utils.semantic
+        const { pagesDir } = utils.foundation.getConfig()
 
         const startTime = Date.now()
         const fileName = liveResponse?.fileName ?? path.basename(filePath, path.extname(filePath))

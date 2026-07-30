@@ -32,13 +32,13 @@ const askAI = async ({ model, yorha, dialog, openAI, messages, response_format =
     }
 }
 
-module.exports = ({ config, yorha, openAI, dialog, prompts }) => {
+module.exports = ({ utils, yorha, openAI, dialog, prompts }) => {
 
     const sharp = require('sharp')
 
-    const { textModel, visionModel } = config
     const { api, mock, system, council } = prompts
     const { UI_DESIGNER, API_DESIGNER, MOCK_DESIGNER } = system
+    const { textModel, visionModel } = utils.foundation.getConfig()
 
     return {
         generateMock: async ({ columns, fileName }) => {

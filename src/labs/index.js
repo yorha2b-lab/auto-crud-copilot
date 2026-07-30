@@ -2,7 +2,7 @@ module.exports = accessPoint => {
 
     const labs = {}
 
-    const { apiDoc, needMock, proxyTarget, enableAutoAlignment } = accessPoint.config
+    const { apiDoc, needMock, proxyTarget, enableAutoAlignment } = accessPoint.utils.foundation.getConfig()
 
     if (!needMock && proxyTarget && enableAutoAlignment) {
         labs.tower = require('../labs/tower')(accessPoint)

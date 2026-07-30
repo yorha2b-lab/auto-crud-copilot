@@ -5,13 +5,12 @@ module.exports = {
     async handle(filePath) {
 
         const chalk = require('chalk')
-        const { llm, core, yorha, dialog, prompts, foundation } = require('../bootstrap').get()
+        const { llm, utils, yorha, dialog, prompts } = require('../bootstrap').get()
 
         const { pod042 } = yorha
         const { recognizePage } = llm
         const { part: prompt } = prompts
-        const { contextStringify } = foundation
-        const { cleanCode, formatFormItemAndColumns } = core
+        const { cleanCode, contextStringify, formatFormItemAndColumns } = utils.generator
 
         const startTime = Date.now()
 
@@ -41,7 +40,7 @@ module.exports = {
             console.log(chalk.magenta(`\n┌────────────────── [ YoRHa Construction Output ] ─────────────────┐`))
             console.log(chalk.magenta(`│ Source: ${filePath}`))
             console.log(chalk.magenta(`│ Protocol: Partial UI Fragment | Status: SUCCESS`))
-            console.log(chalk.magenta(`├───────────────────────────────────────────────────────────────────┘`))
+            console.log(chalk.magenta(`├──────────────────────────────────────────────────────────────────┘`))
             console.log(chalk.white(finalResult))
             pod042.success(spinner, dialog.pod042.partialConstruction((endTime - startTime) / 1000))
             pod042.success(spinner, dialog.pod042.partialRecommendation)
