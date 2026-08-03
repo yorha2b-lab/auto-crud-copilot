@@ -15,7 +15,7 @@ module.exports = () => {
         ctx.yorha.pod042.report(ctx.dialog.pod042.queueEmpty)
         const utilsDir = path.join(process.cwd(), config.utilsDir)
         if (!fs.existsSync(utilsDir)) fs.mkdirSync(utilsDir, { recursive: true })
-        fs.writeFileSync(path.join(utilsDir, 'menus.js'), `export const menus = ${ctx.utils.generator.contextStringify({ context: ctx.menus, maxLength: 50 })}`)
+        fs.writeFileSync(path.join(utilsDir, 'menus.js'), `export const menus = ${ctx.utils.generator.contextStringify({ context: ctx.utils.foundation.getExistingMenus(config.pagesDir), maxLength: 50 })}`)
         ctx.yorha.commander.report(ctx.dialog.bunker.systemStandby, 'gray')
     })
 
