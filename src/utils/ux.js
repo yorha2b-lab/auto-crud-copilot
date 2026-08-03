@@ -38,6 +38,13 @@ const yorha = () => {
 
 }
 
+const matchDialog = (locale, dialogs) => {
+    if (dialogs[locale]) return dialogs[locale]
+    const lang = locale.split('-')[0] // 取 ZH-HANS-CN → ZH
+    const matched = Object.keys(dialogs).find(key => key.startsWith(lang + '-'))
+    return matched ? dialogs[matched] : null
+}
+
 const bootSequence = async (version, local) => {
 
     const lines = [
@@ -58,18 +65,20 @@ const bootSequence = async (version, local) => {
     }
 }
 
-const matrixEffect = async (duration = 1500, dialog) => {
+const matrixEffect = async (duration = 1500, dialog, result) => {
 
     let currentTotal = 0
     const MIRROR_URL = 'https://cdn.jsdelivr.net/gh/yorha2b-lab/auto-crud-copilot@github-repo-stats/bunker-stats.json'
 
     try {
-        const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), 800)
-        const response = await fetch(MIRROR_URL, { signal: controller.signal })
-        const stats = await response.json()
-        currentTotal = stats.total_clones || 0
-        clearTimeout(timeoutId)
+        if (result.utils.foundation.getConfig().fetchClone) {
+            const controller = new AbortController()
+            const timeoutId = setTimeout(() => controller.abort(), 800)
+            const response = await fetch(MIRROR_URL, { signal: controller.signal })
+            const stats = await response.json()
+            currentTotal = stats.total_clones || 0
+            clearTimeout(timeoutId)
+        }
     } catch (e) {
         currentTotal = 0
     }
@@ -130,6 +139,7 @@ const matrixEffect = async (duration = 1500, dialog) => {
 
 module.exports = {
     yorha,
+    matchDialog,
     bootSequence,
     matrixEffect
 }

@@ -5,10 +5,10 @@ const pkg = require('../package.json')
 const { program } = require('commander')
 const local = Intl.DateTimeFormat().resolvedOptions().locale.toUpperCase()
 
-const { matrixEffect } = require('../src/utils/ux')
+const { matchDialog, matrixEffect } = require('../src/utils/ux')
 const recruiter = require('../src/kernel/recruiter')
 const dialogs = recruiter(path.join(__dirname, '../src/dialogs'))
-const dialog = dialogs[local] ?? dialogs['EN-US']
+const dialog = matchDialog(local, dialogs) ?? dialogs['EN-US']
 
 program
     .version(pkg.version)
@@ -45,7 +45,7 @@ program
         require('../src/commands/watch')()
         process.on('SIGINT', () => {
             result.yorha.commander.report(dialog.bunker.systemOffline, 'gray')
-            matrixEffect(500, dialog)
+            matrixEffect(500, dialog, result)
         })
     })
 

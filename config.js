@@ -7,6 +7,8 @@ module.exports = {
 
     useDemo: true,
     needMock: false,
+    //默认拉取克隆数彩蛋
+    fetchClone: true,
     // 是否开启自动联调对齐协议 (42153 拦截塔)
     enableAutoAlignment: false,
 

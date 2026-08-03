@@ -1,4 +1,4 @@
-module.exports = (concurrency = 1) => {
+module.exports = (concurrency = 1, { yorha, dialog }) => {
 
     let running = 0
     let queue = []
@@ -14,7 +14,7 @@ module.exports = (concurrency = 1) => {
         try {
             await task()
         } catch (err) {
-            console.error('任务执行异常:', err)
+            yorha.pod153.report(dialog.pod153.signalLinkFault(err.message), 'red')
         } finally {
             running--
             next()

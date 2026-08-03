@@ -5,11 +5,11 @@ module.exports = () => {
     const chokidar = require('chokidar')
 
     const bootstrap = require('../bootstrap')
-    const queue = require('../kernel/queue')(2)
 
     const ctx = bootstrap.get()
     const routes = Object.values(ctx.handlers)
     const config = ctx.utils.foundation.getConfig()
+    const queue = require('../kernel/queue')(2, ctx)
 
     queue.onIdle(() => {
         ctx.yorha.pod042.report(ctx.dialog.pod042.queueEmpty)

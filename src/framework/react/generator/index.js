@@ -1,10 +1,116 @@
 module.exports = ({ utils, engine }) => {
 
     const { indexTpl, resourceTpl } = engine
+    const { wrapCode, cleanCode, contextStringify } = utils.generator
     const { needMock, responseSuccess } = utils.foundation.getConfig()
-    const { cleanCode, contextStringify, generateSmartImports, formatFormItemAndColumns } = utils.generator
+
+    const formatFormItemAndColumns = ({ pageConfig }) => {
+
+        const codePresets = {
+            money: 'text => moneyRender(text)',
+            date: 'text => timeRender({time: text})',
+            index: '(_, record, index) => index + 1',
+            tag: `text => <Tag color='magenta'>{text}</Tag>`,
+            badge: `text => <Badge status='success' text={text} />`,
+            enum: dataIndex => `text => ${dataIndex}Options.find(item => item.value === text)?.label ?? text`,
+        }
+
+        const columns = pageConfig.table?.columns ?? pageConfig?.columns ?? []
+
+        const tableDicts = columns?.filter(item => item.type === 'enum')?.map(item => `${item.dataIndex}Options`) ?? []
+        const formDicts = pageConfig.formItems?.filter(item => item.type === 'select')?.map(item => `${item.name}Options`) ?? []
+        const dictBlocks = Array.from(new Set([...formDicts, ...tableDicts]))
+
+        const formItems = pageConfig.formItems?.map(item => {
+            if (item.type === 'text') {
+                delete item.type
+            }
+            return {
+                ...item,
+                ...(item.type === 'select' ? { options: wrapCode(`${item.name}Options`) } : {})
+            }
+        })
+
+        const processedColumns = columns?.map(col => {
+            if (col.type === 'text') {
+                delete col.type
+            }
+            if (['image'].includes(col.type)) {
+                return { ...col, renderAction: true }
+            }
+            if (col.type && codePresets[col.type]) {
+                const renderCode = typeof codePresets[col.type] === 'function' ? codePresets[col.type](col.dataIndex) : codePresets[col.type]
+                return { ...col, render: wrapCode(renderCode) }
+            }
+            return col
+        })
+
+        return { formItems, dictBlocks, processedColumns }
+    }
+
+    const generateSmartImports = ({ module, hasTabs, bodyCode, hasFormItems }) => {
+
+        const hooksLib = ['useTableQuery']
+        const utilsLib = ['timeRender', 'moneyRender']
+        const reactLib = ['useState', 'useEffect', 'useRef', 'useMemo']
+        const componentsLib = ['MyTable', 'MyImage', 'MyModalForm', 'MySearchForm']
+        const antdLib = ['Tag', 'Card', 'Badge', 'Space', 'Modal', 'Alert', 'Image', 'Table', 'Input', 'Select', 'Button']
+
+        const usedAntd = antdLib.filter(name => new RegExp(`\\b${name}\\b`).test(bodyCode))
+        const usedUtils = utilsLib.filter(name => new RegExp(`\\b${name}\\b`).test(bodyCode))
+        const usedHooks = hooksLib.filter(name => new RegExp(`\\b${name}\\b`).test(bodyCode))
+        const usedReact = reactLib.filter(name => new RegExp(`\\b${name}\\b`).test(bodyCode))
+        const usedComps = componentsLib.filter(name => new RegExp(`\\b${name}\\b`).test(bodyCode))
+
+        const imports = [
+            usedReact.length && `import { ${usedReact.join(', ')} } from 'react'`,
+            usedAntd.length && `import { ${hasFormItems && module === 'index' ? 'Form, ' : ''}${usedAntd.join(', ')} } from 'antd'`,
+            ...usedHooks.map(hook => `import { ${hook} } from '../../hooks/${hook}'`),
+            ...usedComps.map(comp => `import { ${comp} } from '../../components/${comp}'`),
+            ...(module === 'index' ? [
+                `import { request } from '../../utils/request'`,
+                `import { formatQuery } from '../../utils/utils'`,
+                `import { ${hasTabs ? 'tabs, ' : ''}${hasFormItems ? 'formItems, ' : ''}modalItems, tableColumns} from './resource'`
+            ] : [
+                usedUtils.length && `import { ${usedUtils.join(', ')} } from '../../utils/utils'`
+            ]),
+        ].sort((a, b) => a.length - b.length)
+
+        return imports.filter(Boolean).join('\n')
+    }
 
     return {
+        formatFormItemAndColumns,
+        resource: ({ pageConfig }) => {
+
+            const { formItems, processedColumns, dictBlocks } = formatFormItemAndColumns({ pageConfig })
+
+            const hasTabs = pageConfig.tabs?.length > 0
+            const hasFormItems = pageConfig.formItems?.length > 0
+            const tabKeys = pageConfig.tabs?.map(tab => tab.key).sort((a, b) => a.length - b.length)
+            const optionDict = pageConfig.optionList?.reduce((acc, item) => ({ ...acc, [item.name]: item.options }), {})
+
+            const columnsData = processedColumns.map(item => {
+                delete item.type
+                return item
+            })
+
+            const viewData = {
+                hasTabs,
+                columnsData,
+                hasFormItems,
+                tabs: pageConfig.tabs,
+                dictBlocks: dictBlocks.map(item => ({ name: item, data: optionDict[item] ?? [] })),
+                tabColumns: contextStringify({ context: Object.fromEntries(tabKeys.map(tab => [tab, wrapCode('commonColumns')])), maxLength: 100 }),
+                formItemsData: !hasTabs ?
+                    `export const formItems = ${contextStringify({ context: formItems, maxLength: 120 })}` :
+                    `const searchItems = ${contextStringify({ context: formItems, maxLength: 120 })}\n\nexport const formItems = ${contextStringify({ context: Object.fromEntries(tabKeys.map(tab => [tab, wrapCode('searchItems')])), maxLength: 100 })}`,
+            }
+
+            const bodyCode = resourceTpl(viewData)
+            const importsStr = generateSmartImports({ module: 'resource', hasTabs, bodyCode, hasFormItems })
+            return cleanCode(`${importsStr}\n\n${bodyCode}`)
+        },
         index: ({ fileName, pageConfig }) => {
             const hasTabs = pageConfig.tabs?.length > 0
             const hasPagination = pageConfig.table.pagination
@@ -21,7 +127,7 @@ module.exports = ({ utils, engine }) => {
                 columnsValue = `${columnsValue}.concat(operate)`
             }
 
-            const imgAction = Object.fromEntries(pageConfig.table?.columns?.filter(item => item.type === 'image')?.map(item => [item.dataIndex, `_CODE_(_, record) => <a onClick={() => showImg(record, '${item.dataIndex}')}>查看图片</a>_CODE_`]))
+            const imgAction = Object.fromEntries(pageConfig.table?.columns?.filter(item => item.type === 'image')?.map(item => [item.dataIndex, wrapCode(`(_, record) => <a onClick={() => showImg(record, '${item.dataIndex}')}>查看图片</a>`)]))
             const renderAction = `{${contextStringify({ context: imgAction, maxLength: 120 })}}`.replace(/\n/g, '\n    ')
 
             const viewData = {
@@ -50,35 +156,5 @@ module.exports = ({ utils, engine }) => {
             const importsStr = generateSmartImports({ module: 'index', hasTabs, bodyCode, hasFormItems })
             return cleanCode(`${importsStr}\n\n${bodyCode}`)
         },
-        resource: ({ pageConfig }) => {
-
-            const { formItems, processedColumns, dictBlocks } = formatFormItemAndColumns({ pageConfig })
-
-            const hasTabs = pageConfig.tabs?.length > 0
-            const hasFormItems = pageConfig.formItems?.length > 0
-            const tabKeys = pageConfig.tabs.map(tab => tab.key).sort((a, b) => a.length - b.length)
-            const optionDict = pageConfig.optionList?.reduce((acc, item) => ({ ...acc, [item.name]: item.options }), {})
-
-            const columnsData = processedColumns.map(item => {
-                delete item.type
-                return item
-            })
-
-            const viewData = {
-                hasTabs,
-                columnsData,
-                hasFormItems,
-                tabs: pageConfig.tabs,
-                dictBlocks: dictBlocks.map(item => ({ name: item, data: optionDict[item] ?? [] })),
-                tabColumns: contextStringify({ context: Object.fromEntries(tabKeys.map(tab => [tab, '_CODE_commonColumns_CODE_'])), maxLength: 100 }),
-                formItemsData: !hasTabs ?
-                    `export const formItems = ${contextStringify({ context: formItems, maxLength: 120 })}` :
-                    `const searchItems = ${contextStringify({ context: formItems, maxLength: 120 })}\n\nexport const formItems = ${contextStringify({ context: Object.fromEntries(tabKeys.map(tab => [tab, '_CODE_searchItems_CODE_'])), maxLength: 100 })}`,
-            }
-
-            const bodyCode = resourceTpl(viewData)
-            const importsStr = generateSmartImports({ module: 'resource', hasTabs, bodyCode, hasFormItems })
-            return cleanCode(`${importsStr}\n\n${bodyCode}`)
-        }
     }
 }

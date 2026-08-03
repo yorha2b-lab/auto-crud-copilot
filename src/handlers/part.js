@@ -5,12 +5,13 @@ module.exports = {
     async handle(filePath) {
 
         const chalk = require('chalk')
-        const { llm, utils, yorha, dialog, prompts } = require('../bootstrap').get()
+        const { llm, utils, yorha, dialog, prompts, generator } = require('../bootstrap').get()
 
         const { pod042 } = yorha
         const { recognizePage } = llm
         const { part: prompt } = prompts
-        const { cleanCode, contextStringify, formatFormItemAndColumns } = utils.generator
+        const { formatFormItemAndColumns } = generator
+        const { cleanCode, contextStringify } = utils.generator
 
         const startTime = Date.now()
 

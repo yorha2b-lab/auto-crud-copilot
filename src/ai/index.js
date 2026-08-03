@@ -1,8 +1,8 @@
 const askAI = async ({ model, yorha, dialog, openAI, messages, response_format = { type: 'json_object' }, retryCount = 0 }) => {
 
-    if (retryCount > 3) {
+    if (retryCount >= 3) {
         yorha.commander.report(dialog.bunker.linkSevered, 'red')
-        throw new Error()
+        throw new Error(dialog.bunker.linkSevered)
     }
 
     try {
@@ -20,10 +20,10 @@ const askAI = async ({ model, yorha, dialog, openAI, messages, response_format =
         return JSON5.parse(match ? match[0] : raw)
     } catch (err) {
         const statusCode = err.status || err.response?.status
-        const isAuthError = err.message.includes('401') || err.message.includes('402') || [401, 402].includes(statusCode)
+        const isAuthError = [401, 402].includes(statusCode)
         if (isAuthError) {
             yorha.commander.report(dialog.bunker.accessDenied, 'red')
-            throw new Error()
+            throw new Error(dialog.bunker.accessDenied)
         }
 
         yorha.commander.report(dialog.bunker.networkInstability(retryCount + 1))
