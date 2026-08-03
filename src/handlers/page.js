@@ -16,7 +16,6 @@ module.exports = {
 
 
         const startTime = Date.now()
-        const menus = utils.foundation.getExistingMenus(pagesDir)
         const fileName = path.basename(filePath, path.extname(filePath))
         const mockDir = path.join(process.cwd(), 'mock')
         const targetDir = path.join(process.cwd(), pagesDir, fileName)
@@ -43,10 +42,6 @@ module.exports = {
 
             fs.writeFileSync(path.join(targetDir, 'resource.js'), resource({ pageConfig }))
             fs.writeFileSync(path.join(targetDir, 'index.js'), index({ fileName, pageConfig }))
-
-            if (!menus.find(m => m.key === fileName)) {
-                menus.push({ label: fileName, key: fileName })
-            }
 
             if (needMock) {
                 nineS.update(spinner, dialog.nineS.dataCamouflage(fileName))
