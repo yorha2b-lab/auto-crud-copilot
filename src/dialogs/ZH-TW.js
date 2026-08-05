@@ -5,18 +5,21 @@ module.exports = {
         dataCamouflage: fileName => `正在突破目標防火牆... 執行資料偽裝程序 [${fileName}]`,
     },
     pod042: {
+        startScout: '啟動【右鍵一鍵快照】模式...',
+        capturedToast: '圖像情報已擷取，開始傳輸...',
         extractingUiMetadata: '正在從神經雲網路提取 UI 中繼資料...',
         simulate: '攔截到實際請求。正在空投標準模擬包: example.json',
-        queueEmpty: '佇列已清空，正在向 Bunker 同步 Menu 路由設定...',
-        uploadVisualMetadata: '正在上傳視覺中繼資料至司令部，執行語意分析...',
-        visualPartCaptured: '偵測到局部視覺樣本。正在執行「碎片構築協議」...',
         partialConstruction: time => `報告：局部構築完成。耗時: ${time}s`,
+        visualPartCaptured: '偵測到局部視覺樣本。正在執行「碎片構築協議」...',
         partialRecommendation: '│ 建議：請手動將上述程式碼區塊整合至目標檔案',
+        uploadVisualMetadata: '正在上傳視覺中繼資料至司令部，執行語意分析...',
+        scoutReady: '【右鍵快照模式就緒】在瀏覽器頁面任意位置點擊【滑鼠右鍵】即可秒截屏',
         constructionAborted: virus => `構築中斷。偵測到邏輯病毒或連線逾時：${virus}`,
+        capturedPage: pageName => `擷取頁面【${pageName}】-> 已投遞至 screenShot 目錄`,
         partialConstructionAborted: virus => `[警告] 碎片構築失敗。系統偵測到邏輯干擾：${virus}`,
-        visualCaptured: fileName => `視覺感測器捕捉完成: [${fileName}]。正在調配 Bunker 資源進行物理構築...`,
         intercept: fileName => `模組 [${fileName}] 已存在於 Bunker 資料庫中。為避免資料覆蓋，構築協議已跳過`,
-        assemblyComplete: (fileName, time) => `構築協議執行完成。模組 [${fileName}] 已完成物理裝配。耗時: ${time}s`,
+        visualCaptured: fileName => `視覺感測器捕捉完成: [${fileName}]。正在調配 Bunker 資源進行物理構築...`,
+        assemblyComplete: (fileName, time) => `構築協議執行完成。模組 [${fileName}] 已完成物理裝配。耗時: ${time}s，開始同步 Menu 路由設定...`,
     },
     pod153: {
         signalLinkFault: virus => `訊號鏈路故障: ${virus}`,
@@ -55,10 +58,7 @@ module.exports = {
         frameworkNotSupported: template => `暫不支援 [${template}] 框架。歡迎提交 Pull Request 貢獻`,
         strategicThreshold: (target, current) => `物理複製總數已超越 ${target} 戰略閾值！目前戰力：${current}`,
         initComplete: cmd => `Bunker 部署完成，為更快速進入戰場，建議手動將 ${cmd} 加入 package.json scripts`,
-        isLegendary: (unlockAchievement, current, target) =>
-            unlockAchievement
-                ? '恭喜您指揮官，您的構築協議已成為人類榮光的一部分'
-                : `目前構築總數：${current}。距離 ${target} 徽章還剩 ${target - current} 次`,
+        isLegendary: (unlockAchievement, current, target) => unlockAchievement ? '恭喜您指揮官，您的構築協議已成為人類榮光的一部分' : `目前構築總數：${current}。距離 ${target} 徽章還剩 ${target - current} 次`,
     },
     operator6O: {
         call2B: '呼叫 2B，Bunker 全頻道聯動監控已準備完成！',

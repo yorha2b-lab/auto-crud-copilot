@@ -90,7 +90,7 @@ module.exports = ({ utils, engine }) => {
             const tabKeys = pageConfig.tabs?.map(tab => tab.key).sort((a, b) => a.length - b.length)
             const optionDict = pageConfig.optionList?.reduce((acc, item) => ({ ...acc, [item.name]: item.options }), {})
 
-            const columnsData = processedColumns.map(item => {
+            const columnsData = processedColumns.filter(item => !['操作', 'operation'].includes(item.title?.toLowerCase()))?.map(item => {
                 delete item.type
                 return item
             })

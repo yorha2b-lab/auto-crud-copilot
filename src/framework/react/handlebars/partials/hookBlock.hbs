@@ -9,7 +9,7 @@ const { total, columns, loading, dataSource, search, setSearch, setDataSource, r
         cols:tableColumns,
         formatResponse: response => {
             return {
-                data: response?.data ?? [],
+                data: response?.data?.datas ?? [],
                 total: response?.data?.total ?? 0,
                 columns: undefined,//可选,解析接口动态列;优先级高于cols
             }

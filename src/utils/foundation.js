@@ -12,6 +12,12 @@ const getConfig = () => {
     return config
 }
 
+const findRoute = (routes, filePath) => {
+    const relative = path.relative(path.resolve('bunker'), path.resolve(filePath))
+    const root = relative.split(path.sep)[0]
+    return routes.find(route => root === route.watch)
+}
+
 const getExistingMenus = (dir = 'src/pages') => {
     const pagesDir = path.join(process.cwd(), dir)
     if (!fs.existsSync(pagesDir)) return []
@@ -36,6 +42,7 @@ const copyTemplateDir = (template, templateSubDir, targetSubDir) => {
 
 module.exports = {
     getConfig,
+    findRoute,
     copyTemplateDir,
     getExistingMenus,
 }

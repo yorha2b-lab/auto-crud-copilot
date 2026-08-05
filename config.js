@@ -22,6 +22,8 @@ module.exports = {
 
     // 指向公司的 Swagger JSON 地址
     apiDoc: '',
+    //老项目url
+    remains: '',
     // 代理目标
     proxyTarget: '',
     responseSuccess: `response?.code === 200`,

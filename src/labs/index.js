@@ -2,7 +2,7 @@ module.exports = accessPoint => {
 
     const labs = {}
 
-    const { apiDoc, needMock, proxyTarget, enableAutoAlignment } = accessPoint.utils.foundation.getConfig()
+    const { apiDoc, remains, needMock, proxyTarget, enableAutoAlignment } = accessPoint.utils.foundation.getConfig()
 
     if (!needMock && proxyTarget && enableAutoAlignment) {
         labs.tower = require('../labs/tower')(accessPoint)
@@ -10,6 +10,10 @@ module.exports = accessPoint => {
 
     if (apiDoc && enableAutoAlignment) {
         labs.council = require('../labs/council')(accessPoint)
+    }
+
+    if (remains) {
+        require('../labs/scout')(accessPoint).archeology(remains)
     }
 
     return labs

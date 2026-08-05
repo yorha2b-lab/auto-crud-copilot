@@ -47,6 +47,7 @@
   },
   "devDependencies": {
     "http-proxy": "^1.18.1",
+    "puppeteer": "^25.4.0",
     "segmentit": "^2.0.3"
   }
 }

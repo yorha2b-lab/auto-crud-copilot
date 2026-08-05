@@ -54,8 +54,8 @@ module.exports = ({ utils, yorha, dialog, handlers }) => {
                 }
 
                 pod153.report(dialog.pod153.capturedRuntimeSignal(fileName))
-                // 💡 直接调用 api-handler 物理更新 resource.js
-                await handlers.api.handle(null, { fileName, data: json })
+                // 💡 直接调用 response-handler 物理更新 resource.js
+                await handlers.response.handle(null, { fileName, data: json })
                 hackedRegistry.set(fileName, fingerprint)
             } catch (e) {
                 // 非 JSON 信号，保持静默

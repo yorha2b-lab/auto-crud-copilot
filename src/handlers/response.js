@@ -80,7 +80,7 @@ module.exports = {
                 console.log(chalk.magenta(`└────────────────────────────────────────────────────┘`))
             }
 
-            if (enumParams) {
+            if (enumParams !== '{}') {
                 console.log(chalk.magenta(`\n┌──────── [ YoRHa Physical Assembly: Enum Genomes ] ────────┐`))
                 console.log(chalk.gray(dialog.bunker.copyEnum))
                 console.log(chalk.white(cleanCode(enumParams)))

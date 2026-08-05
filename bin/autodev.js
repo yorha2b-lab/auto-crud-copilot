@@ -45,6 +45,7 @@ program
         require('../src/commands/watch')()
         process.on('SIGINT', () => {
             result.yorha.commander.report(dialog.bunker.systemOffline, 'gray')
+            result.labs?.scout?.close()
             matrixEffect(500, dialog, result)
         })
     })

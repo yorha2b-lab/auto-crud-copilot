@@ -12,7 +12,7 @@ module.exports = {
         const { index, resource } = generator
         const { generateMock, recognizePage } = llm
         const { contextStringify } = utils.generator
-        const { useDemo, pagesDir, needMock } = utils.foundation.getConfig()
+        const { useDemo, pagesDir, utilsDir, needMock } = utils.foundation.getConfig()
 
 
         const startTime = Date.now()
@@ -55,6 +55,9 @@ module.exports = {
 
             if (fs.existsSync(filePath)) {
                 fs.unlinkSync(filePath)
+                const cwdUtilsDir = path.join(process.cwd(), utilsDir)
+                if (!fs.existsSync(cwdUtilsDir)) fs.mkdirSync(cwdUtilsDir, { recursive: true })
+                fs.writeFileSync(path.join(cwdUtilsDir, 'menus.js'), `export const menus = ${contextStringify({ context: utils.foundation.getExistingMenus(pagesDir), maxLength: 50 })}`)
             }
 
         } catch (error) {
