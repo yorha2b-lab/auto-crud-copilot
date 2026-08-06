@@ -1,37 +1,3 @@
-const askAI = async ({ model, yorha, dialog, openAI, messages, response_format = { type: 'json_object' }, retryCount = 0 }) => {
-
-    if (retryCount >= 3) {
-        yorha.commander.report(dialog.bunker.linkSevered, 'red')
-        throw new Error(dialog.bunker.linkSevered)
-    }
-
-    try {
-        const response = await openAI.chat.completions.create({
-            model,
-            messages,
-            top_p: 0.1,
-            response_format,
-            temperature: 0.01,
-        })
-        let raw = response.choices[0].message.content.trim()
-        raw = raw.replace(/^```json\n?/, '').replace(/\n?```$/, '')
-        const match = raw.match(/[\{\[][\s\S]*[\}\]]/)
-        const JSON5 = require('json5')
-        return JSON5.parse(match ? match[0] : raw)
-    } catch (err) {
-        const statusCode = err.status || err.response?.status
-        const isAuthError = [401, 402].includes(statusCode)
-        if (isAuthError) {
-            yorha.commander.report(dialog.bunker.accessDenied, 'red')
-            throw new Error(dialog.bunker.accessDenied)
-        }
-
-        yorha.commander.report(dialog.bunker.networkInstability(retryCount + 1))
-
-        return askAI({ model, yorha, dialog, openAI, messages, response_format, retryCount: retryCount + 1 })
-    }
-}
-
 module.exports = ({ utils, yorha, openAI, dialog, prompts }) => {
 
     const sharp = require('sharp')
@@ -40,12 +6,43 @@ module.exports = ({ utils, yorha, openAI, dialog, prompts }) => {
     const { UI_DESIGNER, API_DESIGNER, MOCK_DESIGNER } = system
     const { textModel, visionModel } = utils.foundation.getConfig()
 
+    const askAI = async ({ model, messages, response_format = { type: 'json_object' }, retryCount = 0 }) => {
+
+        if (retryCount >= 3) {
+            yorha.commander.report(dialog.bunker.linkSevered, 'red')
+            throw new Error(dialog.bunker.linkSevered)
+        }
+
+        try {
+            const response = await openAI.chat.completions.create({
+                model,
+                messages,
+                top_p: 0.1,
+                response_format,
+                temperature: 0.01,
+            })
+            let raw = response.choices[0].message.content.trim()
+            raw = raw.replace(/^```json\n?/, '').replace(/\n?```$/, '')
+            const match = raw.match(/[\{\[][\s\S]*[\}\]]/)
+            const JSON5 = require('json5')
+            return JSON5.parse(match ? match[0] : raw)
+        } catch (err) {
+            const statusCode = err.status || err.response?.status
+            const isAuthError = [401, 402].includes(statusCode)
+            if (isAuthError) {
+                yorha.commander.report(dialog.bunker.accessDenied, 'red')
+                throw new Error(dialog.bunker.accessDenied)
+            }
+
+            yorha.commander.report(dialog.bunker.networkInstability(retryCount + 1))
+
+            return askAI({ model, yorha, dialog, openAI, messages, response_format, retryCount: retryCount + 1 })
+        }
+    }
+
     return {
         generateMock: async ({ columns, fileName }) => {
             return askAI({
-                yorha,
-                openAI,
-                dialog,
                 model: textModel,
                 messages: [
                     { role: 'system', content: MOCK_DESIGNER },
@@ -55,9 +52,6 @@ module.exports = ({ utils, yorha, openAI, dialog, prompts }) => {
         },
         nameSimilarity: async ({ fileName, english }) => {
             return askAI({
-                yorha,
-                openAI,
-                dialog,
                 model: textModel,
                 messages: [
                     { role: 'system', content: UI_DESIGNER },
@@ -67,9 +61,6 @@ module.exports = ({ utils, yorha, openAI, dialog, prompts }) => {
         },
         apiParser: async ({ bunkerAnchors, realApis }) => {
             return askAI({
-                yorha,
-                openAI,
-                dialog,
                 model: textModel,
                 messages: [
                     { role: 'system', content: API_DESIGNER },
@@ -85,9 +76,6 @@ module.exports = ({ utils, yorha, openAI, dialog, prompts }) => {
             const base64Image = compressedBuffer.toString('base64')
 
             return askAI({
-                yorha,
-                openAI,
-                dialog,
                 model: visionModel,
                 messages: [
                     { role: 'system', content: UI_DESIGNER },
@@ -104,9 +92,6 @@ module.exports = ({ utils, yorha, openAI, dialog, prompts }) => {
         },
         alignResponseFields: async ({ responseStr, resourceStr }) => {
             return askAI({
-                yorha,
-                openAI,
-                dialog,
                 model: textModel,
                 messages: [
                     { role: 'system', content: API_DESIGNER },
