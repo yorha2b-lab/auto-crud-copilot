@@ -10,15 +10,14 @@ module.exports = {
         const { page } = prompts
         const { nineS, pod042 } = yorha
         const { index, resource } = generator
-        const { generateMock, recognizePage } = llm
         const { contextStringify } = utils.generator
+        const { generateMock, recognizePage, nameSimilarity } = llm
         const { useDemo, pagesDir, utilsDir, needMock } = utils.foundation.getConfig()
 
 
         const startTime = Date.now()
-        const fileName = path.basename(filePath, path.extname(filePath))
-        const mockDir = path.join(process.cwd(), 'mock')
-        const targetDir = path.join(process.cwd(), pagesDir, fileName)
+        let fileName = path.basename(filePath, path.extname(filePath))
+        let targetDir = path.join(process.cwd(), pagesDir, fileName)
 
         const spinner = pod042.start(dialog.pod042.visualCaptured(fileName))
 
@@ -28,23 +27,29 @@ module.exports = {
                 return
             }
 
-            if (!fs.existsSync(mockDir)) fs.mkdirSync(mockDir, { recursive: true })
-            if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true })
-
             let pageConfig
             if (useDemo) {
                 pod042.report(dialog.pod042.simulate)
                 pageConfig = require('../../example/example.json')
             } else {
                 pod042.update(spinner, dialog.pod042.uploadVisualMetadata)
-                pageConfig = await recognizePage({ prompt: page(fileName), filePath, schema: require(`../framework/${template}/schema/page.json`) })
+                pageConfig = await recognizePage({ prompt: page, filePath, schema: require(`../framework/${template}/schema/page.json`) })
             }
 
+            const { isSimilar } = await nameSimilarity({ fileName, english: pageConfig.title.english })
+            if (!isSimilar) {
+                fileName = pageConfig.title.english
+                targetDir = path.join(process.cwd(), pagesDir, pageConfig.title.english)
+            }
+
+            if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true })
             fs.writeFileSync(path.join(targetDir, 'resource.js'), resource({ pageConfig }))
             fs.writeFileSync(path.join(targetDir, 'index.js'), index({ fileName, pageConfig }))
 
             if (needMock) {
                 nineS.update(spinner, dialog.nineS.dataCamouflage(fileName))
+                const mockDir = path.join(process.cwd(), 'mock')
+                if (!fs.existsSync(mockDir)) fs.mkdirSync(mockDir, { recursive: true })
                 const rawContent = await generateMock({ columns: pageConfig.table.columns, fileName })
                 fs.writeFileSync(path.join(mockDir, `${fileName}.js`), `export default ${contextStringify({ context: rawContent })}`)
                 nineS.success(spinner, dialog.nineS.dataCamouflageComplete)

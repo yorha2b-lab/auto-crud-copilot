@@ -36,7 +36,7 @@ module.exports = ({ utils, yorha, openAI, dialog, prompts }) => {
 
     const sharp = require('sharp')
 
-    const { mock, system, council, response } = prompts
+    const { mock, system, council, response, similarity } = prompts
     const { UI_DESIGNER, API_DESIGNER, MOCK_DESIGNER } = system
     const { textModel, visionModel } = utils.foundation.getConfig()
 
@@ -50,6 +50,18 @@ module.exports = ({ utils, yorha, openAI, dialog, prompts }) => {
                 messages: [
                     { role: 'system', content: MOCK_DESIGNER },
                     { role: 'user', content: mock({ columns, fileName }) }
+                ]
+            })
+        },
+        nameSimilarity: async ({ fileName, english }) => {
+            return askAI({
+                yorha,
+                openAI,
+                dialog,
+                model: textModel,
+                messages: [
+                    { role: 'system', content: UI_DESIGNER },
+                    { role: 'user', content: similarity({ fileName, english }) }
                 ]
             })
         },

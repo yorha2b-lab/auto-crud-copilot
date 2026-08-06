@@ -1,8 +1,8 @@
-module.exports = fileName => `
+module.exports = `
 # Task: Full-Page UI Analysis & Structural Assembly
 执行全页面视觉特征提取，并按照物理布局顺序输出标准的构筑协议。
 
-**模块名: ${fileName}**
+**模块名: 页面主体名称[英文]**
 
 ## 核心命名协议 (Naming Convention)
 - **驼峰命名**: 所有变量及函数名必须遵循 camelCase。
@@ -30,7 +30,7 @@ module.exports = fileName => `
 ## 表格主体 (table)
 - **基础格式(columns)**: [{ title: '文本', dataIndex: 'englishName' }]。
 - **配置项**: [pagination, expandable, rowSelection] 均为布尔值。
-- **行操作 (operation)**: [{ label: '操作名', action: '动词Record', uri: 'BUNKER_API_ANCHOR_动词[模块名]'}]
+- **行操作 (operation)**: [{ label: '操作名', action: '操作动词[模块名单数形式]', uri: 'BUNKER_API_ANCHOR_操作动词[模块名单数形式]'}]
 - **类型定义 (type)**:
     - enum: 枚举列
     - money: 金额列
@@ -42,7 +42,7 @@ module.exports = fileName => `
     - badge: 徽标列(文本前有颜色小圆点)
 
 ## 全局功能按钮 (functionButton)
-- **基础格式**: [{ btn: '按钮', action: '操作动词[模块名]BySelected', uri: 'BUNKER_API_ANCHOR_动词[模块名]BySelected'}]。
+- **基础格式**: [{ btn: '按钮', action: '操作动词[模块名复数形式]', uri: 'BUNKER_API_ANCHOR_动词[模块名复数形式]'}]。
 - **导出数据**: action 设为 'export[模块名]'。
 - **逻辑锁定**: 只要页面中出现了非查询、非重置的独立操作按钮，必须识别并存入 [functionButton] 数组。
 - **构筑联动**: 若 [functionButton] 数组不为空，则在下文的 [RenderTree] 中必须包含 "FunctionButtons"。

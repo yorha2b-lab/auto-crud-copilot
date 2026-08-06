@@ -4,9 +4,9 @@ const initialParams = {{initParams}}
 const query = formatQuery(Object.fromEntries(new URLSearchParams(location.search).entries()),  {{formItems}})
 
 const { total, columns, loading, dataSource, search, setSearch, setDataSource, refresh } = useTableQuery({
-        api: async params => await request('/api/{{uri}}', { method: 'POST', body: params }),
-        initialParams: { ...initialParams, ...query },
         cols:tableColumns,
+        initialParams: { ...initialParams, ...query },
+        api: async params => await request('/api/{{uri}}', { method: 'POST', body: params }),
         formatResponse: response => {
             return {
                 data: response?.data?.datas ?? [],
