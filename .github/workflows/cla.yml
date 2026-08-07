@@ -16,6 +16,11 @@ jobs:
   CLA:
     runs-on: ubuntu-latest
     steps:
+      # 关键修复 1：先把仓库代码 Checkout 下来，机器人才能读到 CLA.md
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 关键修复 2：执行 CLA 校验
       - name: "CLA Assistant Check"
         if: (github.event.comment.issue.pull_request != null || github.event_name == 'pull_request_target')
         uses: contributor-assistant/github-action@v2.4.0
@@ -23,6 +28,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           path-to-signatures: 'bunker/signatures/cla.json'
-          path-to-document: 'https://github.com/${{ github.repository }}/blob/main/CLA.md'
-          branch: 'main'
-          allowlist: 'bot*'
+          path-to-document: 'CLA.md' # 关键修复 3：直接用相对路径，防止 404 报错！
+          branch: 'main' # 如果默认分支是 master 请改成 master
+          allowlist: 'bot*,dependabot[bot],renovate[bot]'
