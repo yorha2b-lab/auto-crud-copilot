@@ -30,4 +30,4 @@ jobs:
           path-to-signatures: '.github/cla.json'
           path-to-document: 'https://github.com/${{ github.repository }}/blob/main/CLA.md'
           branch: 'main'
-          allowlist: 'bot*,dependabot[bot],renovate[bot]'
+          allowlist: 'bot*,dependabot[bot],renovate[bot],github-actions[bot],yorha2b-lab'
