@@ -16,9 +16,11 @@ jobs:
   CLA:
     runs-on: ubuntu-latest
     steps:
+      # ⚠️ 必须有这一步！先把代码 Checkout 下来
       - name: Checkout
         uses: actions/checkout@v4
 
+      # 2. 运行 CLA 机器人
       - name: "CLA Assistant Check"
         if: (github.event.comment.issue.pull_request != null || github.event_name == 'pull_request_target')
         uses: contributor-assistant/github-action@v2.4.0
