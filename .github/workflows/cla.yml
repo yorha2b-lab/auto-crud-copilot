@@ -16,6 +16,9 @@ jobs:
   CLA:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: "CLA Assistant Check"
         if: (github.event.comment.issue.pull_request != null || github.event_name == 'pull_request_target')
         uses: contributor-assistant/github-action@v2.4.0
