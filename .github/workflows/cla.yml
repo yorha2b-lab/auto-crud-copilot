@@ -26,6 +26,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           path-to-signatures: '.github/cla.json'
-          path-to-document: 'https://github.com/${{ github.repository }}/blob/main/CLA.md'
+          path-to-document: 'https://github.com/${{ github.repository }}/main/CLA.md'
           branch: 'main'
           allowlist: 'bot*,dependabot[bot],renovate[bot]'
