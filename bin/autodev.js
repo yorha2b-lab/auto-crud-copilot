@@ -6,7 +6,7 @@ const { program } = require('commander')
 const local = Intl.DateTimeFormat().resolvedOptions().locale.toUpperCase()
 
 const { matchDialog, matrixEffect } = require('../src/utils/ux')
-const recruiter = require('../src/kernel/recruiter')
+const recruiter = require('../src/core/recruiter')
 const dialogs = recruiter(path.join(__dirname, '../src/dialogs'))
 const dialog = matchDialog(local, dialogs) ?? dialogs['EN-US']
 

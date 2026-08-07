@@ -7,7 +7,7 @@ module.exports = {
 
     init: async ({ template }, dialog, version, local) => {
 
-        const recruiter = require('../kernel/recruiter')
+        const recruiter = require('../core/recruiter')
         const utils = recruiter(path.join(__dirname, '../utils'))
         const yorha = utils.ux.yorha()
 
@@ -23,7 +23,7 @@ module.exports = {
             dialog,
             template,
             openAI: require('../ai/openai')(),
-            engine: require('../kernel/engine')({ utils, template }),
+            engine: require('../core/engine')({ utils, template }),
             handlers: recruiter(path.join(__dirname, '../handlers')),
             prompts: recruiter(path.join(__dirname, `../framework/${template}/prompts`)),
         }
@@ -31,7 +31,7 @@ module.exports = {
         if (version) {
             await utils.ux.bootSequence(version, local)
         }
-        require('../kernel/deployment')(accessPoint)
+        require('../core/deployment')(accessPoint)
         const llm = require('../ai')(accessPoint)
         const generator = require(generatorPath)(accessPoint)
         const labs = require('../labs')({ llm, ...accessPoint })

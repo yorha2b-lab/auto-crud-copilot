@@ -6,7 +6,7 @@ module.exports = () => {
 
     const ctx = bootstrap.get()
     const routes = Object.values(ctx.handlers)
-    const queue = require('../kernel/queue')(2, ctx)
+    const queue = require('../core/queue')(2, ctx)
 
     queue.onIdle(() => ctx.yorha.commander.report(ctx.dialog.bunker.systemStandby, 'gray'))
 
