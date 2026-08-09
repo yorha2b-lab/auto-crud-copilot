@@ -36,7 +36,7 @@ module.exports = ({ utils, yorha, openAI, dialog, prompts }) => {
 
             yorha.commander.report(dialog.bunker.networkInstability(retryCount + 1))
 
-            return askAI({ model, yorha, dialog, openAI, messages, response_format, retryCount: retryCount + 1 })
+            return askAI({ model, messages, response_format, retryCount: retryCount + 1 })
         }
     }
 
