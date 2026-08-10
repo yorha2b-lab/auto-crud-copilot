@@ -2,6 +2,7 @@ module.exports = ({ utils, yorha, openAI, dialog, prompts }) => {
 
     const sharp = require('sharp')
 
+    const { sleep } = utils.ux
     const { mock, system, council, response, similarity } = prompts
     const { UI_DESIGNER, API_DESIGNER, MOCK_DESIGNER } = system
     const { textModel, visionModel } = utils.foundation.getConfig()
@@ -35,7 +36,7 @@ module.exports = ({ utils, yorha, openAI, dialog, prompts }) => {
             }
 
             yorha.commander.report(dialog.bunker.networkInstability(retryCount + 1))
-
+            await sleep(1000)
             return askAI({ model, messages, response_format, retryCount: retryCount + 1 })
         }
     }

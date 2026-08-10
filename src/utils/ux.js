@@ -138,6 +138,7 @@ const matrixEffect = async (duration = 1500, dialog, result) => {
 }
 
 module.exports = {
+    sleep,
     yorha,
     matchDialog,
     bootSequence,
