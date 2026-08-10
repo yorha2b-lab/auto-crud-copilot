@@ -38,7 +38,7 @@ const renderFormContent = ({ item, prefixName = [] }) => {
     const namePath = Array.isArray(prefixName) ? [...prefixName, ...(Array.isArray(item.name) ? item.name : [item.name])] : item.name
 
     const inputNode = (
-        <Form.Item noStyle name={namePath} rules={item.rules} initialValue={item.value} {...(['upload', 'ossUpload'].includes(item.type) ? { getValueFromEvent, valuePropName: 'fileList' } : { valuePropName: item.valuePropName })}>
+        <Form.Item noStyle name={namePath} rules={item.rules} dependencies={item.dependencies} initialValue={item.value} {...(['upload', 'ossUpload'].includes(item.type) ? { getValueFromEvent, valuePropName: 'fileList' } : { valuePropName: item.valuePropName })}>
             {formNode({ item })}
         </Form.Item>
     )

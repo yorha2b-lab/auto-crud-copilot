@@ -118,7 +118,7 @@ const FormRenderer = ({ form, formItems, tableConfig, setModalTable, setSelected
  *   formItems={[{ label: '截止日期', name: 'deadline', type: 'date' }]}
  * />
  */
-export const MyModalForm = ({ width, title, footer, submit, record, visible, setModal, labelCol, formItems, wrapperCol, tableConfig, onValuesChange, handleModalTableOk }) => {
+export const MyModalForm = ({ width, title, footer, submit, record, visible, setModal, labelCol, formItems, wrapperCol, tableConfig, okButtonProps, onValuesChange, handleModalTableOk }) => {
 
     const rowKey = tableConfig?.rowKey || 'id'
 
@@ -220,7 +220,19 @@ export const MyModalForm = ({ width, title, footer, submit, record, visible, set
     }), [rowKey, modalTable, selectedTableRows])
 
     return (
-        <Modal centered title={title} width={width} open={visible} onOk={handleOk} footer={footer?.({ setModal })} destroyOnClose onCancel={handleCancel} confirmLoading={pending} bodyStyle={{ paddingBottom: 0 }}>
+        <Modal
+            centered
+            title={title}
+            width={width}
+            open={visible}
+            destroyOnClose
+            onOk={handleOk}
+            onCancel={handleCancel}
+            confirmLoading={pending}
+            okButtonProps={okButtonProps}
+            bodyStyle={{ paddingBottom: 0 }}
+            footer={footer?.({ form, record, setModal })}
+        >
             {modalTable.visible && <MyModalTable rowKey={rowKey} {...modalTable} rowSelection={tableRowSelection} onOk={modalTableOk} setModal={setModalTable} />}
             <Form form={form} preserve={false} labelCol={labelCol} wrapperCol={wrapperCol} onValuesChange={(changed, all) => onValuesChange?.({ changed, all, form, record })}>
                 <Row gutter={[24, 0]}>
