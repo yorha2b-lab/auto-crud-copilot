@@ -68,7 +68,7 @@ const bootSequence = async (version, local) => {
 const matrixEffect = async (duration = 1500, dialog, result) => {
 
     let currentTotal = 0
-    const MIRROR_URL = 'https://cdn.jsdelivr.net/gh/yorha2b-lab/auto-crud-copilot@github-repo-stats/bunker-stats.json'
+    const MIRROR_URL = 'https://cdn.jsdelivr.net/gh/yorha2b-lab/autodev@github-repo-stats/bunker-stats.json'
 
     try {
         if (result.logistics.foundation.getConfig().fetchClone) {

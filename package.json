@@ -1,7 +1,7 @@
 {
   "name": "@yorha2b-lab/autodev",
   "version": "5.7.3",
-  "description": "基于视觉大模型的前端(react+Antd)全自动 CRUD 代码生成器",
+  "description": "基于 AI 视觉与语义协议的前端 (React+Antd) 代码构筑与旧系统重构引擎",
   "bin": {
     "bunker": "bin/bunker.js"
   },
@@ -9,45 +9,48 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "crud",
-    "generator",
     "ai",
-    "vision",
-    "react",
-    "antd",
     "umi",
-    "code-generation",
-    "automation",
+    "antd",
+    "crud",
+    "react",
+    "vision",
+    "copilot",
     "frontend",
-    "scaffold"
+    "scaffold",
+    "generator",
+    "automation",
+    "refactoring",
+    "legacy-code",
+    "code-generation"
   ],
   "author": "yorha2b-Lab",
   "license": "AGPL-3.0",
   "type": "commonjs",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yorha2b-lab/auto-crud-copilot.git"
+    "url": "https://github.com/yorha2b-lab/autodev.git"
   },
   "bugs": {
-    "url": "https://github.com/yorha2b-lab/auto-crud-copilot/issues"
+    "url": "https://github.com/yorha2b-lab/autodev/issues"
   },
-  "homepage": "https://github.com/yorha2b-lab/auto-crud-copilot#readme",
+  "homepage": "https://github.com/yorha2b-lab/autodev#readme",
   "dependencies": {
+    "ora": "^5.4.1",
     "chalk": "^4.1.2",
-    "chokidar": "^5.0.0",
-    "commander": "^14.0.3",
+    "json5": "^2.2.3",
+    "sharp": "^0.34.5",
     "dotenv": "^17.3.1",
     "figlet": "^1.10.0",
-    "handlebars": "^4.7.8",
-    "json-stringify-pretty-compact": "^4.0.0",
-    "json5": "^2.2.3",
     "openai": "^6.24.0",
-    "ora": "^5.4.1",
-    "sharp": "^0.34.5"
+    "chokidar": "^5.0.0",
+    "commander": "^14.0.3",
+    "handlebars": "^4.7.8",
+    "json-stringify-pretty-compact": "^4.0.0"
   },
   "devDependencies": {
-    "http-proxy": "^1.18.1",
+    "segmentit": "^2.0.3",
     "puppeteer": "^25.4.0",
-    "segmentit": "^2.0.3"
+    "http-proxy": "^1.18.1"
   }
 }

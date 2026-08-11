@@ -60,8 +60,8 @@ Contributors retain copyright in their original contributions; this does not con
 
 1. 克隆仓库
 ```bash
-git clone https://github.com/yorha2b-lab/auto-crud-copilot.git
-cd auto-crud-copilot
+git clone https://github.com/yorha2b-lab/autodev.git
+cd autodev
 ```
 
 2. 安装依赖
