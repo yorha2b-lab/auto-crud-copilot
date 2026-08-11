@@ -44,7 +44,7 @@ module.exports = {
         envCheck: '.env dosyası zaten mevcut. Oluşturma atlandı',
         copyTemplateError: virus => `Şablon inşası başarısız: ${virus}`,
         configCheck: 'config.js dosyası zaten mevcut. Oluşturma atlandı',
-        watchDesc: 'Tam kanal izlemeyi başlat: Page/Part/API ortak inşası',
+        bootDesc: 'Tam kanal izlemeyi başlat: Page/Part/API ortak inşası',
         towerOnline: port => `Sinyal yakalama kulesi aktif [Frekans: ${port}]`,
         star: 'Bu proje size zaman kazandırdıysa GitHub üzerinde yıldız bırakın ⭐',
         dataSynced: 'Tüm inşa verileri Bunker depolama düğümü ile senkronize edildi',

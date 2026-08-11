@@ -2,17 +2,17 @@ const fs = require('fs')
 const path = require('path')
 
 module.exports = {
-    watch: 'screenShot',
+    station: 'screenShot',
     async handle(filePath) {
 
-        const { llm, utils, yorha, dialog, prompts, template, generator } = require('../bootstrap').get()
+        const { llm, yorha, dialog, prompts, template, generator, logistics } = require('../awakening').get()
 
         const { page } = prompts
         const { nineS, pod042 } = yorha
         const { index, resource } = generator
-        const { contextStringify } = utils.generator
+        const { contextStringify } = logistics.generator
         const { generateMock, recognizePage, nameSimilarity } = llm
-        const { useDemo, pagesDir, utilsDir, needMock } = utils.foundation.getConfig()
+        const { useDemo, pagesDir, utilsDir, needMock } = logistics.foundation.getConfig()
 
 
         const startTime = Date.now()
@@ -36,10 +36,13 @@ module.exports = {
                 pageConfig = await recognizePage({ prompt: page, filePath, schema: require(`../framework/${template}/schema/page.json`) })
             }
 
-            const { isSimilar } = await nameSimilarity({ fileName, english: pageConfig.title.english })
-            if (!isSimilar) {
+            const { similarity } = await nameSimilarity({ fileName, english: pageConfig.title.english })
+            if (similarity === 0) {
                 fileName = pageConfig.title.english
                 targetDir = path.join(process.cwd(), pagesDir, pageConfig.title.english)
+                if (fs.existsSync(targetDir)) {
+                    targetDir = `${targetDir}_temp`
+                }
             }
 
             if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true })
@@ -62,7 +65,7 @@ module.exports = {
                 fs.unlinkSync(filePath)
                 const cwdUtilsDir = path.join(process.cwd(), utilsDir)
                 if (!fs.existsSync(cwdUtilsDir)) fs.mkdirSync(cwdUtilsDir, { recursive: true })
-                fs.writeFileSync(path.join(cwdUtilsDir, 'menus.js'), `export const menus = ${contextStringify({ context: utils.foundation.getExistingMenus(pagesDir), maxLength: 50 })}`)
+                fs.writeFileSync(path.join(cwdUtilsDir, 'menus.js'), `export const menus = ${contextStringify({ context: logistics.foundation.getExistingMenus(pagesDir), maxLength: 50 })}`)
             }
 
         } catch (error) {

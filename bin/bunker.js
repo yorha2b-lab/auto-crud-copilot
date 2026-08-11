@@ -5,8 +5,8 @@ const pkg = require('../package.json')
 const { program } = require('commander')
 const local = Intl.DateTimeFormat().resolvedOptions().locale.toUpperCase()
 
-const { matchDialog, matrixEffect } = require('../src/utils/ux')
-const recruiter = require('../src/core/recruiter')
+const { matchDialog, matrixEffect } = require('../src/logistics/ux')
+const recruiter = require('../src/headquarters/recruiter')
 const dialogs = recruiter(path.join(__dirname, '../src/dialogs'))
 const dialog = matchDialog(local, dialogs) ?? dialogs['EN-US']
 
@@ -20,29 +20,29 @@ program
     .command('init')
     .description(dialog.bunker.initDesc)
     .action(() => {
-        const battlefield = {
+        const outpost = {
             files: [
                 { from: '.env.example', to: '.env', exist: 'envCheck', success: 'envCopy' },
                 { from: 'config.js', to: 'config.js', exist: 'configCheck', success: 'configCopy' }
             ]
         }
-        const installer = require('../src/utils/installer')({ root: process.cwd(), dialog })
-        Object.entries(battlefield).forEach(([type, items]) => items.forEach(installer[type]))
-        const bunkerCmd = chalk.yellow(`'bunker': 'autodev watch'`)
+        const quartermaster = require('../src/headquarters/quartermaster')({ root: process.cwd(), dialog })
+        Object.entries(outpost).forEach(([type, items]) => items.forEach(quartermaster[type]))
+        const bunkerCmd = chalk.yellow(`'bunker': 'bunker boot'`)
         console.log(chalk.cyan(dialog.bunker.initComplete(bunkerCmd)))
     })
 
 program
-    .command('watch')
+    .command('boot')
     .alias('start')
-    .description(dialog.bunker.watchDesc)
+    .description(dialog.bunker.bootDesc)
     .action(async () => {
-        const bunker = require('../src/bootstrap')
+        const bunker = require('../src/awakening')
         const result = await bunker.init(program.opts(), dialog, pkg.version, local)
         if (!result) {
             return
         }
-        require('../src/commands/watch')()
+        require('../src/headquarters/observer')(bunker)
         process.on('SIGINT', () => {
             result.yorha.commander.report(dialog.bunker.systemOffline, 'gray')
             result.labs?.scout?.close()

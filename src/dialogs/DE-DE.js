@@ -47,7 +47,7 @@ module.exports = {
         initDesc: 'Bunker-Konstruktionsumgebung im aktuellen Verzeichnis initialisieren',
         linkSevered: 'Verbindung getrennt: Netzwerkstatus oder Blackbox-Resonanz prüfen',
         towerConnected: port => `Befehl: Proxy-Ziel auf http://localhost:${port} setzen`,
-        watchDesc: 'Überwachung aller Kanäle starten: Page/Part/API-Konstruktion unterstützt',
+        bootDesc: 'Überwachung aller Kanäle starten: Page/Part/API-Konstruktion unterstützt',
         accessDenied: 'Zentralzugriff verweigert: API-Key ungültig oder Kontingent erschöpft',
         dataSynced: 'Alle Konstruktionsdaten wurden mit dem Bunker-Speicherknoten synchronisiert',
         systemOffline: 'Neuronale Cloud-Verbindung wird getrennt. Daten werden physisch versiegelt...',

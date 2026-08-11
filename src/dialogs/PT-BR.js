@@ -48,7 +48,7 @@ module.exports = {
         towerOnline: port => `Torre de interceptação de sinais online [Frequência: ${port}]`,
         accessDenied: 'Acesso ao comando central negado: API Key inválida ou limite excedido',
         star: 'Se este projeto ajudou você a economizar tempo, deixe uma estrela no GitHub ⭐',
-        watchDesc: 'Iniciar monitoramento de todos os canais: construção integrada de Page/Part/API',
+        bootDesc: 'Iniciar monitoramento de todos os canais: construção integrada de Page/Part/API',
         linkSevered: 'Conexão interrompida: verifique o estado da rede ou a ressonância do Black Box',
         systemOffline: 'Desconectando conexão neural em nuvem. Executando selamento físico dos dados...',
         dataSynced: 'Todos os dados de construção foram sincronizados com o nó de armazenamento do Bunker',

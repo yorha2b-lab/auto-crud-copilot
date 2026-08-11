@@ -7,9 +7,9 @@ module.exports = {
 
     init: async ({ template }, dialog, version, local) => {
 
-        const recruiter = require('../core/recruiter')
-        const utils = recruiter(path.join(__dirname, '../utils'))
-        const yorha = utils.ux.yorha()
+        const recruiter = require('../headquarters/recruiter')
+        const logistics = recruiter(path.join(__dirname, '../logistics'))
+        const yorha = logistics.ux.yorha()
 
         const generatorPath = path.join(__dirname, `../framework/${template}/generator`)
         if (!fs.existsSync(generatorPath)) {
@@ -18,21 +18,20 @@ module.exports = {
         }
 
         const accessPoint = {
-            utils,
             yorha,
             dialog,
             template,
-            openAI: require('../ai/openai')(),
-            engine: require('../core/engine')({ utils, template }),
-            handlers: recruiter(path.join(__dirname, '../handlers')),
+            logistics,
+            units: recruiter(path.join(__dirname, '../units')),
+            builder: require('../headquarters/builder')({ logistics, template }),
             prompts: recruiter(path.join(__dirname, `../framework/${template}/prompts`)),
         }
 
         if (version) {
-            await utils.ux.bootSequence(version, local)
+            await logistics.ux.bootSequence(version, local)
         }
-        require('../core/deployment')(accessPoint)
-        const llm = require('../ai')(accessPoint)
+        require('../headquarters/engineer')(accessPoint)
+        const llm = require('../gateway')(accessPoint)
         const generator = require(generatorPath)(accessPoint)
         const labs = require('../labs')({ llm, ...accessPoint })
 

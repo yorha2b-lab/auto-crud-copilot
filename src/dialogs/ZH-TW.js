@@ -49,7 +49,7 @@ module.exports = {
         copyTemplateError: virus => `模板構築失敗: ${virus}`,
         star: '如果它能幫助您節省時間，請在 GitHub 上給它一顆 Star ⭐',
         towerOnline: port => `訊號攔截塔已上線 [頻段: ${port}]`,
-        watchDesc: '開啟全頻道聯動監控：支援 Page/Part/API 協同構築',
+        bootDesc: '開啟全頻道聯動監控：支援 Page/Part/API 協同構築',
         accessDenied: '司令部拒絕存取：API Key 無效或額度耗盡，請檢查！',
         disclaimer: '匹配結果僅供參考，不構成最終決策，各機體需依照實際情況進行調整',
         towerConnected: port => `指令：請將您的代理目標指向 http://localhost:${port}`,

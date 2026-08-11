@@ -44,7 +44,7 @@ module.exports = {
         configCheck: 'File config.js già presente. Creazione ignorata',
         dataSynced: 'Tutti i dati di costruzione sincronizzati con il nodo Bunker',
         copyTemplateError: virus => `Errore nella costruzione del template: ${virus}`,
-        watchDesc: 'Avvia monitoraggio completo: costruzione coordinata Page/Part/API',
+        bootDesc: 'Avvia monitoraggio completo: costruzione coordinata Page/Part/API',
         initDesc: 'Inizializza ambiente di costruzione Bunker nella directory corrente',
         star: 'Se questo progetto ti fa risparmiare tempo, lascia una stella su GitHub ⭐',
         towerOnline: port => `Torre di intercettazione segnali online [Frequenza: ${port}]`,

@@ -47,7 +47,7 @@ module.exports = {
         towerOnline: port => `Menara intersepsi sinyal aktif [Frekuensi: ${port}]`,
         initDesc: 'Menginisialisasi lingkungan konstruksi Bunker di direktori saat ini',
         accessDenied: 'Akses ditolak pusat komando: API Key tidak valid atau kuota habis',
-        watchDesc: 'Mengaktifkan pemantauan multi-kanal: konstruksi Page/Part/API terpadu',
+        bootDesc: 'Mengaktifkan pemantauan multi-kanal: konstruksi Page/Part/API terpadu',
         star: 'Jika proyek ini membantu menghemat waktu Anda, berikan bintang di GitHub ⭐',
         systemOffline: 'Memutus koneksi neural cloud. Menjalankan penyegelan fisik data...',
         dataSynced: 'Seluruh data konstruksi telah disinkronkan dengan node penyimpanan Bunker',

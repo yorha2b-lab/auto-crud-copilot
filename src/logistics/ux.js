@@ -71,7 +71,7 @@ const matrixEffect = async (duration = 1500, dialog, result) => {
     const MIRROR_URL = 'https://cdn.jsdelivr.net/gh/yorha2b-lab/auto-crud-copilot@github-repo-stats/bunker-stats.json'
 
     try {
-        if (result.utils.foundation.getConfig().fetchClone) {
+        if (result.logistics.foundation.getConfig().fetchClone) {
             const controller = new AbortController()
             const timeoutId = setTimeout(() => controller.abort(), 800)
             const response = await fetch(MIRROR_URL, { signal: controller.signal })

@@ -50,7 +50,7 @@ module.exports = {
         initDesc: 'Inicializar entorno de construcción Bunker en el directorio actual',
         dataSynced: 'Todos los datos de construcción sincronizados con el nodo Bunker',
         towerConnected: port => `Comando: apunta tu proxy hacia http://localhost:${port}`,
-        watchDesc: 'Iniciar monitorización completa: construcción coordinada Page/Part/API',
+        bootDesc: 'Iniciar monitorización completa: construcción coordinada Page/Part/API',
         towerOnline: port => `Torre de interceptación de señales activa [Frecuencia: ${port}]`,
         systemOffline: 'Desconectando enlace neural en la nube. Ejecutando sellado físico de datos...',
         disclaimer: 'Los resultados son referencias. Cada unidad debe ajustar según la situación real',

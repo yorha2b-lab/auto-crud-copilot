@@ -1,13 +1,13 @@
-module.exports = ({ utils, template }) => {
+module.exports = ({ template, logistics }) => {
 
     const fs = require('fs')
     const path = require('path')
     const Handlebars = require('handlebars')
 
     Handlebars.registerHelper('raw', opt => opt.fn())
-    Handlebars.registerHelper('stringify', (context, maxLength = 200) => context ? new Handlebars.SafeString(utils.generator.contextStringify({ context, maxLength })) : '[]')
+    Handlebars.registerHelper('stringify', (context, maxLength = 200) => context ? new Handlebars.SafeString(logistics.generator.contextStringify({ context, maxLength })) : '[]')
 
-    const { hbsDir } = utils.foundation.getConfig()
+    const { hbsDir } = logistics.foundation.getConfig()
     const tplDir = !!hbsDir ? path.join(process.cwd(), hbsDir) : path.join(__dirname, `../framework/${template}/handlebars`)
     const partialsDir = !!hbsDir ? path.join(process.cwd(), hbsDir, 'partials') : path.join(__dirname, `../framework/${template}/handlebars/partials`)
 

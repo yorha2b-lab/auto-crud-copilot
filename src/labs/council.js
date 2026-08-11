@@ -1,13 +1,13 @@
 const fs = require('fs')
 const path = require('path')
 
-module.exports = async ({ llm, utils, yorha, dialog }) => {
+module.exports = async ({ llm, yorha, dialog, logistics }) => {
 
     const { apiParser } = llm
     const { pod153, commander } = yorha
-    const { contextStringify } = utils.generator
-    const { apiDoc, pagesDir } = utils.foundation.getConfig()
-    const { getLocalScore, getSemanticKeywords } = utils.semantic
+    const { contextStringify } = logistics.generator
+    const { apiDoc, pagesDir } = logistics.foundation.getConfig()
+    const { getLocalScore, getSemanticKeywords } = logistics.semantic
 
     if (!apiDoc) return
 

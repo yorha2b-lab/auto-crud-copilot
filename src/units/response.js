@@ -2,17 +2,17 @@ const fs = require('fs')
 const path = require('path')
 
 module.exports = {
-    watch: 'response',
+    station: 'response',
     async handle(filePath, liveResponse = null) {
 
         const chalk = require('chalk')
-        const { llm, utils, labs, yorha, dialog } = require('../bootstrap').get()
+        const { llm, labs, yorha, dialog, logistics } = require('../awakening').get()
 
         const { nineS, pod153 } = yorha
         const { alignResponseFields } = llm
-        const { cleanCode } = utils.generator
-        const { unwrapSignal } = utils.semantic
-        const { pagesDir } = utils.foundation.getConfig()
+        const { cleanCode } = logistics.generator
+        const { unwrapSignal } = logistics.semantic
+        const { pagesDir } = logistics.foundation.getConfig()
 
         const startTime = Date.now()
         const fileName = liveResponse?.fileName ?? path.basename(filePath, path.extname(filePath))

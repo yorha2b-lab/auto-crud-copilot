@@ -47,7 +47,7 @@ module.exports = {
         copyTemplateError: virus => `テンプレート構築失敗: ${virus}`,
         star: 'このシステムが役立った場合、GitHubでスターをお願いします ⭐',
         towerOnline: port => `シグナル迎撃塔オンライン [周波数: ${port}]`,
-        watchDesc: '全チャンネル連携監視を開始：Page/Part/API協調構築をサポート',
+        bootDesc: '全チャンネル連携監視を開始：Page/Part/API協調構築をサポート',
         systemOffline: 'ニューラルクラウド接続を切断中。データを物理封印します...',
         accessDenied: '司令部アクセス拒否：API Keyが無効、または利用上限に達しています',
         linkSevered: '接続断絶：ネットワーク状態またはブラックボックス共鳴を確認してください',

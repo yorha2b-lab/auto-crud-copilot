@@ -50,7 +50,7 @@ module.exports = {
         towerOnline: port => `신호 인터셉트 타워 온라인 [주파수: ${port}]`,
         linkSevered: '연결 종료: 네트워크 상태 또는 블랙박스 공명을 확인하십시오',
         star: '이 프로젝트가 시간을 절약해 준다면 GitHub에서 Star를 눌러주세요 ⭐',
-        watchDesc: '전체 채널 연동 모니터링 시작: Page/Part/API 협동 구축 지원',
+        bootDesc: '전체 채널 연동 모니터링 시작: Page/Part/API 협동 구축 지원',
         disclaimer: '매칭 결과는 참고용이며 최종 판단은 각 기체가 실제 상황에 따라 조정해야 합니다',
         towerConnected: port => `명령: 프록시 대상을 http://localhost:${port} 로 설정하십시오`,
         networkInstability: count => `뉴럴 클라우드 연결 불안정. 재연결 시도 중... (${count}번째 시도)`,

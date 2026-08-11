@@ -1,17 +1,17 @@
 const fs = require('fs')
 
 module.exports = {
-    watch: 'screenPart',
+    station: 'screenPart',
     async handle(filePath) {
 
         const chalk = require('chalk')
-        const { llm, utils, yorha, dialog, prompts, generator } = require('../bootstrap').get()
+        const { llm, yorha, dialog, prompts, generator, logistics } = require('../awakening').get()
 
         const { pod042 } = yorha
         const { recognizePage } = llm
         const { part: prompt } = prompts
         const { formatFormItemAndColumns } = generator
-        const { cleanCode, contextStringify } = utils.generator
+        const { cleanCode, contextStringify } = logistics.generator
 
         const startTime = Date.now()
 

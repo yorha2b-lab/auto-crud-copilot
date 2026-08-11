@@ -1,4 +1,4 @@
-module.exports = (concurrency = 1, { yorha, dialog }) => {
+module.exports = ({ yorha, dialog }, concurrency = 1) => {
 
     let running = 0
     let queue = []

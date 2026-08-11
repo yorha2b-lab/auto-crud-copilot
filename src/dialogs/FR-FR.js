@@ -45,7 +45,7 @@ module.exports = {
         copyTemplateError: virus => `Échec de construction du modèle : ${virus}`,
         accessDenied: 'Accès au quartier général refusé : clé API invalide ou quota épuisé',
         towerOnline: port => `Tour d’interception des signaux en ligne [Fréquence : ${port}]`,
-        watchDesc: 'Démarrer la surveillance multi-canaux : construction coordonnée Page/Part/API',
+        bootDesc: 'Démarrer la surveillance multi-canaux : construction coordonnée Page/Part/API',
         initDesc: 'Initialiser l’environnement de construction du Bunker dans le répertoire actuel',
         towerConnected: port => `Ordre : configurez votre cible proxy vers http://localhost:${port}`,
         star: 'Si ce système vous fait gagner du temps, pensez à lui donner une étoile sur GitHub ⭐',

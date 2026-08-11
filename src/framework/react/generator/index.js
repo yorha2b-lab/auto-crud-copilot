@@ -1,8 +1,8 @@
-module.exports = ({ utils, engine }) => {
+module.exports = ({ builder, logistics }) => {
 
-    const { indexTpl, resourceTpl } = engine
-    const { wrapCode, cleanCode, contextStringify } = utils.generator
-    const { needMock, responseSuccess } = utils.foundation.getConfig()
+    const { indexTpl, resourceTpl } = builder
+    const { wrapCode, cleanCode, contextStringify } = logistics.generator
+    const { needMock, responseSuccess } = logistics.foundation.getConfig()
 
     const formatFormItemAndColumns = ({ pageConfig }) => {
 
