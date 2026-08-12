@@ -67,6 +67,9 @@ module.exports = ({ yorha, dialog }) => {
             const page = pages.length > 0 ? pages[0] : await globalBrowser.newPage()
 
             try {
+
+                const browserDialog = { capturedToast: dialog.pod042.capturedToast }
+
                 await page.exposeFunction('nodeTakeScreenshot', async () => {
                     const currentUrl = await page.url()
                     const pageName = derivePageNameFromUrl(currentUrl)
@@ -75,7 +78,7 @@ module.exports = ({ yorha, dialog }) => {
                     pod042.report(dialog.pod042.capturedPage(pageName), 'green')
                 })
 
-                await page.evaluateOnNewDocument(() => {
+                await page.evaluateOnNewDocument(({ capturedToast }) => {
                     if (window.__hasBunkerListener__) return
                     window.__hasBunkerListener__ = true
                     window.addEventListener('contextmenu', (e) => {
@@ -84,7 +87,7 @@ module.exports = ({ yorha, dialog }) => {
                             window.nodeTakeScreenshot()
                         }
                         const toast = document.createElement('div')
-                        toast.innerText = dialog.pod042.capturedToast
+                        toast.innerText = capturedToast
                         toast.style.cssText = `
                             position: fixed; top: 20px; right: 20px; z-index: 999999;
                             background: rgba(0, 0, 0, 0.85); color: #00ffcc;
@@ -99,7 +102,7 @@ module.exports = ({ yorha, dialog }) => {
                             setTimeout(() => toast.remove(), 400)
                         }, 1200)
                     })
-                })
+                }, browserDialog)
             } catch (error) { }
 
             await page.goto(targetUrl)
