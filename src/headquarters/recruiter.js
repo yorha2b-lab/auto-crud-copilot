@@ -1,7 +1,7 @@
 /**
- * Auto CRUD Copilot - YoRHa Bunker Construction System
- * This file is part of AutoDev.
- * AutoDev is free software: you can redistribute it and/or modify
+ * YoRHa Bunker Construction System
+ * This file is part of Bunker.
+ * Bunker is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
