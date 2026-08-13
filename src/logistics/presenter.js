@@ -48,8 +48,8 @@ const matchDialog = (locale, dialogs) => {
 const bootSequence = async (version, local) => {
 
     const lines = [
-        chalk.cyan(figlet.textSync('AutoDev', { horizontalLayout: 'full' })),
-        chalk.gray('[BUNKER] Booting System...'),
+        chalk.cyan(figlet.textSync('Bunker', { horizontalLayout: 'full' })),
+        chalk.gray('Booting System...'),
         chalk.white('[BUNKER] ') + chalk.green('Locale Detection: ') + chalk.cyan(local),
         chalk.white('[BUNKER] ') + chalk.green('YoRHa No.2 Type B Unit: ') + chalk.cyan('Online'),
         chalk.white('[BUNKER] ') + chalk.green('Scanner Type 9S Unit: ') + chalk.cyan('Standby'),
