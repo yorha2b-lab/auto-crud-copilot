@@ -5,7 +5,7 @@ const pkg = require('../package.json')
 const { program } = require('commander')
 const local = Intl.DateTimeFormat().resolvedOptions().locale.toUpperCase()
 
-const { matchDialog, matrixEffect } = require('../src/logistics/presenter')
+const { matchDialog, collapseEffect } = require('../src/logistics/presenter')
 const recruiter = require('../src/headquarters/recruiter')
 const dialogues = recruiter(path.join(__dirname, '../src/dialogues'))
 const dialog = matchDialog(local, dialogues) ?? dialogues['EN-US']
@@ -46,7 +46,7 @@ program
         process.on('SIGINT', () => {
             result.yorha.commander.report(dialog.bunker.systemOffline, 'gray')
             result.labs?.scout?.close()
-            matrixEffect(500, dialog, result)
+            collapseEffect(500, dialog, result)
         })
     })
 
