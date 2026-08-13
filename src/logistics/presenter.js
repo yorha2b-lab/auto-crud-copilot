@@ -65,7 +65,7 @@ const bootSequence = async (version, local) => {
     }
 }
 
-const collapseEffect = async (duration = 1500, dialog, result) => {
+const terminalCollapse = async (duration = 1500, dialog, result) => {
 
     let currentTotal = 0
     const MIRROR_URL = 'https://cdn.jsdelivr.net/gh/yorha2b-lab/autodev@github-repo-stats/bunker-stats.json'
@@ -142,5 +142,5 @@ module.exports = {
     yorha,
     matchDialog,
     bootSequence,
-    collapseEffect
+    terminalCollapse
 }
