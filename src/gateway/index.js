@@ -1,11 +1,11 @@
-module.exports = ({ yorha, dialog, prompts, logistics }) => {
+module.exports = ({ yorha, dialog, logistics, briefings }) => {
 
     const sharp = require('sharp')
 
-    const { sleep } = logistics.ux
-    const { mock, system, council, response, similarity } = prompts
+    const { sleep } = logistics.presenter
+    const { mock, system, council, response, similarity } = briefings
     const { UI_DESIGNER, API_DESIGNER, MOCK_DESIGNER } = system
-    const { textModel, visionModel } = logistics.foundation.getConfig()
+    const { textModel, visionModel } = logistics.supporter.getConfig()
 
     const openAI = require('./client')()
     const askAI = require('./protocol')({ yorha, sleep, dialog, openAI })

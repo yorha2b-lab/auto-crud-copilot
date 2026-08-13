@@ -28,7 +28,7 @@ const getExistingMenus = (dir = 'src/pages') => {
 
 const copyTemplateDir = (template, templateSubDir, targetSubDir) => {
     const targetDir = path.join(process.cwd(), targetSubDir)
-    const sourceDir = path.join(__dirname, `../framework/${template}/${templateSubDir}`)
+    const sourceDir = path.join(__dirname, `../workshop/${template}/${templateSubDir}`)
     if (!fs.existsSync(sourceDir)) return
     fs.mkdirSync(targetDir, { recursive: true })
     fs.readdirSync(sourceDir).forEach(file => {

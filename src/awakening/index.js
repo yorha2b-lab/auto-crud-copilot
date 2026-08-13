@@ -9,10 +9,10 @@ module.exports = {
 
         const recruiter = require('../headquarters/recruiter')
         const logistics = recruiter(path.join(__dirname, '../logistics'))
-        const yorha = logistics.ux.yorha()
+        const yorha = logistics.presenter.yorha()
 
-        const generatorPath = path.join(__dirname, `../framework/${template}/generator`)
-        if (!fs.existsSync(generatorPath)) {
+        const builderPath = path.join(__dirname, `../workshop/${template}/builder`)
+        if (!fs.existsSync(builderPath)) {
             yorha.commander.report(dialog.bunker.frameworkNotSupported(template), 'red')
             return
         }
@@ -23,20 +23,20 @@ module.exports = {
             template,
             logistics,
             units: recruiter(path.join(__dirname, '../units')),
-            builder: require('../headquarters/builder')({ logistics, template }),
-            prompts: recruiter(path.join(__dirname, `../framework/${template}/prompts`)),
+            designer: require('../headquarters/designer')({ logistics, template }),
+            briefings: recruiter(path.join(__dirname, `../workshop/${template}/briefings`)),
         }
 
         if (version) {
-            await logistics.ux.bootSequence(version, local)
+            await logistics.presenter.bootSequence(version, local)
         }
         require('../headquarters/engineer')(accessPoint)
         const llm = require('../gateway')(accessPoint)
-        const generator = require(generatorPath)(accessPoint)
+        const builder = require(builderPath)(accessPoint)
         const labs = require('../labs')({ llm, ...accessPoint })
 
 
-        instance = { llm, labs, generator, ...accessPoint }
+        instance = { llm, labs, builder, ...accessPoint }
         return instance
     },
 

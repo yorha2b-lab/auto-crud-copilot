@@ -5,10 +5,10 @@ const pkg = require('../package.json')
 const { program } = require('commander')
 const local = Intl.DateTimeFormat().resolvedOptions().locale.toUpperCase()
 
-const { matchDialog, matrixEffect } = require('../src/logistics/ux')
+const { matchDialog, matrixEffect } = require('../src/logistics/presenter')
 const recruiter = require('../src/headquarters/recruiter')
-const dialogs = recruiter(path.join(__dirname, '../src/dialogs'))
-const dialog = matchDialog(local, dialogs) ?? dialogs['EN-US']
+const dialogues = recruiter(path.join(__dirname, '../src/dialogues'))
+const dialog = matchDialog(local, dialogues) ?? dialogues['EN-US']
 
 program
     .version(pkg.version)

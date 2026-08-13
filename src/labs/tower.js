@@ -5,8 +5,8 @@ module.exports = ({ units, yorha, dialog, logistics }) => {
     const httpProxy = require('http-proxy')
 
     const { pod153, commander } = yorha
-    const { unwrapSignal, isQuerySignal } = logistics.semantic
-    const { routeMap = {}, proxyTarget } = logistics.foundation.getConfig()
+    const { unwrapSignal, isQuerySignal } = logistics.analyzer
+    const { routeMap = {}, proxyTarget } = logistics.supporter.getConfig()
 
     const TOWER_PORT = 42153
     const hackedRegistry = new Map()
@@ -49,12 +49,10 @@ module.exports = ({ units, yorha, dialog, logistics }) => {
                 }
 
                 pod153.report(dialog.pod153.capturedRuntimeSignal(fileName))
-                // 💡 直接调用 response-handler 物理更新 resource.js
-                await units.response.handle(null, { fileName, data: json })
+                await units.reconciler.handle(null, { fileName, data: json })
                 hackedRegistry.set(fileName, fingerprint)
             } catch (e) {
                 // 非 JSON 信号，保持静默
-                console.log(e)
             }
         })
     })

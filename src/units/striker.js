@@ -5,14 +5,14 @@ module.exports = {
     station: 'screenShot',
     async handle(filePath) {
 
-        const { llm, yorha, dialog, prompts, template, generator, logistics } = require('../awakening').get()
+        const { llm, yorha, dialog, builder, template, logistics, briefings } = require('../awakening').get()
 
-        const { page } = prompts
+        const { page } = briefings
         const { nineS, pod042 } = yorha
-        const { index, resource } = generator
-        const { contextStringify } = logistics.generator
+        const { index, resource } = builder
+        const { contextStringify } = logistics.builder
         const { generateMock, recognizePage, nameSimilarity } = llm
-        const { useDemo, pagesDir, utilsDir, needMock } = logistics.foundation.getConfig()
+        const { useDemo, pagesDir, utilsDir, needMock } = logistics.supporter.getConfig()
 
 
         const startTime = Date.now()
@@ -33,7 +33,7 @@ module.exports = {
                 pageConfig = require('../../example/example.json')
             } else {
                 pod042.update(spinner, dialog.pod042.uploadVisualMetadata)
-                pageConfig = await recognizePage({ prompt: page, filePath, schema: require(`../framework/${template}/schema/page.json`) })
+                pageConfig = await recognizePage({ prompt: page, filePath, schema: require(`../workshop/${template}/protocols/striker.json`) })
             }
 
             const { similarity } = await nameSimilarity({ fileName, english: pageConfig.title.english })
@@ -65,7 +65,7 @@ module.exports = {
                 fs.unlinkSync(filePath)
                 const cwdUtilsDir = path.join(process.cwd(), utilsDir)
                 if (!fs.existsSync(cwdUtilsDir)) fs.mkdirSync(cwdUtilsDir, { recursive: true })
-                fs.writeFileSync(path.join(cwdUtilsDir, 'menus.js'), `export const menus = ${contextStringify({ context: logistics.foundation.getExistingMenus(pagesDir), maxLength: 50 })}`)
+                fs.writeFileSync(path.join(cwdUtilsDir, 'menus.js'), `export const menus = ${contextStringify({ context: logistics.supporter.getExistingMenus(pagesDir), maxLength: 50 })}`)
             }
 
         } catch (error) {

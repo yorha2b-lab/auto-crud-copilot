@@ -10,9 +10,9 @@ module.exports = {
 
         const { nineS, pod153 } = yorha
         const { alignResponseFields } = llm
-        const { cleanCode } = logistics.generator
-        const { unwrapSignal } = logistics.semantic
-        const { pagesDir } = logistics.foundation.getConfig()
+        const { cleanCode } = logistics.builder
+        const { unwrapSignal } = logistics.analyzer
+        const { pagesDir } = logistics.supporter.getConfig()
 
         const startTime = Date.now()
         const fileName = liveResponse?.fileName ?? path.basename(filePath, path.extname(filePath))

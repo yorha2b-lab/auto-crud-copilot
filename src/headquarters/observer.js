@@ -21,7 +21,7 @@ module.exports = bunker => {
     acp.yorha.operator6O.report(acp.dialog.operator6O.call2B)
 
     fileWatcher.on('add', filePath => {
-        const unit = acp.logistics.foundation.findUnit(units, filePath)
+        const unit = acp.logistics.supporter.findUnit(units, filePath)
         if (unit) {
             dispatcher.add(() => unit.handle(filePath))
         }
