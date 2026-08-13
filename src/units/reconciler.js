@@ -17,7 +17,7 @@ module.exports = {
         const startTime = Date.now()
         const fileName = liveResponse?.fileName ?? path.basename(filePath, path.extname(filePath))
         const resourcePath = path.join(process.cwd(), pagesDir, fileName, 'resource.js')
-        const enumParams = (await labs?.council)?.[fileName] ?? ''
+        const enumParams = (await labs?.council)?.[fileName] ?? '{}'
 
         const spinner = pod153.start(dialog.pod153.reconEncryptedData(fileName))
 
