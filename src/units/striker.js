@@ -7,7 +7,7 @@ module.exports = {
 
         const { llm, yorha, dialog, builder, template, logistics, briefings } = require('../awakening').get()
 
-        const { page } = briefings
+        const { striker } = briefings
         const { nineS, pod042 } = yorha
         const { index, resource } = builder
         const { contextStringify } = logistics.builder
@@ -33,7 +33,7 @@ module.exports = {
                 pageConfig = require('../../example/example.json')
             } else {
                 pod042.update(spinner, dialog.pod042.uploadVisualMetadata)
-                pageConfig = await recognizePage({ prompt: page, filePath, schema: require(`../workshop/${template}/protocols/striker.json`) })
+                pageConfig = await recognizePage({ prompt: striker, filePath, schema: require(`../workshop/${template}/protocols/striker.json`) })
             }
 
             const { similarity } = await nameSimilarity({ fileName, english: pageConfig.title.english })

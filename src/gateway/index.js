@@ -3,9 +3,9 @@ module.exports = ({ yorha, dialog, logistics, briefings }) => {
     const sharp = require('sharp')
 
     const { sleep } = logistics.presenter
-    const { mock, system, council, response, similarity } = briefings
-    const { UI_DESIGNER, API_DESIGNER, MOCK_DESIGNER } = system
+    const { mock, council, similarity, reconciler } = briefings
     const { textModel, visionModel } = logistics.supporter.getConfig()
+    const { UI_DESIGNER, API_DESIGNER, MOCK_DESIGNER } = briefings.system
 
     const openAI = require('./client')()
     const askAI = require('./protocol')({ yorha, sleep, dialog, openAI })
@@ -65,7 +65,7 @@ module.exports = ({ yorha, dialog, logistics, briefings }) => {
                 model: textModel,
                 messages: [
                     { role: 'system', content: API_DESIGNER },
-                    { role: 'user', content: response({ responseStr, resourceStr }) }
+                    { role: 'user', content: reconciler({ responseStr, resourceStr }) }
                 ]
             })
         },

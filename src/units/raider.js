@@ -8,8 +8,8 @@ module.exports = {
         const { llm, yorha, dialog, builder, logistics, briefings } = require('../awakening').get()
 
         const { pod042 } = yorha
+        const { raider } = briefings
         const { recognizePage } = llm
-        const { part: prompt } = briefings
         const { formatFormItemAndColumns } = builder
         const { cleanCode, contextStringify } = logistics.builder
 
@@ -20,7 +20,7 @@ module.exports = {
         try {
             pod042.update(spinner, dialog.pod042.extractingUiMetadata)
 
-            const pageConfig = await recognizePage({ prompt, filePath })
+            const pageConfig = await recognizePage({ prompt: raider, filePath })
 
             const { formItems, dictBlocks, processedColumns } = formatFormItemAndColumns({ pageConfig })
 
