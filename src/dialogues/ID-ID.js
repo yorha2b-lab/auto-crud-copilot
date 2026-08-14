@@ -13,7 +13,7 @@ module.exports = {
         visualPartCaptured: 'Sampel visual terdeteksi. Menjalankan protokol konstruksi fragmen...',
         uploadVisualMetadata: 'Mengirim metadata visual ke pusat komando untuk analisis semantik...',
         partialRecommendation: '│ Rekomendasi: Pasang blok kode di atas secara manual ke file target',
-        capturedPage: pageName => `Halaman ditangkap [${pageName}] -> Ditransmisikan ke direktori screenShot`,
+        capturedPage: pageName => `Halaman ditangkap [${pageName}] -> Ditransmisikan ke direktori mission`,
         scoutReady: '[Mode Jepretan Klik-Kanan Siap] Klik kanan di mana saja pada halaman web untuk mengambil gambar.',
         constructionAborted: virus => `Konstruksi dihentikan. Virus logika atau batas waktu koneksi terdeteksi: ${virus}`,
         partialConstructionAborted: virus => `[Peringatan] Konstruksi fragmen gagal. Gangguan logika terdeteksi: ${virus}`,
@@ -23,7 +23,6 @@ module.exports = {
     },
     pod153: {
         signalLinkFault: virus => `Gangguan koneksi sinyal: ${virus}`,
-        formatError: 'Format JSON tidak standar. Mencoba penyelarasan data mentah',
         signalSynchronized: count => `Sinkronisasi sinyal selesai. ${count} node telah diaktifkan`,
         alignmentFailed: virus => `Penyelarasan sinyal gagal. Data API menghadapi firewall: ${virus}`,
         autonomousAddressing: 'Memulai protokol pengalamatan otomatis multi-kanal [versi semantik]...',

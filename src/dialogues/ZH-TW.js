@@ -15,7 +15,7 @@ module.exports = {
         uploadVisualMetadata: '正在上傳視覺中繼資料至司令部，執行語意分析...',
         scoutReady: '【右鍵快照模式就緒】在瀏覽器頁面任意位置點擊【滑鼠右鍵】即可秒截屏',
         constructionAborted: virus => `構築中斷。偵測到邏輯病毒或連線逾時：${virus}`,
-        capturedPage: pageName => `擷取頁面【${pageName}】-> 已投遞至 screenShot 目錄`,
+        capturedPage: pageName => `擷取頁面【${pageName}】-> 已投遞至 mission 目錄`,
         partialConstructionAborted: virus => `[警告] 碎片構築失敗。系統偵測到邏輯干擾：${virus}`,
         intercept: fileName => `模組 [${fileName}] 已存在於 Bunker 資料庫中。為避免資料覆蓋，構築協議已跳過`,
         visualCaptured: fileName => `視覺感測器捕捉完成: [${fileName}]。正在調配 Bunker 資源進行物理構築...`,
@@ -23,7 +23,6 @@ module.exports = {
     },
     pod153: {
         signalLinkFault: virus => `訊號鏈路故障: ${virus}`,
-        formatError: '資料格式非標準 JSON，將嘗試原始字串對齊',
         autonomousAddressing: '啟動「全頻道自動尋址協議 [語意掃描版]」...',
         signalSynchronized: count => `訊號同步完成，${count} 個節點已通電`,
         alignmentFailed: virus => `訊號對齊失敗。API 資料遭遇強力防火牆：${virus}`,

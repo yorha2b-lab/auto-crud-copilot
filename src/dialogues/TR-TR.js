@@ -10,8 +10,8 @@ module.exports = {
         partialConstruction: time => `Rapor: Kısmi inşa tamamlandı. Süre: ${time}s`,
         extractingUiMetadata: 'Bulut sinir ağından UI meta verileri çıkarılıyor...',
         visualPartCaptured: 'Görsel parça algılandı. Parçalı inşa protokolü başlatılıyor...',
+        capturedPage: pageName => `Sayfa yakalandı [${pageName}] -> mission dizinine aktarıldı`,
         simulate: 'Gerçek istek algılandı. Standart simülasyon paketi bırakılıyor: example.json',
-        capturedPage: pageName => `Sayfa yakalandı [${pageName}] -> screenShot dizinine aktarıldı`,
         partialRecommendation: '│ Öneri: Yukarıdaki kod bloğunu hedef dosyaya manuel olarak entegre edin',
         uploadVisualMetadata: 'Görsel meta veriler komuta merkezine gönderiliyor. Semantik analiz başlatılıyor...',
         partialConstructionAborted: virus => `[Uyarı] Parçalı inşa başarısız. Mantıksal engel tespit edildi: ${virus}`,
@@ -23,7 +23,6 @@ module.exports = {
     },
     pod153: {
         signalLinkFault: virus => `Sinyal bağlantı hatası: ${virus}`,
-        formatError: 'Standart dışı JSON formatı. Ham veri hizalaması deneniyor',
         signalSynchronized: count => `Sinyal senkronizasyonu tamamlandı. ${count} düğüm aktif edildi`,
         autonomousAddressing: 'Çok kanallı otonom adresleme protokolü [semantik sürüm] başlatılıyor...',
         alignmentFailed: virus => `Sinyal hizalama başarısız. API verileri güvenlik duvarına takıldı: ${virus}`,

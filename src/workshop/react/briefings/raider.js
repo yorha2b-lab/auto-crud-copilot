@@ -53,4 +53,4 @@ module.exports = `
 ## 3. 下拉选项字典 (OptionDict)
 - 结构: optionDict: { 字段英文名Options: [] }
 - 内容: 数组元素必须为 {label: '', value: ''} 格式。
-`
+`.trim()

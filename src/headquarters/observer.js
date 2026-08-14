@@ -1,29 +1,21 @@
 module.exports = bunker => {
 
+    const path = require('path')
     const chokidar = require('chokidar')
+    const commander = require('../headquarters/commander')(bunker)
 
-    const acp = bunker.get()
-    const units = Object.values(acp.units)
-    const dispatcher = require('../headquarters/dispatcher')(acp, 2)
+    const settingWatcher = chokidar.watch('./bunker/config.js', { persistent: true, ignoreInitial: true })
 
-    dispatcher.onIdle(() => acp.yorha.commander.report(acp.dialog.bunker.systemStandby, 'gray'))
-
-    const options = {
+    const missionWatcher = chokidar.watch('./bunker/mission/', {
         persistent: true,
         ignoreInitial: true,
         ignored: /(^|[\/\\])\../,
-        awaitWriteFinish: { stabilityThreshold: 500, pollInterval: 100 }
-    }
+        awaitWriteFinish: { stabilityThreshold: 500, pollInterval: 100 },
+    })
 
-    const settingWatcher = chokidar.watch(['./bunker/config.js'], options)
-    const fileWatcher = chokidar.watch(units.map(unit => `./bunker/${unit.station}`), options)
-
-    acp.yorha.operator6O.report(acp.dialog.operator6O.call2B)
-
-    fileWatcher.on('add', filePath => {
-        const unit = acp.logistics.supporter.findUnit(units, filePath)
-        if (unit) {
-            dispatcher.add(() => unit.handle(filePath))
+    missionWatcher.on('add', filePath => {
+        if (['.png', '.jpg', '.jpeg', '.webp'].includes(path.extname(filePath))) {
+            commander.receive({ input: filePath, type: 'file-added' })
         }
     })
 
@@ -32,5 +24,4 @@ module.exports = bunker => {
             bunker.reboot()
         }
     })
-
 }

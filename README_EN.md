@@ -14,20 +14,28 @@ AI Vision and Semantic Protocol-based Frontend (React + Ant Design) Code Constru
 
 ![Auto CRUD Copilot 2.0 Demo](https://github.com/user-attachments/assets/287d0db1-d0b0-4290-87da-751ba638655e)
 
-## 🌟 v6.0 Bunker Architecture Upgrade
+## 🌟 v7.0 Bunker Architecture Upgrade
 
-In the v6.0 era, AutoDev has fully upgraded to a modular Bunker architecture. Centered around Headquarters, it accomplishes monitoring, dispatching, construction, and external communication through independent units.
-- 🕵️ **Legacy System Recon (Scout)**: Puppeteer headless scout unit. Simply **[Right-Click]** anywhere on legacy web pages to capture instant snapshots and auto-refactor!
-- 🗼 **Live Proxy Tower (Tower)**: Tactical proxy server on port 42153. Proxies live XHR/Fetch traffic and automatically hot-loads real production data into `resource.js`.
-- 🏛️ **OpenAPI Council (Council)**: Auto-connects Swagger/OpenAPI docs, automatically extracts enum information, and updates `BUNKER_API_ANCHOR` semantic anchors.
+In v7.0, AutoDev evolves into a **Mission-Driven modular bunker architecture**.
+
+All tasks are unified as `Mission` objects and routed through **Headquarters**. The **Commander** analyzes mission requirements, identifies the capabilities needed, selects the most suitable Unit, and dispatches it for execution.
+
+Units are no longer bound to fixed input directories. Instead, each Unit declares its own `capabilities` and participates dynamically in mission matching, allowing the Bunker to assemble the right team for each task.
+
+- 🧠 **Mission Command (Commander)**: Analyzes mission requirements and selects the most suitable Unit from all available capabilities.
+- ⚔️ **Combat Units (Units)**: Declare their capabilities and participate in mission matching, handling tasks such as page reconstruction and semantic alignment.
+- 🕵️ **Digital Archaeology (Scout)**: A Puppeteer-based reconnaissance unit that captures pages from legacy systems and turns them into reconstruction missions.
+- 🗼 **Live Network Defense (Tower)**: Proxies real XHR / Fetch traffic and feeds live backend responses directly into the Bunker mission pipeline.
+- 🏛️ **Council**: Parses OpenAPI / Swagger documentation, extracting enums and API semantics to provide protocol intelligence for construction missions.
 
 ## ✨ Features
 
-- 🖼️ **Full-Page Construction (Page)**: Drop a screenshot into `./bunker/screenShot`, and Pod 042 auto-generates complete CRUD pages with Table/Form/Tabs and appends menus.
-- 🧩 **Fragment Extraction (Part)**: Drop a partial screenshot into `./bunker/screenPart`, and the terminal instantly outputs plug-and-play UI config code blocks.
-- 🕵️ **Right-Click Archeology (Scout)**: Puppeteer headless browser inspection. Right-click anywhere in the browser to capture and refactor pages in seconds.
-- 🔌 **Semantic Alignment (API)**: Drop an API JSON into `./bunker/response` to automatically discover and fix frontend/backend field semantic differences, reducing manual alignment work.
-- 🔧 **Smart Assembly**: Auto-completes import statements, date format conversions, currency separators, enum dictionaries, and OSS upload logic.
+- 🖼️ **Full Page Reconstruction (Page)**: Feed a complete page screenshot into the Bunker. The Commander identifies the required capabilities and dispatches the appropriate Unit to generate a complete CRUD page with Table / Form / Tabs and synchronized menus.
+- 🧩 **UI Fragment Extraction (Part)**: Feed a partial UI screenshot and let the Bunker identify it as a component reconstruction mission, generating ready-to-use UI configuration code.
+- 🕵️ **Digital Archaeology (Scout)**: Use Puppeteer to inspect legacy systems. Right-click anywhere in the browser to capture the current page and turn it into a reconstruction mission.
+- 🗼 **Live Data Acquisition (Tower)**: Proxy real XHR / Fetch requests and feed live backend responses directly into the mission pipeline, eliminating the need to prepare response JSON manually.
+- 🔌 **Semantic Alignment (Reconciler)**: Analyze differences between backend responses and frontend resource definitions, then automatically reconcile fields in `resource.js`.
+- 🔧 **Smart Assembly**: Automatically handle imports, date formatting, number formatting, enum dictionaries, OSS uploads, and other practical frontend engineering tasks.
 
 ## 🚀 Quick Start
 

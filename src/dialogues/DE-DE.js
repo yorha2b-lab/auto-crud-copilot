@@ -11,7 +11,7 @@ module.exports = {
         extractingUiMetadata: 'UI-Metadaten werden aus dem neuronalen Cloud-Netzwerk extrahiert...',
         simulate: 'Echte Anfrage erkannt. Standard-Simulationspaket example.json wird bereitgestellt',
         partialRecommendation: '│ Empfehlung: Den obigen Codeblock manuell in die Zieldatei integrieren',
-        capturedPage: pageName => `Seite erfasst [${pageName}] -> In das Verzeichnis screenShot übertragen`,
+        capturedPage: pageName => `Seite erfasst [${pageName}] -> In das Verzeichnis mission übertragen`,
         visualPartCaptured: 'Lokales visuelles Fragment erkannt. „Fragment-Konstruktionsprotokoll“ wird gestartet',
         uploadVisualMetadata: 'Visuelle Metadaten werden an die Zentrale übertragen. Semantische Analyse wird gestartet...',
         partialConstructionAborted: virus => `[Warnung] Fragment-Konstruktion fehlgeschlagen. Logische Störung erkannt: ${virus}`,
@@ -24,7 +24,6 @@ module.exports = {
     pod153: {
         signalLinkFault: virus => `Signalverbindungsfehler: ${virus}`,
         signalSynchronized: count => `${count} Knoten synchronisiert. Energieversorgung bestätigt`,
-        formatError: 'Nicht standardisiertes JSON-Format erkannt. Synchronisation mit Rohdaten wird versucht',
         autonomousAddressing: '„Vollkanal-Autoadressierungsprotokoll [Semantische Analyseversion]“ wird aktiviert...',
         inactiveModule: fileName => `Nicht aktiviertes Modul [${fileName}] erkannt. Hochpräzise Analyse durch 9S angefordert`,
         alignmentFailed: virus => `Signalsynchronisierung fehlgeschlagen. API-Daten durch starke Firewall blockiert: ${virus}`,

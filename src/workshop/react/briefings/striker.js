@@ -55,4 +55,4 @@ module.exports = `
 - **格式**:[{ name: '字段英文名Options', options:[{ label, value}]}]。
 - **注释**:label:选项文本,value:文本英文。
 - **数据源**:根据对应列的内容去重，生成选项数组。
-`.trim();
+`.trim()

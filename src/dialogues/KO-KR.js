@@ -15,7 +15,7 @@ module.exports = {
         partialRecommendation: '│ 권장: 아래 코드 블록을 대상 파일에 수동으로 통합하십시오',
         partialConstructionAborted: virus => `[경고] 파편 구축 실패. 논리 간섭 감지: ${virus}`,
         constructionAborted: virus => `구축 중단. 논리 바이러스 또는 연결 시간 초과 감지: ${virus}`,
-        capturedPage: pageName => `페이지 획득 [${pageName}] -> screenShot 디렉터리로 전송 완료`,
+        capturedPage: pageName => `페이지 획득 [${pageName}] -> mission 디렉터리로 전송 완료`,
         scoutReady: '[우클릭 스냅샷 모드 준비 완료] 브라우저 페이지 임의의 위치에서 [우클릭] 시 즉시 캡처됩니다.',
         visualCaptured: fileName => `시각 센서 캡처 완료: [${fileName}]. Bunker 자원을 배치하여 물리 구축 시작...`,
         intercept: fileName => `모듈 [${fileName}]은(는) 이미 Bunker 데이터베이스에 존재합니다. 덮어쓰기를 방지하기 위해 구축 프로토콜을 건너뜁니다`,
@@ -23,7 +23,6 @@ module.exports = {
     },
     pod153: {
         signalLinkFault: virus => `신호 연결 오류: ${virus}`,
-        formatError: '비표준 JSON 형식 감지. 원본 데이터 정렬 시도',
         signalSynchronized: count => `${count}개의 노드 동기화 완료. 전원 활성화 확인`,
         autonomousAddressing: '「전 채널 자동 주소 지정 프로토콜 [시맨틱 스캔 버전]」 실행...',
         inactiveModule: fileName => `비활성 모듈 [${fileName}] 발견. 9S 고정밀 분석 요청`,

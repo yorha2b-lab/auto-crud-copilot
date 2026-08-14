@@ -12,7 +12,7 @@ module.exports = {
         uploadVisualMetadata: 'Invio metadati visivi al comando centrale per analisi semantica...',
         simulate: 'Richiesta reale intercettata. Lancio pacchetto simulato standard: example.json',
         visualPartCaptured: 'Frammento visivo rilevato. Avvio protocollo di costruzione frammentata...',
-        capturedPage: pageName => `Pagina catturata [${pageName}] -> Trasferita nella directory screenShot`,
+        capturedPage: pageName => `Pagina catturata [${pageName}] -> Trasferita nella directory mission`,
         partialRecommendation: '│ Raccomandazione: integra manualmente il blocco di codice sopra nel file destinazione',
         constructionAborted: virus => `Costruzione interrotta. Rilevato virus logico o timeout di connessione: ${virus}`,
         partialConstructionAborted: virus => `[Avviso] Fallimento costruzione frammentata. Interferenza logica rilevata: ${virus}`,
@@ -23,7 +23,6 @@ module.exports = {
     },
     pod153: {
         signalLinkFault: virus => `Errore collegamento segnale: ${virus}`,
-        formatError: 'Formato JSON non standard. Tentativo di allineamento dati originali',
         signalSynchronized: count => `Sincronizzazione completata. ${count} nodi attivati`,
         alignmentFailed: virus => `Allineamento fallito. I dati API hanno incontrato un firewall: ${virus}`,
         autonomousAddressing: 'Avvio protocollo di indirizzamento autonomo multicanale [versione semantica]...',

@@ -11,7 +11,7 @@ module.exports = {
         simulate: 'Real-fire request intercepted. Dropping simulation package: example.json',
         uploadVisualMetadata: 'Uploading visual metadata to Command for semantic analysis...',
         partialConstruction: time => `Report: Partial construction achieved. Elapsed: ${time}s`,
-        capturedPage: pageName => `Page captured [${pageName}] -> Transmitted to screenShot directory`,
+        capturedPage: pageName => `Page captured [${pageName}] -> Transmitted to mission directory`,
         constructionAborted: virus => `Construction aborted. Logic virus or timeout detected: ${virus}`,
         visualPartCaptured: `Partial visual sample detected. Executing 'Fragment Construction Protocol'...`,
         scoutReady: '[Right-Click Snapshot Ready] Right-click anywhere on the webpage to capture instantly.',
@@ -24,7 +24,6 @@ module.exports = {
     pod153: {
         signalLinkFault: virus => `Signal Link Fault: ${virus}`,
         signalSynchronized: count => `Signal Synchronized: ${count} nodes energized`,
-        formatError: 'Data format is not standard JSON, will try to align by character',
         alignmentFailed: virus => `Alignment failed. Encountered powerful API firewall: ${virus}`,
         autonomousAddressing: `Initiating 'Full-Channel Autonomous Addressing Protocol [Semantic Scan]'...`,
         inactiveModule: fileName => `Inactive module: [${fileName}]. Requesting 9S for precise alignment...`,

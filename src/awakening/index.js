@@ -30,7 +30,7 @@ module.exports = {
         if (version) {
             await logistics.presenter.bootSequence(version, local)
         }
-        require('../headquarters/engineer')(accessPoint)
+
         const llm = require('../gateway')(accessPoint)
         const builder = require(builderPath)(accessPoint)
         const labs = require('../labs')({ llm, ...accessPoint })

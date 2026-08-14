@@ -15,7 +15,7 @@ module.exports = {
         partialRecommendation: '│ 建议：请手动将上述代码块物理装配至您的目标文件中',
         scoutReady: '【右键快照模式就绪】在浏览器页面任意位置点击【鼠标右键】即可秒截屏',
         constructionAborted: virus => `构筑中断。检测到逻辑病毒或连接超时：${virus}`,
-        capturedPage: pageName => `捕获页面【${pageName}】-> 已投递至 screenShot 目录`,
+        capturedPage: pageName => `捕获页面【${pageName}】-> 已投递至 mission 目录`,
         partialConstructionAborted: virus => `[警告] 碎片构筑失败。系统检测到逻辑干扰：${virus}`,
         visualCaptured: fileName => `视觉传感器捕捉完成: [${fileName}]。正在调配地堡资源进行物理构筑...`,
         intercept: fileName => `模块 [${fileName}] 已存在于地堡数据库中。为了防止数据覆盖，构筑协议已跳过`,
@@ -23,7 +23,6 @@ module.exports = {
     },
     pod153: {
         signalLinkFault: virus => `信号链路故障: ${virus}`,
-        formatError: '数据格式非标准 JSON，将尝试原始字符对齐',
         autonomousAddressing: `启动‘全频道自动寻址协议 [语义扫描版]’...`,
         signalSynchronized: count => `信号同步完成，${count} 个节点已通电`,
         alignmentFailed: virus => `信号对齐失败。接口数据遭遇强力防火墙：${virus}`,

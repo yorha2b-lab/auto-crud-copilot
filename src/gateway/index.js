@@ -38,7 +38,7 @@ module.exports = ({ yorha, dialog, logistics, briefings }) => {
                 ]
             })
         },
-        recognizePage: async ({ prompt, filePath, schema }) => {
+        recognizePage: async ({ schema, prompt, filePath }) => {
             const compressedBuffer = await sharp(filePath)
                 .resize(1280, null, { withoutEnlargement: true })
                 .jpeg({ quality: 80 })

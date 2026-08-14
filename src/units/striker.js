@@ -2,10 +2,16 @@ const fs = require('fs')
 const path = require('path')
 
 module.exports = {
-    station: 'screenShot',
-    async handle(filePath) {
+    meta: {
+        name: 'striker',
+        inputs: ['image'],
+        outputs: ['page-config', 'artifacts'],
+        description: 'reconstruct full UI from visual input',
+        capabilities: ['vision', 'page-analysis', 'page-generation'],
+    },
+    execute: async ({ acp, mission }) => {
 
-        const { llm, yorha, dialog, builder, template, logistics, briefings } = require('../awakening').get()
+        const { llm, yorha, dialog, builder, template, logistics, briefings } = acp
 
         const { striker } = briefings
         const { nineS, pod042 } = yorha
@@ -16,7 +22,7 @@ module.exports = {
 
 
         const startTime = Date.now()
-        let fileName = path.basename(filePath, path.extname(filePath))
+        let fileName = path.basename(mission.input, path.extname(mission.input))
         let targetDir = path.join(process.cwd(), pagesDir, fileName)
 
         const spinner = pod042.start(dialog.pod042.visualCaptured(fileName))
@@ -33,7 +39,7 @@ module.exports = {
                 pageConfig = require('../../example/example.json')
             } else {
                 pod042.update(spinner, dialog.pod042.uploadVisualMetadata)
-                pageConfig = await recognizePage({ prompt: striker, filePath, schema: require(`../workshop/${template}/protocols/striker.json`) })
+                pageConfig = await recognizePage({ prompt: striker, filePath: mission.input, schema: require(`../workshop/${template}/protocols/striker.json`) })
             }
 
             const { similarity } = await nameSimilarity({ fileName, english: pageConfig.title.english })
@@ -61,8 +67,8 @@ module.exports = {
             const endTime = Date.now()
             pod042.success(spinner, dialog.pod042.assemblyComplete(fileName, (endTime - startTime) / 1000))
 
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath)
+            if (fs.existsSync(mission.input)) {
+                fs.unlinkSync(mission.input)
                 const cwdUtilsDir = path.join(process.cwd(), utilsDir)
                 if (!fs.existsSync(cwdUtilsDir)) fs.mkdirSync(cwdUtilsDir, { recursive: true })
                 fs.writeFileSync(path.join(cwdUtilsDir, 'menus.js'), `export const menus = ${contextStringify({ context: logistics.supporter.getExistingMenus(pagesDir), maxLength: 50 })}`)

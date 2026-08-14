@@ -35,7 +35,7 @@ module.exports = ({ yorha, dialog }) => {
             pod042.report(dialog.pod042.startScout, 'green')
 
             const puppeteer = require('puppeteer')
-            const screenshotDir = path.join(process.cwd(), 'bunker', 'screenShot')
+            const missionDir = path.join(process.cwd(), 'bunker', 'mission')
             const sessionDir = path.join(process.cwd(), 'bunker', '.chrome_session')
 
             let isBrowserAlive = false
@@ -73,7 +73,7 @@ module.exports = ({ yorha, dialog }) => {
                 await page.exposeFunction('nodeTakeScreenshot', async () => {
                     const currentUrl = await page.url()
                     const pageName = derivePageNameFromUrl(currentUrl)
-                    const savePath = path.join(screenshotDir, `${pageName}.png`)
+                    const savePath = path.join(missionDir, `${pageName}.png`)
                     await page.screenshot({ path: savePath, fullPage: true })
                     pod042.report(dialog.pod042.capturedPage(pageName), 'green')
                 })

@@ -10,7 +10,7 @@ module.exports = {
         extractingUiMetadata: 'Extrayendo metadatos de UI desde la red neuronal en la nube...',
         partialConstruction: time => `Informe: construcción parcial completada. Tiempo: ${time}s`,
         simulate: 'Solicitud real interceptada. Desplegando paquete simulado estándar: example.json',
-        capturedPage: pageName => `Página capturada [${pageName}] -> Transmitida al directorio screenShot`,
+        capturedPage: pageName => `Página capturada [${pageName}] -> Transmitida al directorio mission`,
         uploadVisualMetadata: 'Subiendo metadatos visuales al centro de comando para análisis semántico...',
         visualPartCaptured: 'Fragmento visual detectado. Ejecutando protocolo de construcción fragmentada...',
         constructionAborted: virus => `Construcción abortada. Virus lógico o tiempo de conexión agotado: ${virus}`,
@@ -24,7 +24,6 @@ module.exports = {
     pod153: {
         signalLinkFault: virus => `Fallo en enlace de señal: ${virus}`,
         signalSynchronized: count => `Sincronización completada. ${count} nodos activados`,
-        formatError: 'Formato JSON no estándar detectado. Intentando alineación de datos originales',
         alignmentFailed: virus => `Fallo de alineación. Los datos de interfaz encontraron un firewall: ${virus}`,
         autonomousAddressing: 'Iniciando protocolo de direccionamiento autónomo multicanal [versión semántica]...',
         inactiveModule: fileName => `Módulo sin energía detectado [${fileName}]. Solicitando análisis de precisión a 9S`,

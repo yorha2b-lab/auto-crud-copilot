@@ -2,8 +2,14 @@ const fs = require('fs')
 const path = require('path')
 
 module.exports = {
-    station: 'response',
-    async handle(filePath, liveResponse = null) {
+    meta: {
+        name: 'reconciler',
+        inputs: ['response'],
+        outputs: ['aligned-resource'],
+        capabilities: ['field-alignment', 'resource-update', 'response-analysis'],
+        description: 'align backend response fields with frontend resource fields',
+    },
+    execute: async ({ data, fileName }) => {
 
         const chalk = require('chalk')
         const { llm, labs, yorha, dialog, logistics } = require('../awakening').get()
@@ -11,11 +17,9 @@ module.exports = {
         const { nineS, pod153 } = yorha
         const { alignResponseFields } = llm
         const { cleanCode } = logistics.builder
-        const { unwrapSignal } = logistics.analyzer
         const { pagesDir } = logistics.supporter.getConfig()
 
         const startTime = Date.now()
-        const fileName = liveResponse?.fileName ?? path.basename(filePath, path.extname(filePath))
         const resourcePath = path.join(process.cwd(), pagesDir, fileName, 'resource.js')
         const enumParams = (await labs?.council)?.[fileName] ?? '{}'
 
@@ -27,13 +31,7 @@ module.exports = {
                 return
             }
 
-            let rawJson = liveResponse ? liveResponse.data : JSON.parse(fs.readFileSync(filePath, 'utf8'))
             let resourceStr = fs.readFileSync(resourcePath, 'utf8')
-
-            const coreArray = unwrapSignal(rawJson)
-            if (!coreArray || coreArray.length === 0) {
-                pod153.warning(spinner, dialog.pod153.formatError)
-            }
 
             nineS.update(spinner, dialog.nineS.scanningField)
 
@@ -47,8 +45,7 @@ module.exports = {
                 return Array.from(new Set(keys.filter(key => key !== 'index')))
             }
 
-            const sampleData = coreArray && coreArray.length > 0 ? [coreArray[0]] : rawJson
-            const result = await alignResponseFields({ responseStr: JSON.stringify(sampleData), resourceStr: extractKeys(resourceStr).join(',') })
+            const result = await alignResponseFields({ responseStr: JSON.stringify(data), resourceStr: extractKeys(resourceStr).join(',') })
             let changeCount = 0
             const resultMapping = {}
             Object.entries(result).forEach(([oldField, newField]) => {
@@ -85,10 +82,6 @@ module.exports = {
                 console.log(chalk.gray(dialog.bunker.copyEnum))
                 console.log(chalk.white(cleanCode(enumParams)))
                 console.log(chalk.magenta(`├───────────────────────────────────────────────────────────┘`))
-            }
-
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath)
             }
 
         } catch (error) {

@@ -10,7 +10,7 @@ module.exports = {
         extractingUiMetadata: 'Extraction des métadonnées UI depuis le réseau neuronal cloud...',
         partialConstruction: time => `Rapport : Construction partielle terminée. Durée : ${time}s`,
         simulate: 'Requête réelle détectée. Déploiement du paquet de simulation standard : example.json',
-        capturedPage: pageName => `Page capturée [${pageName}] -> Transférée vers le répertoire screenShot`,
+        capturedPage: pageName => `Page capturée [${pageName}] -> Transférée vers le répertoire mission`,
         scoutReady: '[Capture par Clic Droit Prête] Effectuez un clic droit n’importe où sur la page web pour capturer.',
         visualPartCaptured: 'Fragment visuel local détecté. Activation du « protocole de construction fragmentaire »...',
         uploadVisualMetadata: 'Transmission des métadonnées visuelles au quartier général. Analyse sémantique en cours...',
@@ -24,7 +24,6 @@ module.exports = {
     pod153: {
         signalLinkFault: virus => `Erreur de liaison du signal : ${virus}`,
         signalSynchronized: count => `${count} nœuds synchronisés. Alimentation confirmée`,
-        formatError: 'Format JSON non standard détecté. Tentative de synchronisation avec les données brutes',
         inactiveModule: fileName => `Module non activé détecté [${fileName}]. Analyse haute précision demandée à 9S`,
         autonomousAddressing: 'Activation du « protocole d’adressage automatique multi-canaux [version analyse sémantique] »...',
         alignmentFailed: virus => `Échec de synchronisation du signal. Les données API sont bloquées par un pare-feu puissant : ${virus}`,

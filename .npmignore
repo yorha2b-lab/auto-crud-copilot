@@ -2,6 +2,4 @@
 .git
 .npmrc
 node_modules
-response/*.json
-screenShot/*.png
-screenPart/*.png
+mission

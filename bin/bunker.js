@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const fs = require('fs')
 const path = require('path')
 const chalk = require('chalk')
 const pkg = require('../package.json')
@@ -20,13 +21,28 @@ program
     .command('init')
     .description(dialog.bunker.initDesc)
     .action(() => {
+
+        const equipments = []
+        const root = process.cwd()
+        const { template } = program.opts()
+        const workshop = path.join(__dirname, `../src/workshop/${template}`)
+        const quartermaster = require('../src/headquarters/quartermaster')({ dialog })
+        const { hbsDir, hooksDir, utilsDir, componentsDir } = require('../src/logistics/supporter').getConfig()
+
+        if (!hbsDir) {
+            equipments.push(...fs.readdirSync(`${workshop}/kit`).map(file => ({ from: `${workshop}/kit/${file}`, to: `${path.join(root, utilsDir, file)}` })))
+            equipments.push(...fs.readdirSync(`${workshop}/extensions`).map(file => ({ from: `${workshop}/extensions/${file}`, to: `${path.join(root, hooksDir, file)}` })))
+            equipments.push(...fs.readdirSync(`${workshop}/standardParts`).map(file => ({ from: `${workshop}/standardParts/${file}`, to: `${path.join(root, componentsDir, file)}` })))
+        }
+
         const outpost = {
+            dirs: [`${path.join(root, 'bunker', 'mission')}`],
             files: [
-                { from: '.env.example', to: '.env', exist: 'envCheck', success: 'envCopy' },
-                { from: 'config.js', to: 'config.js', exist: 'configCheck', success: 'configCopy' }
+                ...equipments,
+                { from: path.join(__dirname, `../.env.example`), to: `${path.join(root, 'bunker', '.env')}`, exist: 'envCheck', success: 'envCopy' },
+                { from: path.join(__dirname, `../config.js`), to: `${path.join(root, 'bunker', 'config.js')}`, exist: 'configCheck', success: 'configCopy' }
             ]
         }
-        const quartermaster = require('../src/headquarters/quartermaster')({ root: process.cwd(), dialog })
         Object.entries(outpost).forEach(([type, items]) => items.forEach(quartermaster[type]))
         const bunkerCmd = chalk.yellow(`'bunker': 'bunker boot'`)
         console.log(chalk.cyan(dialog.bunker.initComplete(bunkerCmd)))
@@ -43,6 +59,7 @@ program
             return
         }
         require('../src/headquarters/observer')(bunker)
+        result.yorha.operator6O.report(result.dialog.operator6O.call2B)
         process.on('SIGINT', () => {
             result.yorha.commander.report(dialog.bunker.systemOffline, 'gray')
             result.labs?.scout?.close()

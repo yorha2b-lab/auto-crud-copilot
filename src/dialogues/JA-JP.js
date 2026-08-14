@@ -15,7 +15,7 @@ module.exports = {
         partialConstructionAborted: virus => `[警告] 断片構築失敗。論理干渉を検出：${virus}`,
         simulate: '実弾リクエストを検知。標準シミュレーションパッケージ example.json を投下します',
         constructionAborted: virus => `構築中断。論理ウイルスまたは接続タイムアウトを検出：${virus}`,
-        capturedPage: pageName => `ページデータを取得【${pageName}】-> screenShot ディレクトリへ送信完了`,
+        capturedPage: pageName => `ページデータを取得【${pageName}】-> mission ディレクトリへ送信完了`,
         scoutReady: '【スナップショット準備完了】ウェブページ上の任意の位置で【右クリック】すると即座に撮影されます。',
         visualCaptured: fileName => `視覚センサーによる捕捉完了: [${fileName}]。Bunkerリソースを展開し物理構築を開始します`,
         intercept: fileName => `モジュール [${fileName}] は既にBunkerデータベースに存在。データ上書き防止のため構築プロトコルを中断`,
@@ -23,7 +23,6 @@ module.exports = {
     },
     pod153: {
         signalLinkFault: virus => `シグナルリンク障害: ${virus}`,
-        formatError: '非標準JSON形式を検出。原始文字列による同期処理を試行します',
         signalSynchronized: count => `${count}個のノード同期完了。電力供給を確認`,
         autonomousAddressing: '「全チャンネル自動アドレス指定プロトコル [セマンティック解析版]」を起動...',
         inactiveModule: fileName => `未通電モジュール [${fileName}] を検出。9Sによる高精度照合を要求します`,

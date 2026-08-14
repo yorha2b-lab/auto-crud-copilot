@@ -14,20 +14,28 @@
 
 ![Auto CRUD Copilot 2.0 Demo](https://github.com/user-attachments/assets/287d0db1-d0b0-4290-87da-751ba638655e)
 
-## 🌟 v6.0 地堡架构升级
+## 🌟 v7.0 地堡架构升级
 
-在 v6.0 时代，AutoDev 全面升级为模块化地堡架构，以 Headquarters 为核心，通过独立单位完成监听、调度、构筑与外部通信。
-- 🕵️ **旧系统侦察 (Scout)**：Puppeteer 无头侦察兵，在旧项目网页上**【单击右键】**即可秒级捕获快照并自动重构！
-- 🗼 **现网防御塔 (Tower)**：搭建 42153 战术代理端口，代理真实 XHR/Fetch 流量，自动将现网数据反向填装入 `resource.js`。
-- 🏛️ **议会自动通电 (Council)**：自动对接 OpenAPI/Swagger 文档，自动提炼枚举信息，并更新 `BUNKER_API_ANCHOR` 语义锚点。
+在 v7.0 时代，AutoDev 进一步升级为 **Mission-Driven 的模块化地堡架构**。
+
+所有任务统一进入 `Mission`，由 **Headquarters** 中的 **Commander** 识别任务需求、匹配最合适的 Unit，并交由 Dispatcher 调度执行。
+
+Unit 不再绑定固定输入目录，而是通过声明自身的 `capabilities` 主动参与任务匹配，让地堡可以根据任务动态组织作战单位。
+
+- 🧠 **任务指挥 (Commander)**：识别任务类型与所需能力，从全部 Units 中选择最合适的执行单位。
+- ⚔️ **作战单位 (Units)**：通过能力声明参与任务匹配，负责具体的页面构筑、语义对齐等任务。
+- 🕵️ **数字考古 (Scout)**：Puppeteer 无头侦察兵，从旧系统捕获页面并生成重构任务。
+- 🗼 **现网防御塔 (Tower)**：代理真实 XHR/Fetch 流量，将现网数据直接送入地堡任务链。
+- 🏛️ **议会 (Council)**：解析 OpenAPI / Swagger 文档，提炼枚举与接口语义，为构筑任务提供协议情报。
 
 ## ✨ 特性
 
-- 🖼️ **全页构筑 (Page)**: 截图丢入 `./bunker/screenShot`，Pod 042 自动生成带 Table/Form/Tabs 的完整 CRUD 页面并追加菜单。
-- 🧩 **碎片提取 (Part)**: 局部截图丢入 `./bunker/screenPart`，终端瞬间弹出“即插即用”的 UI 配置代码块。
-- 🕵️ **右键考古 (Scout)**: Puppeteer 无头浏览器巡检，网页任意处点击【鼠标右键】即可秒级一键捕获页面重构。
-- 🔌 **语义对齐 (API)**: 接口 JSON 丢入 `./bunker/response`，自动发现并修正前后端字段语义差异，减少手工对齐工作。
-- 🔧 **智能装配**: 自动补全 import 语句、日期格式转换、金额千分位、枚举字典以及 OSS 上传等实战逻辑。
+- 🖼️ **全页构筑 (Page)**：输入完整页面截图，Commander 自动识别构筑需求并调度对应 Unit，生成包含 Table / Form / Tabs 的完整 CRUD 页面及菜单。
+- 🧩 **碎片提取 (Part)**：输入局部 UI 截图，自动识别为组件构筑任务，生成可直接使用的 UI 配置代码。
+- 🕵️ **数字考古 (Scout)**：通过 Puppeteer 巡检旧系统，浏览器中右键即可捕获当前页面，并将其转换为重构任务。
+- 🗼 **现网数据采集 (Tower)**：代理真实 XHR / Fetch 请求，将运行中的后端响应直接送入任务链，无需手工准备 JSON。
+- 🔌 **语义对齐 (Reconciler)**：分析后端响应与前端资源定义之间的字段差异，自动修正 `resource.js`。
+- 🔧 **智能装配**：自动补全 import、日期格式转换、金额千分位、枚举字典、OSS 上传等实战逻辑。
 
 ## 🚀 快速开始
 
