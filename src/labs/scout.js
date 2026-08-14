@@ -1,9 +1,9 @@
-const fs = require('fs')
-const path = require('path')
-
 let globalBrowser = null
 
 module.exports = ({ yorha, dialog }) => {
+
+    const fs = require('fs')
+    const path = require('path')
 
     const { pod042 } = yorha
 

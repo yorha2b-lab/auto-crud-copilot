@@ -1,4 +1,4 @@
-module.exports = ({ units, yorha, dialog, logistics }) => {
+module.exports = ({ units, yorha, dialog, logistics, headquarters }) => {
 
     const http = require('http')
     const zlib = require('zlib')
@@ -39,7 +39,7 @@ module.exports = ({ units, yorha, dialog, logistics }) => {
                     return
                 }
                 pod153.report(dialog.pod153.capturedRuntimeSignal(fileName))
-                await units.reconciler.execute({ fileName, data: [coreData[0]] })
+                await headquarters.reconciler({ fileName, data: [coreData[0]] })
                 hackedRegistry.set(fileName, fingerprint)
             } catch (e) {
                 // 非 JSON 信号，保持静默

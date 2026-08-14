@@ -1,11 +1,11 @@
-const fs = require('fs')
-const path = require('path')
-
 module.exports = async ({ llm, yorha, dialog, logistics }) => {
+
+    const fs = require('fs')
+    const path = require('path')
 
     const { apiParser } = llm
     const { pod153, commander } = yorha
-    const { contextStringify } = logistics.builder
+    const { contextStringify } = logistics.formater
     const { apiDoc, pagesDir } = logistics.supporter.getConfig()
     const { getLocalScore, getSemanticKeywords } = logistics.analyzer
 
@@ -59,7 +59,7 @@ module.exports = async ({ llm, yorha, dialog, logistics }) => {
                         .slice(0, 20) // 💡 拓宽至前 20 名，给 AI 更多的判别空间
 
                     const finalCandidates = candidates.map(item => `${item.method} ${item.path} ${item.desc}`).join('\n')
-                    pod153.report(dialog.pod153.inactiveModule(fileName), 'yellow')
+                    const spinner = pod153.start(dialog.pod153.inactiveModule(fileName), 'yellow')
                     // 3. 驱动 9S 最终裁决
                     const result = await apiParser({ bunkerAnchors, realApis: finalCandidates })
 
@@ -98,7 +98,7 @@ module.exports = async ({ llm, yorha, dialog, logistics }) => {
                         })
 
                         fs.writeFileSync(indexPath, indexCode)
-                        pod153.report(dialog.pod153.signalSynchronized(Object.keys(result).length))
+                        pod153.success(spinner, dialog.pod153.signalSynchronized(Object.keys(result).length))
                         // 💡 战术免责补丁：采用橙黄色高亮，提醒指挥官保持警惕
                         commander.report(dialog.bunker.disclaimer, 'yellow')
                     }

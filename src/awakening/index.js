@@ -9,6 +9,8 @@ module.exports = {
 
         const recruiter = require('../headquarters/recruiter')
         const logistics = recruiter(path.join(__dirname, '../logistics'))
+        const headquarters = recruiter(path.join(__dirname, '../headquarters'))
+
         const yorha = logistics.presenter.yorha()
 
         const builderPath = path.join(__dirname, `../workshop/${template}/builder`)
@@ -22,8 +24,8 @@ module.exports = {
             dialog,
             template,
             logistics,
+            headquarters,
             units: recruiter(path.join(__dirname, '../units')),
-            designer: require('../headquarters/designer')({ logistics, template }),
             briefings: recruiter(path.join(__dirname, `../workshop/${template}/briefings`)),
         }
 

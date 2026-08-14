@@ -1,5 +1,3 @@
-const fs = require('fs')
-
 module.exports = {
     meta: {
         name: 'raider',
@@ -10,6 +8,7 @@ module.exports = {
     },
     execute: async ({ acp, mission }) => {
 
+        const fs = require('fs')
         const chalk = require('chalk')
         const { llm, yorha, dialog, builder, logistics, briefings } = acp
 
@@ -17,7 +16,7 @@ module.exports = {
         const { raider } = briefings
         const { recognizePage } = llm
         const { formatFormItemAndColumns } = builder
-        const { cleanCode, contextStringify } = logistics.builder
+        const { cleanCode, contextStringify } = logistics.formater
 
         const startTime = Date.now()
 

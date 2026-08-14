@@ -1,6 +1,3 @@
-const fs = require('fs')
-const path = require('path')
-
 module.exports = {
     meta: {
         name: 'striker',
@@ -11,12 +8,15 @@ module.exports = {
     },
     execute: async ({ acp, mission }) => {
 
+        const fs = require('fs')
+        const path = require('path')
+
         const { llm, yorha, dialog, builder, template, logistics, briefings } = acp
 
         const { striker } = briefings
         const { nineS, pod042 } = yorha
         const { index, resource } = builder
-        const { contextStringify } = logistics.builder
+        const { contextStringify } = logistics.formater
         const { generateMock, recognizePage, nameSimilarity } = llm
         const { useDemo, pagesDir, utilsDir, needMock } = logistics.supporter.getConfig()
 
@@ -42,9 +42,9 @@ module.exports = {
                 pageConfig = await recognizePage({ prompt: striker, filePath: mission.input, schema: require(`../workshop/${template}/protocols/striker.json`) })
             }
 
-            const { similarity } = await nameSimilarity({ fileName, english: pageConfig.title.english })
+            const { similarity } = await nameSimilarity({ fileName, english: pageConfig.title?.english })
             if (similarity === 0) {
-                fileName = pageConfig.title.english
+                fileName = pageConfig.title?.english
                 targetDir = path.join(process.cwd(), pagesDir, pageConfig.title.english)
                 if (fs.existsSync(targetDir)) {
                     targetDir = `${targetDir}_temp`

@@ -1,8 +1,8 @@
-module.exports = ({ designer, logistics }) => {
+module.exports = ({ template, logistics, headquarters }) => {
 
-    const { indexTpl, resourceTpl } = designer
-    const { wrapCode, cleanCode, contextStringify } = logistics.builder
+    const { wrapCode, cleanCode, contextStringify } = logistics.formater
     const { needMock, responseSuccess } = logistics.supporter.getConfig()
+    const { indexTpl, resourceTpl } = headquarters.designer({ template, logistics })
 
     const formatFormItemAndColumns = ({ pageConfig }) => {
 
@@ -87,7 +87,7 @@ module.exports = ({ designer, logistics }) => {
 
             const hasTabs = pageConfig.tabs?.length > 0
             const hasFormItems = pageConfig.formItems?.length > 0
-            const tabKeys = pageConfig.tabs?.map(tab => tab.key).sort((a, b) => a.length - b.length)
+            const tabKeys = pageConfig.tabs?.map(tab => tab.key).sort((a, b) => a.length - b.length) ?? []
             const optionDict = pageConfig.optionList?.reduce((acc, item) => ({ ...acc, [item.name]: item.options }), {})
 
             const columnsData = processedColumns.filter(item => !['操作', 'operation'].includes(item.title?.toLowerCase()))?.map(item => {
@@ -101,10 +101,10 @@ module.exports = ({ designer, logistics }) => {
                 hasFormItems,
                 tabs: pageConfig.tabs,
                 dictBlocks: dictBlocks.map(item => ({ name: item, data: optionDict[item] ?? [] })),
-                tabColumns: contextStringify({ context: Object.fromEntries(tabKeys.map(tab => [tab, wrapCode('commonColumns')])), maxLength: 100 }),
+                tabColumns: contextStringify({ context: Object.fromEntries(tabKeys?.map(tab => [tab, wrapCode('commonColumns')])), maxLength: 100 }),
                 formItemsData: !hasTabs ?
                     `export const formItems = ${contextStringify({ context: formItems, maxLength: 120 })}` :
-                    `const searchItems = ${contextStringify({ context: formItems, maxLength: 120 })}\n\nexport const formItems = ${contextStringify({ context: Object.fromEntries(tabKeys.map(tab => [tab, wrapCode('searchItems')])), maxLength: 100 })}`,
+                    `const searchItems = ${contextStringify({ context: formItems, maxLength: 120 })}\n\nexport const formItems = ${contextStringify({ context: Object.fromEntries(tabKeys?.map(tab => [tab, wrapCode('searchItems')])), maxLength: 100 })}`,
             }
 
             const bodyCode = resourceTpl(viewData)

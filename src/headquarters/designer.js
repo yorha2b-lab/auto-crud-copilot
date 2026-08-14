@@ -5,7 +5,7 @@ module.exports = ({ template, logistics }) => {
     const Handlebars = require('handlebars')
 
     Handlebars.registerHelper('raw', opt => opt.fn())
-    Handlebars.registerHelper('stringify', (context, maxLength = 200) => context ? new Handlebars.SafeString(logistics.builder.contextStringify({ context, maxLength })) : '[]')
+    Handlebars.registerHelper('stringify', (context, maxLength = 200) => context ? new Handlebars.SafeString(logistics.formater.contextStringify({ context, maxLength })) : '[]')
 
     const { hbsDir } = logistics.supporter.getConfig()
     const tplDir = !!hbsDir ? path.join(process.cwd(), hbsDir) : path.join(__dirname, `../workshop/${template}/blueprint`)
@@ -13,7 +13,7 @@ module.exports = ({ template, logistics }) => {
 
     fs.readdirSync(moldsDir).forEach(file => {
         if (file.endsWith('.hbs')) {
-            const name = path.basename(file, '.hbs') // 去掉后缀拿名字
+            const name = path.basename(file, '.hbs')
             const content = fs.readFileSync(path.join(moldsDir, file), 'utf-8')
             Handlebars.registerPartial(name, `${content}\n`)
         }
