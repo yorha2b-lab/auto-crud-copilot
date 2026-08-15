@@ -5,6 +5,16 @@ module.exports = {
         outputs: ['component-config'],
         description: 'extract reusable UI component from visual input',
         capabilities: ['vision', 'component-analysis', 'component-generation'],
+        mission: `
+        ## Partial CRUD Page
+            局部 CRUD 页面或 UI 碎片。
+            例如：
+            - 仅包含表格
+            - 仅包含表单
+            - 仅包含筛选区域
+            - 仅包含某个 CRUD 功能区域
+            - 页面结构明显不完整
+        `
     },
     execute: async ({ acp, mission }) => {
 

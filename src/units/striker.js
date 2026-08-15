@@ -5,6 +5,18 @@ module.exports = {
         outputs: ['page-config', 'artifacts'],
         description: 'reconstruct full UI from visual input',
         capabilities: ['vision', 'page-analysis', 'page-generation'],
+        mission: `
+        ## Full CRUD Page
+            完整的 CRUD 页面。
+            满足以下特征中的大部分：
+            - 页面结构完整
+            - 包含页面级功能区域
+            - 包含查询表单或筛选区域
+            - 包含表格主体
+            - 包含行操作
+            - 包含新增、编辑、删除等功能按钮
+            - 可能包含统计区域、导出按钮等页面级功能
+        `
     },
     execute: async ({ acp, mission }) => {
 
