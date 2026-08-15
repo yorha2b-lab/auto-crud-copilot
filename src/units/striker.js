@@ -45,7 +45,7 @@ module.exports = {
             const { similarity } = await nameSimilarity({ fileName, english: pageConfig.title?.english })
             if (similarity === 0) {
                 fileName = pageConfig.title?.english
-                targetDir = path.join(process.cwd(), pagesDir, pageConfig.title.english)
+                targetDir = path.join(process.cwd(), pagesDir, pageConfig.title?.english)
                 if (fs.existsSync(targetDir)) {
                     targetDir = `${targetDir}_temp`
                 }

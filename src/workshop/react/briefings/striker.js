@@ -9,6 +9,9 @@ module.exports = `
 - **严禁中文**: 绝对禁止在变量名、键名中使用中文字符。
 - **屏蔽关键字**: 禁止使用 JS 保留字 (export, delete, const, let, class, default 等)。
 
+## 页面标题 (title)
+- **格式**: {title:{english:'页面标题[英文]',chinese:'页面标题[中文]'}}
+
 ## 零部件构筑规范 (Component Specifications)
 
 ## 标签页 (tabs)

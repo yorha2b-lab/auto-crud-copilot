@@ -17,14 +17,21 @@ module.exports = bunker => {
 
     return {
         receive: async mission => {
-            const result = await acp.llm.recognizePage({ filePath: mission.input, prompt: acp.briefings.visionType })
-            const unit = Object.values(acp.units).map(unit => ({ unit, score: unit.meta.capabilities.filter(cap => result.capabilities.includes(cap)).length }))
-                .filter(item => item.score > 0)
-                .sort((a, b) => b.score - a.score)[0]?.unit
-            if (!unit) {
-                return
+            const spinner = acp.yorha.commander.start(acp.dialog.bunker.detectedEnemy)
+            try {
+                const result = await acp.llm.recognizePage({ filePath: mission.input, prompt: acp.briefings.visionType })
+                acp.yorha.commander.success(spinner, acp.dialog.bunker.confirmEnemy)
+                const unit = Object.values(acp.units).map(unit => ({ unit, score: unit.meta.capabilities.filter(cap => result.capabilities.includes(cap)).length }))
+                    .filter(item => item.score > 0)
+                    .sort((a, b) => b.score - a.score)[0]?.unit
+                if (!unit) {
+                    acp.yorha.commander.fail(spinner, acp.dialog.bunker.missionFailed)
+                    return
+                }
+                dispatcher.add(() => unit.execute({ acp, mission }))
+            } catch (error) {
+                acp.yorha.commander.fail(spinner, acp.dialog.bunker.missionUnknown)
             }
-            dispatcher.add(() => unit.execute({ acp, mission }))
         },
     }
 }
