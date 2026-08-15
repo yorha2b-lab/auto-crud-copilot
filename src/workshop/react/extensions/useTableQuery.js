@@ -50,6 +50,10 @@ export const useTableQuery = ({ api, cols = [], initialParams = {}, formatRespon
         apiRef.current = api
     }, [api])
 
+    useEffect(() => {
+        formatResponseRef.current = formatResponse
+    }, [formatResponse])
+
     /**
      * @function getColumnSchema
      * @description [指纹识别协议] 对列配置执行“结构化脱水”。
@@ -104,7 +108,7 @@ export const useTableQuery = ({ api, cols = [], initialParams = {}, formatRespon
                 setLoading(false)
             }
         }
-    }, [search, isLocalPaging, dataSource.length])
+    }, [search, isLocalPaging])
 
     useEffect(() => {
         fetchData()
