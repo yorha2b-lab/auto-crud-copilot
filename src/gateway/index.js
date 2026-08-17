@@ -1,11 +1,11 @@
-module.exports = ({ yorha, dialog, logistics, briefings }) => {
+module.exports = ({ yorha, dialog, logistics, constitution }) => {
 
     const sharp = require('sharp')
 
     const { sleep } = logistics.presenter
-    const { mock, council, similarity, reconciler } = briefings
     const { textModel, visionModel } = logistics.supporter.getConfig()
-    const { UI_DESIGNER, API_DESIGNER, MOCK_DESIGNER } = briefings.system
+    const { council, similarity, reconciler, simulation } = constitution
+    const { UI_DESIGNER, API_DESIGNER, MOCK_DESIGNER } = constitution.system
 
     const openAI = require('./client')()
     const askAI = require('./protocol')({ yorha, sleep, dialog, openAI })
@@ -16,7 +16,7 @@ module.exports = ({ yorha, dialog, logistics, briefings }) => {
                 model: textModel,
                 messages: [
                     { role: 'system', content: MOCK_DESIGNER },
-                    { role: 'user', content: mock({ columns, fileName }) }
+                    { role: 'user', content: simulation({ columns, fileName }) }
                 ]
             })
         },

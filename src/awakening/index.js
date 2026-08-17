@@ -9,6 +9,7 @@ module.exports = {
 
         const recruiter = require('../headquarters/recruiter')
         const logistics = recruiter(path.join(__dirname, '../logistics'))
+        const constitution = recruiter(path.join(__dirname, '../constitution'))
         const headquarters = recruiter(path.join(__dirname, '../headquarters'))
 
         const yorha = logistics.presenter.yorha()
@@ -25,6 +26,7 @@ module.exports = {
             template,
             logistics,
             headquarters,
+            constitution,
             units: recruiter(path.join(__dirname, '../units')),
             briefings: recruiter(path.join(__dirname, `../workshop/${template}/briefings`)),
         }
