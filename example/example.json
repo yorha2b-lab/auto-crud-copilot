@@ -77,19 +77,19 @@
         ],
         "operation": [
             {
-                "uri": "BUNKER_API_ANCHOR_view",
+                "uri": "BUNKER_API_ANCHOR_viewProfession",
                 "label": "查看",
-                "action": "view"
+                "action": "viewProfession"
             },
             {
-                "uri": "BUNKER_API_ANCHOR_edit",
+                "uri": "BUNKER_API_ANCHOR_editProfession",
                 "label": "编辑",
-                "action": "edit"
+                "action": "editProfession"
             },
             {
-                "uri": "BUNKER_API_ANCHOR_delete",
+                "uri": "BUNKER_API_ANCHOR_deleteProfession",
                 "label": "删除",
-                "action": "delete"
+                "action": "deleteProfession"
             }
         ],
         "pagination": true,
