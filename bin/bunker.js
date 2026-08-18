@@ -62,6 +62,7 @@ program
         require('../src/headquarters/observer')(bunker)
         result.yorha.operator6O.report(dialog.operator6O.call2B)
         process.on('SIGINT', async () => {
+            process.stdout.write('\r\x1b[K')
             result.yorha.commander.report(dialog.bunker.systemOffline, 'gray')
             terminalCollapse(500, dialog, result)
             const scout = await result.labs?.scout
