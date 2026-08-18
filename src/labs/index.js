@@ -13,7 +13,7 @@ module.exports = accessPoint => {
     }
 
     if (remains) {
-        require('../labs/scout')(accessPoint).archeology(remains)
+        labs.scout = require('../labs/scout')(accessPoint).archeology(remains)
     }
 
     return labs

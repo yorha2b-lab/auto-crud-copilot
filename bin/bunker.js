@@ -61,10 +61,11 @@ program
         }
         require('../src/headquarters/observer')(bunker)
         result.yorha.operator6O.report(dialog.operator6O.call2B)
-        process.on('SIGINT', () => {
+        process.on('SIGINT', async () => {
             result.yorha.commander.report(dialog.bunker.systemOffline, 'gray')
-            result.labs?.scout?.close()
             terminalCollapse(500, dialog, result)
+            const scout = await result.labs?.scout
+            scout?.close()
         })
     })
 
