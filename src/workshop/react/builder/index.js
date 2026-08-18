@@ -11,6 +11,7 @@ module.exports = ({ template, logistics, headquarters }) => {
             date: 'text => timeRender({time: text})',
             index: '(_, record, index) => index + 1',
             tag: `text => <Tag color='magenta'>{text}</Tag>`,
+            link: `text => <a href='#' target='_blank'>{text}</a>`,
             badge: `text => <Badge status='success' text={text} />`,
             enum: dataIndex => `text => ${dataIndex}Options.find(item => item.value === text)?.label ?? text`,
         }
@@ -100,7 +101,7 @@ module.exports = ({ template, logistics, headquarters }) => {
                 columnsData,
                 hasFormItems,
                 tabs: pageConfig.tabs,
-                dictBlocks: dictBlocks.map(item => ({ name: item, data: optionDict[item] ?? [] })),
+                dictBlocks: dictBlocks.map(item => ({ name: item, data: optionDict[item] ?? [] })).sort((a, b) => a.name.length - b.name.length),
                 tabColumns: contextStringify({ context: Object.fromEntries(tabKeys?.map(tab => [tab, wrapCode('commonColumns')])), maxLength: 100 }),
                 formItemsData: !hasTabs ?
                     `export const formItems = ${contextStringify({ context: formItems, maxLength: 120 })}` :
@@ -145,10 +146,10 @@ module.exports = ({ template, logistics, headquarters }) => {
                 renderTree: pageConfig.renderTree,
                 hasExpandable: pageConfig.table.expandable,
                 staticInfoText: pageConfig.staticInfo?.text,
-                operations: pageConfig.table.operation || [],
                 hasRowSelection: pageConfig.table.rowSelection,
                 uri: needMock ? fileName : 'BUNKER_API_ANCHOR_pages',
                 formItems: hasFormItems ? (hasTabs ? 'formItems[activeKey]' : 'formItems') : '[]',
+                operations: pageConfig.table.operation?.sort((a, b) => a.action.length - b.action.length) || [],
                 initParams: `{ ${hasTabs ? 'type: tabs[0].key ,' : ''}${hasPagination ? 'pageNo: 1 , pageSize: 10' : ''}}`,
             }
 
