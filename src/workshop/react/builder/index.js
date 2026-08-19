@@ -33,9 +33,6 @@ module.exports = ({ template, logistics, headquarters }) => {
         })
 
         const processedColumns = columns?.map(col => {
-            if (col.type === 'text') {
-                delete col.type
-            }
             if (['image'].includes(col.type)) {
                 return { ...col, renderAction: true }
             }
@@ -147,10 +144,10 @@ module.exports = ({ template, logistics, headquarters }) => {
                 hasExpandable: pageConfig.table.expandable,
                 staticInfoText: pageConfig.staticInfo?.text,
                 hasRowSelection: pageConfig.table.rowSelection,
-                uri: needMock ? fileName : 'BUNKER_API_ANCHOR_pages',
                 formItems: hasFormItems ? (hasTabs ? 'formItems[activeKey]' : 'formItems') : '[]',
                 operations: pageConfig.table.operation?.sort((a, b) => a.action.length - b.action.length) || [],
                 initParams: `{ ${hasTabs ? 'type: tabs[0].key ,' : ''}${hasPagination ? 'pageNo: 1 , pageSize: 10' : ''}}`,
+                uri: needMock ? `request('/api/${fileName}', { method: 'POST', body: params })` : 'BUNKER_API_ANCHOR_pages',
             }
 
             const bodyCode = indexTpl(viewData)

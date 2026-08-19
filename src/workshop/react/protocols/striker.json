@@ -83,13 +83,13 @@
                         "items": {
                             "type": "object",
                             "required": [
-                                "uri",
                                 "label",
-                                "action"
+                                "action",
+                                "request"
                             ],
                             "additionalProperties": false,
                             "properties": {
-                                "uri": {
+                                "request": {
                                     "type": "string"
                                 },
                                 "label": {
@@ -230,15 +230,15 @@
                     "type": "object",
                     "required": [
                         "btn",
-                        "uri",
-                        "action"
+                        "action",
+                        "request"
                     ],
                     "additionalProperties": false,
                     "properties": {
                         "btn": {
                             "type": "string"
                         },
-                        "uri": {
+                        "request": {
                             "type": "string"
                         },
                         "action": {

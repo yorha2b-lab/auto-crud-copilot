@@ -77,19 +77,19 @@
         ],
         "operation": [
             {
-                "uri": "BUNKER_API_ANCHOR_viewProfession",
+                "request": "BUNKER_API_ANCHOR_viewJob",
                 "label": "查看",
-                "action": "viewProfession"
+                "action": "viewJob"
             },
             {
-                "uri": "BUNKER_API_ANCHOR_editProfession",
+                "request": "BUNKER_API_ANCHOR_editJob",
                 "label": "编辑",
-                "action": "editProfession"
+                "action": "editJob"
             },
             {
-                "uri": "BUNKER_API_ANCHOR_deleteProfession",
+                "request": "BUNKER_API_ANCHOR_deleteJob",
                 "label": "删除",
-                "action": "deleteProfession"
+                "action": "deleteJob"
             }
         ],
         "pagination": true,
@@ -97,8 +97,8 @@
         "rowSelection": true
     },
     "title": {
-        "chinese": "职业觉醒管理",
-        "english": "professionAwakeningManagement"
+        "chinese": "鬼剑士职业管理",
+        "english": "GhostSwordsmanManagement"
     },
     "formItems": [
         {
@@ -140,7 +140,7 @@
                 },
                 {
                     "label": "太刀",
-                    "value": "longSword"
+                    "value": "katana"
                 },
                 {
                     "label": "巨剑",
@@ -170,13 +170,13 @@
     "functionButton": [
         {
             "btn": "批量删除",
-            "uri": "BUNKER_API_ANCHOR_deleteProfessions",
-            "action": "deleteProfessions"
+            "request": "BUNKER_API_ANCHOR_batchDeleteJobs",
+            "action": "batchDeleteJobs"
         },
         {
             "btn": "批量导出",
-            "uri": "BUNKER_API_ANCHOR_exportProfessions",
-            "action": "exportProfessions"
+            "request": "BUNKER_API_ANCHOR_exportJobs",
+            "action": "exportJobs"
         }
     ]
 }

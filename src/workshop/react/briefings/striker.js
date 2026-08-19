@@ -36,7 +36,7 @@ module.exports = `
 ## 表格主体 (table)
 - **基础格式(columns)**: [{ title: '文本', dataIndex: 'englishName' }]。
 - **配置项**: [pagination, expandable, rowSelection] 均为布尔值。
-- **行操作 (operation)**: [{ label: '操作名', action: '操作动词+[模块名单数]', uri: 'BUNKER_API_ANCHOR_动词+[模块名单数]'}]
+- **行操作 (operation)**: [{ label: '操作名', action: '操作动词+[模块名单数]', request: 'BUNKER_API_ANCHOR_动词+[模块名单数]'}]
 - **类型定义 (type)**:
     - enum: 枚举列
     - money: 金额列
@@ -45,10 +45,11 @@ module.exports = `
     - date: 时间/日期列
     - text: 普通文本（默认）
     - tag: 标签列(有背景色的文本)
+    - link: 链接列（蓝色下划线的文本）
     - badge: 徽标列(文本前有颜色小圆点)
 
 ## 全局功能按钮 (functionButton)
-- **基础格式**: [{ btn: '按钮', action: '操作动词+[模块名复数]', uri: 'BUNKER_API_ANCHOR_动词+[模块名复数]'}]。
+- **基础格式**: [{ btn: '按钮', action: '操作动词+[模块名复数]', request: 'BUNKER_API_ANCHOR_动词+[模块名复数]'}]。
 - **导出数据**: action 设为 'export[模块名]'。
 - **逻辑锁定**: 只要页面中出现了非查询、非重置的独立操作按钮，必须识别并存入 [functionButton] 数组。
 - **构筑联动**: 若 [functionButton] 数组不为空，则在下文的 [RenderTree] 中必须包含 "FunctionButtons"。

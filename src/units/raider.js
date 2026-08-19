@@ -37,7 +37,12 @@ module.exports = {
 
             const pageConfig = await recognizePage({ prompt: raider, filePath: mission.input })
 
-            const { formItems, dictBlocks, processedColumns } = formatFormItemAndColumns({ pageConfig })
+            let { formItems, dictBlocks, processedColumns } = formatFormItemAndColumns({ pageConfig })
+
+            processedColumns = processedColumns.map(col => {
+                delete col.type
+                return col
+            })
 
             const result = Object.fromEntries(Object.entries({ formItems, processedColumns }).filter(([key, value]) => value?.length > 0))
 

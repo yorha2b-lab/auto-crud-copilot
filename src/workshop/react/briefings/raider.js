@@ -23,6 +23,7 @@ module.exports = `
     - date: 时间/日期列
     - text: 普通文本（默认）
     - tag: 标签列(有背景色的文本)
+    - link: 链接列（蓝色下划线的文本）
     - badge: 徽标列(文本前有颜色小圆点)
     - **行操作 (Operation)**: [{label:'操作名', action:'动词ByRecord'}]
 

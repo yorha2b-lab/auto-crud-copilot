@@ -49,8 +49,8 @@
     "json-stringify-pretty-compact": "^4.0.0"
   },
   "devDependencies": {
-    "segmentit": "^2.0.3",
+    "http-proxy": "^1.18.1",
     "puppeteer": "^25.4.0",
-    "http-proxy": "^1.18.1"
+    "segmentit": "^2.0.3"
   }
 }
