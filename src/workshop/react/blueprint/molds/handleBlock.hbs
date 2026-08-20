@@ -11,6 +11,7 @@ const {{this.action}} = async params => {
 
 {{#each functionButtons}}
 const {{this.action}} = () => {
+    const params = {}
     Modal.confirm({
         title: '确认',
         centered: true,
