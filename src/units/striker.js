@@ -28,7 +28,7 @@ module.exports = {
         const { striker } = briefings
         const { nineS, pod042 } = yorha
         const { index, resource } = builder
-        const { contextStringify } = logistics.formater
+        const { contextStringify } = logistics.formatter
         const { generateMock, recognizePage, nameSimilarity } = llm
         const { useDemo, pagesDir, utilsDir, needMock } = logistics.supporter.getConfig()
 

@@ -1,6 +1,6 @@
 module.exports = ({ template, logistics, headquarters }) => {
 
-    const { wrapCode, cleanCode, contextStringify } = logistics.formater
+    const { wrapCode, cleanCode, contextStringify } = logistics.formatter
     const { needMock, responseSuccess } = logistics.supporter.getConfig()
     const { indexTpl, resourceTpl } = headquarters.designer({ template, logistics })
 

@@ -8,7 +8,7 @@ module.exports = async ({ data, fileName }) => {
 
     const { nineS, pod153 } = yorha
     const { alignResponseFields } = llm
-    const { cleanCode } = logistics.formater
+    const { cleanCode } = logistics.formatter
     const { pagesDir } = logistics.supporter.getConfig()
 
     const startTime = Date.now()

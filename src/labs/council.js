@@ -5,7 +5,7 @@ module.exports = async ({ llm, yorha, dialog, logistics }) => {
 
     const { apiParser } = llm
     const { pod153, commander } = yorha
-    const { contextStringify } = logistics.formater
+    const { contextStringify } = logistics.formatter
     const { apiDoc, pagesDir } = logistics.supporter.getConfig()
     const { getLocalScore, getSemanticKeywords } = logistics.analyzer
 

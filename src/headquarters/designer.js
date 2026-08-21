@@ -5,7 +5,7 @@ module.exports = ({ template, logistics }) => {
     const Handlebars = require('handlebars')
 
     Handlebars.registerHelper('raw', opt => opt.fn())
-    Handlebars.registerHelper('stringify', (context, maxLength = 200) => context ? new Handlebars.SafeString(logistics.formater.contextStringify({ context, maxLength })) : '[]')
+    Handlebars.registerHelper('stringify', (context, maxLength = 200) => context ? new Handlebars.SafeString(logistics.formatter.contextStringify({ context, maxLength })) : '[]')
 
     const { hbsDir } = logistics.supporter.getConfig()
     const tplDir = !!hbsDir ? path.join(process.cwd(), hbsDir) : path.join(__dirname, `../workshop/${template}/blueprint`)

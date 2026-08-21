@@ -26,7 +26,7 @@ module.exports = {
         const { raider } = briefings
         const { recognizePage } = llm
         const { formatFormItemAndColumns } = builder
-        const { cleanCode, contextStringify } = logistics.formater
+        const { cleanCode, contextStringify } = logistics.formatter
 
         const startTime = Date.now()
 
