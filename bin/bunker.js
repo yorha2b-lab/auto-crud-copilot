@@ -8,6 +8,7 @@ const local = Intl.DateTimeFormat().resolvedOptions().locale.toUpperCase()
 
 const { matchDialog, terminalCollapse } = require('../src/logistics/presenter')
 
+let isTerminating = false
 const recruiter = require('../src/headquarters/recruiter')
 const dialogues = recruiter(path.join(__dirname, '../src/dialogues'))
 const dialog = matchDialog(local, dialogues) ?? dialogues['EN-US']
@@ -62,10 +63,13 @@ program
         require('../src/headquarters/observer')(bunker)
         result.yorha.operator6O.report(dialog.operator6O.call2B)
         process.on('SIGINT', async () => {
+            if (isTerminating) return
+            isTerminating = true
             process.stdout.write('\r\x1b[K')
-            result.yorha.commander.report(dialog.bunker.systemOffline, 'gray')
-            terminalCollapse(500, dialog, result)
-            const scout = await result.labs?.scout
+            const currentBunker = bunker.get()
+            currentBunker.yorha.commander.report(dialog.bunker.systemOffline, 'gray')
+            terminalCollapse(500, dialog, currentBunker)
+            const scout = await currentBunker.labs?.scout
             scout?.close()
         })
     })
