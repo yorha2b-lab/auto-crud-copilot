@@ -1,4 +1,4 @@
-# AutoDev (YoRHa Bunker Engine v6.0)
+# AutoDev (YoRHa Bunker Engine)
 
 [English](./README_EN.md) | 简体中文
 
@@ -69,7 +69,7 @@ BASE_URL=your_api_base_url_here
 
 🚗 **获取API Key直通车**: [阿里云百炼控制台](https://bailian.console.aliyun.com/cn-beijing?tab=doc#/doc/)
 
-## 📖 指挥中心操作指南 (v6.0 工作流)
+## 📖 指挥中心操作指南
 
 启动主监控网络：
 
@@ -79,28 +79,27 @@ bunker boot
 
 启动后，地堡系统将进入全频道联动监听状态：
 
-| 战术操作 | 传感器/动作 | 构筑效果 |
+| 战术操作 | 传感器 / 触发动作 | 作战构筑效果 |
 | :--- | :--- | :--- |
-| **全页构筑** | `./bunker/screenShot` | 自动生成 `index.js`、`resource.js` 并追加同步 `menus.js` |
-| **碎片提取** | `./bunker/screenPart` | 终端实时弹出紫色代码框，即拷即用 |
-| **右键考古** | 浏览器【鼠标右键】 | 触发 `scout.js` 侦察兵，一键捕获当前页面降维重构 |
-| **接口 JSON** | `./bunker/response` | 自动执行语义对齐，修正 `resource.js` 中的字段名 |
+| **任务空投**<br>*(智能分流)* | 拖入设计图/截图至<br>`./bunker/mission/` | **司令部（commander）视觉雷达自动研判分流**：<br>• **完整 CRUD 页面** $\rightarrow$ 派出 `striker`（重装打击）：生成全套目录、`index.js`、`resource.js`、Mock 数据并同步 `menus.js`<br>• **局部 UI 碎片/下拉字典** $\rightarrow$ 派出 `raider`（轻装突袭）：终端弹出紫色代码框，即拷即用 |
+| **遗迹考古**<br>*(一键克隆)* | 目标老系统浏览器中<br>【鼠标右键】点击任意位置 | 调起 `scout.js` 侦察兵，全屏秒级截屏并自动推导路由命名，空投至 `./bunker/mission/` 触发自动构筑 |
+| **全频道通电**<br>*(Swagger 对齐)* | 配置 `apiDoc` 启动地堡 | `council.js` 启动语义雷达与本地 NLP 分词，自动匹配真实接口、请求方式（GET/POST/DELETE）与路径变量，并同步后端 Enum 基因字典 |
+| **神之塔嗅探**<br>*(抓包自愈)* | 将业务代理目标指向<br>`http://localhost:42153` | `tower.js` 实时拦截真实网络响应，`reconciler.js` 自动比对并物理覆写修正 `resource.js` 中的字段名 |
 
 ## 📁 地堡结构说明
 
 ```text
 your-project/
-├── bunker/              # 地堡传感器与配置
-│   ├── config.js        # 地堡配置文件
-│   ├── screenShot/      # 全页截图接收站
-│   ├── screenPart/      # 碎片截图接收站
-│   └── response/        # 响应对齐接收站
-├── mock/                # 自动伪造的 Mock 数据
+├── bunker/                  # 地堡前哨基地与战术传感器
+│   ├── .env                 # 神经云连接密钥 (API Key)
+│   ├── config.js            # 地堡战略配置文件 (支持热重载)
+│   ├── mission/             # 统一作战任务空投舱 (设计图/截图投放点，司令部自动分流)
+│   └── .chrome_session/     # 侦察兵 (scout) 浏览器会话与缓存持久化目录
+├── mock/                    # 9S 自动执行数据伪装的 Mock 数据包
 └── src/
-    ├── pages/           # 自动构建的前端页面代码
+    ├── pages/               # 寄叶部队自动构筑的前端业务页面 (视图与 Schema 解耦)
     └── utils/
-        └── menus.js     # 自动同步的动态菜单配置
-```
+        └── menus.js         # 自动同步的战区菜单路由配置
 
 ## ⚙️ 配置
 

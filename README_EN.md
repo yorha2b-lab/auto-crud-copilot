@@ -1,4 +1,4 @@
-# AutoDev (YoRHa Bunker Engine v6.0)
+# AutoDev (YoRHa Bunker Engine)
 
 English | [简体中文](./README.md)
 
@@ -69,7 +69,7 @@ BASE_URL=your_api_base_url_here
 
 🚗 **Get API Key**: [Alibaba Cloud Bailian Console](https://bailian.console.aliyun.com/)
 
-## 📖 Command Center Operations Guide (v6.0 Workflow)
+## 📖 Command Center Operations Guide
 
 Start the main monitoring network:
 
@@ -77,30 +77,29 @@ Start the main monitoring network:
 bunker boot
 ```
 
-Upon launch, the Bunker system enters all-channel monitoring mode:
+Upon booting, the Bunker enters **Full-Channel Active Reconnaissance State**:
 
-| Tactical Action | Sensor / Target | Construction Output |
+| Tactical Operation | Sensor / Trigger | Construction Objective & Output |
 | :--- | :--- | :--- |
-| **Full Page** | `./bunker/screenShot` | Auto-generates `index.js`, `resource.js`, and syncs `menus.js` |
-| **Fragment** | `./bunker/screenPart` | Terminal outputs copy-pasteable UI code snippets in real-time |
-| **Archeology** | Browser [Right-Click] | Triggers `scout.js` unit to capture and refactor current page |
-| **API Alignment** | `./bunker/response` | Auto-aligns semantics and fixes field names in `resource.js` |
+| **Mission Drop**<br>*(Autonomous Routing)* | Drop mockups/screenshots into<br>`./bunker/mission/` | **Headquarters (`commander`) visual radar automatically analyzes and routes:**<br>• **Full CRUD Page** $\rightarrow$ Dispatches `striker` (Heavy Assault): Generates complete directory, `index.js`, `resource.js`, 9S Data Camouflage (Mock), and synchronizes `menus.js`.<br>• **UI Fragment / Dropdown Enum** $\rightarrow$ Dispatches `raider` (Tactical Extraction): Outputs styled terminal code block, ready for instant physical assembly. |
+| **Remains Archaeology**<br>*(One-Click Clone)* | **[Right-Click]** anywhere on the target legacy web application | Awakens `scout.js` reconnaissance unit to capture a full-page snapshot, derive semantic route naming, and auto-airdrop the asset into `./bunker/mission/` to trigger immediate construction. |
+| **Full-Channel Link**<br>*(Swagger / OpenAPI)* | Configure `apiDoc` and boot Bunker | `council.js` engages local NLP semantic radar to automatically match real endpoints, HTTP methods (GET/POST/DELETE), and RESTful path variables via ES6 template literals, while synchronizing backend Enum genomes. |
+| **The Tower Sniffing**<br>*(Runtime Self-Healing)* | Direct local proxy target to<br>`http://localhost:42153` | `tower.js` intercepts live runtime JSON responses, prompting `reconciler.js` to physically mutate and self-heal field discrepancies in `resource.js` in-place. |
 
-## 📁 Bunker Architecture Overview
+## 📁 Bunker Outpost Topology
 
 ```text
 your-project/
-├── bunker/              # Bunker sensors and configuration
-│   ├── config.js        # Bunker configuration file
-│   ├── screenShot/      # Full-page screenshot receiver
-│   ├── screenPart/      # UI fragment receiver
-│   └── response/        # Response alignment receiver
-├── mock/                # Auto-generated Mock data
+├── bunker/                  # Bunker Tactical Outpost & Sensors
+│   ├── .env                 # Neural Cloud Link Credentials (API Key)
+│   ├── config.js            # Strategic Configuration (Hot-reloadable)
+│   ├── mission/             # Unified Tactical Airdrop Bay (Drag & drop screenshots here)
+│   └── .chrome_session/     # Scout Browser Persistent Session & Cache
+├── mock/                    # 9S Automated Data Camouflage Payloads (Mock APIs)
 └── src/
-    ├── pages/           # Auto-built frontend page code
+    ├── pages/               # YoRHa-Constructed Frontend Units (Decoupled View & Schema)
     └── utils/
-        └── menus.js     # Auto-synced dynamic menu configuration
-```
+        └── menus.js         # Synchronized Theater Menu & Routing Configurations
 
 ## ⚙️ Configuration
 
